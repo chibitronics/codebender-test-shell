@@ -19,7 +19,7 @@
 	<form method="post" id="show-result" target="result" action="/build">
 
 		<div id="wrapper">
-			<header><u style="font-color: blue"><div id="buildandrun">Build and run</div></u> <div style="display: none" id="stoprunning">Stop Running</div><div id="runprogressbar"></div><div id="runprogresstxt"></div><div id="buildoutput"></div></header>
+			<header><div style="color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="buildandrun">Build and run</div> <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div><div id="buildoutput"></div><div id="runprogressbar"></div><div id="runprogresstxt"></div></header>
 			<div id="content">
 				<div id="sidebar">
 					<div id="treething"></div>
@@ -53,17 +53,24 @@ void loop() {
 		var fsk;
 		var totalSize;
 
+		Number.prototype.toFixedDown = function(digits) {
+		    var re = new RegExp("(\\d+\\.\\d{" + digits + "})(\\d)"),
+			m = this.toString().match(re);
+		    return m ? parseFloat(m[1]) : this.valueOf();
+		};
+
 		function updateProgress() {
+			progress = fsk.progress() * 100;
 			if (fsk.isRunning()) {
-				$("#runprogresstxt").html("Loading " + totalSize + " bytes: " + fsk.progress());
-				$("#runprogressbar").progressbar({value: fsk.progress() * 100});
+				$("#runprogresstxt").html("Loading " + totalSize + " bytes: " + progress.toFixedDown(2) + "%");
+				$("#runprogressbar").progressbar({value: progress});
 				window.setTimeout(updateProgress, 100);
 			}
 			else {
 				$("#runprogresstxt").html("Done");
-				$("#runprogressbar").progressbar({value: fsk.progress() * 100});
-				$("#buildandrun").show("slow");
+				$("#runprogressbar").progressbar({value: progress});
 				$("#stoprunning").hide("slow");
+				$("#buildandrun").show("slow");
 			}
 		}
 		function buildResult(results, textStatus, jqXHR) {
@@ -74,8 +81,6 @@ void loop() {
 			if (results.success) {
 				$("#buildoutput").html("Build complete");
 
-				$("#buildandrun").hide("slow");
-				$("#stoprunning").show("slow");
 				totalSize = results.size;
 				var data = atob(results.output);
 
@@ -123,7 +128,8 @@ void loop() {
 				console.log("Done.  Playing audio...");
 				fsk.play();
 				updateProgress();
-				//window.setTimeout(function() { fsk.play(); updateProgress(); }, 1000);
+				$("#buildandrun").hide("slow");
+				$("#stoprunning").show("slow");
 			}
 			else {
 				$("#buildoutput").html(results.message);
@@ -137,6 +143,7 @@ void loop() {
 			});
 			$("#buildandrun").click(function() {
 				console.log("Building code...");
+				$("#buildoutput").html("Building code...");
 				if (fsk)
 					fsk.stop();
 				codeobj = {
