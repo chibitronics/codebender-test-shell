@@ -1,0 +1,542 @@
+[
+  {
+    "id": "basics",
+    "text": "01. Basics",
+    "children": [
+      {
+        "id": "analogreadserial",
+        "text": "AnalogReadSerial",
+        "data": "examples/01.Basics/AnalogReadSerial/AnalogReadSerial.ino",
+        "type": "file"
+      },
+      {
+        "id": "bareminimum",
+        "text": "BareMinimum",
+        "data": "examples/01.Basics/BareMinimum/BareMinimum.ino",
+        "type": "file"
+      },
+      {
+        "id": "blink",
+        "text": "Blink",
+        "data": "examples/01.Basics/Blink/Blink.ino",
+        "type": "file"
+      },
+      {
+        "id": "digitalreadserial",
+        "text": "DigitalReadSerial",
+        "data": "examples/01.Basics/DigitalReadSerial/DigitalReadSerial.ino",
+        "type": "file"
+      },
+      {
+        "id": "fade",
+        "text": "Fade",
+        "data": "examples/01.Basics/Fade/Fade.ino",
+        "type": "file"
+      },
+      {
+        "id": "readanalogvoltage",
+        "text": "ReadAnalogVoltage",
+        "data": "examples/01.Basics/ReadAnalogVoltage/ReadAnalogVoltage.ino",
+        "type": "file"
+      }
+    ]
+  },
+  {
+    "id": "digital",
+    "text": "02. Digital",
+    "children": [
+      {
+        "id": "blinkwithoutdelay",
+        "text": "BlinkWithoutDelay",
+        "data": "examples/02.Digital/BlinkWithoutDelay/BlinkWithoutDelay.ino",
+        "type": "file"
+      },
+      {
+        "id": "button",
+        "text": "Button",
+        "data": "examples/02.Digital/Button/Button.ino",
+        "type": "file"
+      },
+      {
+        "id": "debounce",
+        "text": "Debounce",
+        "data": "examples/02.Digital/Debounce/Debounce.ino",
+        "type": "file"
+      },
+      {
+        "id": "digitalinputpullup",
+        "text": "DigitalInputPullup",
+        "data": "examples/02.Digital/DigitalInputPullup/DigitalInputPullup.ino",
+        "type": "file"
+      },
+      {
+        "id": "statechangedetection",
+        "text": "StateChangeDetection",
+        "data": "examples/02.Digital/StateChangeDetection/StateChangeDetection.ino",
+        "type": "file"
+      },
+      {
+        "id": "tonekeyboard",
+        "text": "toneKeyboard",
+        "data": "examples/02.Digital/toneKeyboard/toneKeyboard.ino",
+        "type": "file"
+      },
+      {
+        "id": "tonemelody",
+        "text": "toneMelody",
+        "data": "examples/02.Digital/toneMelody/toneMelody.ino",
+        "type": "file"
+      },
+      {
+        "id": "tonemultiple",
+        "text": "toneMultiple",
+        "data": "examples/02.Digital/toneMultiple/toneMultiple.ino",
+        "type": "file"
+      },
+      {
+        "id": "tonepitchfollower",
+        "text": "tonePitchFollower",
+        "data": "examples/02.Digital/tonePitchFollower/tonePitchFollower.ino",
+        "type": "file"
+      }
+    ]
+  },
+  {
+    "id": "analog",
+    "text": "03. Analog",
+    "children": [
+      {
+        "id": "analoginoutserial",
+        "text": "AnalogInOutSerial",
+        "data": "examples/03.Analog/AnalogInOutSerial/AnalogInOutSerial.ino",
+        "type": "file"
+      },
+      {
+        "id": "analoginput",
+        "text": "AnalogInput",
+        "data": "examples/03.Analog/AnalogInput/AnalogInput.ino",
+        "type": "file"
+      },
+      {
+        "id": "analogwritemega",
+        "text": "AnalogWriteMega",
+        "data": "examples/03.Analog/AnalogWriteMega/AnalogWriteMega.ino",
+        "type": "file"
+      },
+      {
+        "id": "calibration",
+        "text": "Calibration",
+        "data": "examples/03.Analog/Calibration/Calibration.ino",
+        "type": "file"
+      },
+      {
+        "id": "fading",
+        "text": "Fading",
+        "data": "examples/03.Analog/Fading/Fading.ino",
+        "type": "file"
+      },
+      {
+        "id": "smoothing",
+        "text": "Smoothing",
+        "data": "examples/03.Analog/Smoothing/Smoothing.ino",
+        "type": "file"
+      }
+    ]
+  },
+  {
+    "id": "communication",
+    "text": "04. Communication",
+    "children": [
+      {
+        "id": "asciitable",
+        "text": "ASCIITable",
+        "data": "examples/04.Communication/ASCIITable/ASCIITable.ino",
+        "type": "file"
+      },
+      {
+        "id": "dimmer",
+        "text": "Dimmer",
+        "data": "examples/04.Communication/Dimmer/Dimmer.ino",
+        "type": "file"
+      },
+      {
+        "id": "graph",
+        "text": "Graph",
+        "data": "examples/04.Communication/Graph/Graph.ino",
+        "type": "file"
+      },
+      {
+        "id": "midi",
+        "text": "MIDI",
+        "data": "examples/04.Communication/MIDI/Midi.ino",
+        "type": "file"
+      },
+      {
+        "id": "multiserialmega",
+        "text": "MultiSerialMega",
+        "data": "examples/04.Communication/MultiSerialMega/MultiSerialMega.ino",
+        "type": "file"
+      },
+      {
+        "id": "physicalpixel",
+        "text": "PhysicalPixel",
+        "data": "examples/04.Communication/PhysicalPixel/PhysicalPixel.ino",
+        "type": "file"
+      },
+      {
+        "id": "readasciistring",
+        "text": "ReadASCIIString",
+        "data": "examples/04.Communication/ReadASCIIString/ReadASCIIString.ino",
+        "type": "file"
+      },
+      {
+        "id": "serialcallresponseascii",
+        "text": "SerialCallResponseASCII",
+        "data": "examples/04.Communication/SerialCallResponseASCII/SerialCallResponseASCII.ino",
+        "type": "file"
+      },
+      {
+        "id": "serialcallresponse",
+        "text": "SerialCallResponse",
+        "data": "examples/04.Communication/SerialCallResponse/SerialCallResponse.ino",
+        "type": "file"
+      },
+      {
+        "id": "serialevent",
+        "text": "SerialEvent",
+        "data": "examples/04.Communication/SerialEvent/SerialEvent.ino",
+        "type": "file"
+      },
+      {
+        "id": "virtualcolormixer",
+        "text": "VirtualColorMixer",
+        "data": "examples/04.Communication/VirtualColorMixer/VirtualColorMixer.ino",
+        "type": "file"
+      }
+    ]
+  },
+  {
+    "id": "control",
+    "text": "05. Control",
+    "children": [
+      {
+        "id": "arrays",
+        "text": "Arrays",
+        "data": "examples/05.Control/Arrays/Arrays.ino",
+        "type": "file"
+      },
+      {
+        "id": "forloopiteration",
+        "text": "ForLoopIteration",
+        "data": "examples/05.Control/ForLoopIteration/ForLoopIteration.ino",
+        "type": "file"
+      },
+      {
+        "id": "ifstatementconditional",
+        "text": "IfStatementConditional",
+        "data": "examples/05.Control/IfStatementConditional/IfStatementConditional.ino",
+        "type": "file"
+      },
+      {
+        "id": "switchcase2",
+        "text": "switchCase2",
+        "data": "examples/05.Control/switchCase2/switchCase2.ino",
+        "type": "file"
+      },
+      {
+        "id": "switchcase",
+        "text": "switchCase",
+        "data": "examples/05.Control/switchCase/switchCase.ino",
+        "type": "file"
+      },
+      {
+        "id": "whilestatementconditional",
+        "text": "WhileStatementConditional",
+        "data": "examples/05.Control/WhileStatementConditional/WhileStatementConditional.ino",
+        "type": "file"
+      }
+    ]
+  },
+  {
+    "id": "sensors",
+    "text": "06. Sensors",
+    "children": [
+      {
+        "id": "adxl3xx",
+        "text": "ADXL3xx",
+        "data": "examples/06.Sensors/ADXL3xx/ADXL3xx.ino",
+        "type": "file"
+      },
+      {
+        "id": "knock",
+        "text": "Knock",
+        "data": "examples/06.Sensors/Knock/Knock.ino",
+        "type": "file"
+      },
+      {
+        "id": "memsic2125",
+        "text": "Memsic2125",
+        "data": "examples/06.Sensors/Memsic2125/Memsic2125.ino",
+        "type": "file"
+      },
+      {
+        "id": "ping",
+        "text": "Ping",
+        "data": "examples/06.Sensors/Ping/Ping.ino",
+        "type": "file"
+      }
+    ]
+  },
+  {
+    "id": "display",
+    "text": "07. Display",
+    "children": [
+      {
+        "id": "bargraph",
+        "text": "barGraph",
+        "data": "examples/07.Display/barGraph/barGraph.ino",
+        "type": "file"
+      },
+      {
+        "id": "rowcolumnscanning",
+        "text": "RowColumnScanning",
+        "data": "examples/07.Display/RowColumnScanning/RowColumnScanning.ino",
+        "type": "file"
+      }
+    ]
+  },
+  {
+    "id": "strings",
+    "text": "08. Strings",
+    "children": [
+      {
+        "id": "characteranalysis",
+        "text": "CharacterAnalysis",
+        "data": "examples/08.Strings/CharacterAnalysis/CharacterAnalysis.ino",
+        "type": "file"
+      },
+      {
+        "id": "stringadditionoperator",
+        "text": "StringAdditionOperator",
+        "data": "examples/08.Strings/StringAdditionOperator/StringAdditionOperator.ino",
+        "type": "file"
+      },
+      {
+        "id": "stringappendoperator",
+        "text": "StringAppendOperator",
+        "data": "examples/08.Strings/StringAppendOperator/StringAppendOperator.ino",
+        "type": "file"
+      },
+      {
+        "id": "stringcasechanges",
+        "text": "StringCaseChanges",
+        "data": "examples/08.Strings/StringCaseChanges/StringCaseChanges.ino",
+        "type": "file"
+      },
+      {
+        "id": "stringcharacters",
+        "text": "StringCharacters",
+        "data": "examples/08.Strings/StringCharacters/StringCharacters.ino",
+        "type": "file"
+      },
+      {
+        "id": "stringcomparisonoperators",
+        "text": "StringComparisonOperators",
+        "data": "examples/08.Strings/StringComparisonOperators/StringComparisonOperators.ino",
+        "type": "file"
+      },
+      {
+        "id": "stringconstructors",
+        "text": "StringConstructors",
+        "data": "examples/08.Strings/StringConstructors/StringConstructors.ino",
+        "type": "file"
+      },
+      {
+        "id": "stringindexof",
+        "text": "StringIndexOf",
+        "data": "examples/08.Strings/StringIndexOf/StringIndexOf.ino",
+        "type": "file"
+      },
+      {
+        "id": "stringlength",
+        "text": "StringLength",
+        "data": "examples/08.Strings/StringLength/StringLength.ino",
+        "type": "file"
+      },
+      {
+        "id": "stringlengthtrim",
+        "text": "StringLengthTrim",
+        "data": "examples/08.Strings/StringLengthTrim/StringLengthTrim.ino",
+        "type": "file"
+      },
+      {
+        "id": "stringreplace",
+        "text": "StringReplace",
+        "data": "examples/08.Strings/StringReplace/StringReplace.ino",
+        "type": "file"
+      },
+      {
+        "id": "stringstartswithendswith",
+        "text": "StringStartsWithEndsWith",
+        "data": "examples/08.Strings/StringStartsWithEndsWith/StringStartsWithEndsWith.ino",
+        "type": "file"
+      },
+      {
+        "id": "stringsubstring",
+        "text": "StringSubstring",
+        "data": "examples/08.Strings/StringSubstring/StringSubstring.ino",
+        "type": "file"
+      },
+      {
+        "id": "stringtointrgb",
+        "text": "StringToIntRGB",
+        "data": "examples/08.Strings/StringToIntRGB/StringToIntRGB.ino",
+        "type": "file"
+      },
+      {
+        "id": "stringtoint",
+        "text": "StringToInt",
+        "data": "examples/08.Strings/StringToInt/StringToInt.ino",
+        "type": "file"
+      }
+    ]
+  },
+  {
+    "id": "usb",
+    "text": "09. USB",
+    "children": [
+      {
+        "id": "keyboardandmousecontrol",
+        "text": "KeyboardAndMouseControl",
+        "data": "examples/09.USB/KeyboardAndMouseControl/KeyboardAndMouseControl.ino",
+        "type": "file"
+      },
+      {
+        "id": "keyboardlogout",
+        "text": "Keyboard Logout",
+        "data": "examples/09.USB/Keyboard/KeyboardLogout/KeyboardLogout.ino",
+        "type": "file"
+      },
+      {
+        "id": "keyboardmessage",
+        "text": "Keyboard Message",
+        "data": "examples/09.USB/Keyboard/KeyboardMessage/KeyboardMessage.ino",
+        "type": "file"
+      },
+      {
+        "id": "keyboardreprogram",
+        "text": "Keyboard Reprogram",
+        "data": "examples/09.USB/Keyboard/KeyboardReprogram/KeyboardReprogram.ino",
+        "type": "file"
+      },
+      {
+        "id": "keyboardserial",
+        "text": "Keyboard Serial",
+        "data": "examples/09.USB/Keyboard/KeyboardSerial/KeyboardSerial.ino",
+        "type": "file"
+      },
+      {
+        "id": "buttonmouse",
+        "text": "Button Mouse Control",
+        "data": "examples/09.USB/Mouse/ButtonMouseControl/ButtonMouseControl.ino",
+        "type": "file"
+      },
+      {
+        "id": "joystickmousecontrol",
+        "text": "Joystick Mouse Control",
+        "data": "examples/09.USB/Mouse/JoystickMouseControl/JoystickMouseControl.ino",
+        "type": "file"
+      }
+    ]
+  },
+  {
+    "id": "starterkit",
+    "text": "10. StarterKit",
+    "children": [
+      {
+        "id": "p02_spaceshipinterface",
+        "text": "p02: SpaceshipInterface",
+        "data": "examples/10.StarterKit/p02_SpaceshipInterface/p02_SpaceshipInterface.ino",
+        "type": "file"
+      },
+      {
+        "id": "p03_loveometer",
+        "text": "p03: LoveOMeter",
+        "data": "examples/10.StarterKit/p03_LoveOMeter/p03_LoveOMeter.ino",
+        "type": "file"
+      },
+      {
+        "id": "p04_colormixinglamp",
+        "text": "p04: ColorMixingLamp",
+        "data": "examples/10.StarterKit/p04_ColorMixingLamp/p04_ColorMixingLamp.ino",
+        "type": "file"
+      },
+      {
+        "id": "p05_servomoodindicator",
+        "text": "p05: ServoMoodIndicator",
+        "data": "examples/10.StarterKit/p05_ServoMoodIndicator/p05_ServoMoodIndicator.ino",
+        "type": "file"
+      },
+      {
+        "id": "p06_lighttheremin",
+        "text": "p06: LightTheremin",
+        "data": "examples/10.StarterKit/p06_LightTheremin/p06_LightTheremin.ino",
+        "type": "file"
+      },
+      {
+        "id": "p07_keyboard",
+        "text": "p07: Keyboard",
+        "data": "examples/10.StarterKit/p07_Keyboard/p07_Keyboard.ino",
+        "type": "file"
+      },
+      {
+        "id": "p08_digitalhourglass",
+        "text": "p08: DigitalHourglass",
+        "data": "examples/10.StarterKit/p08_DigitalHourglass/p08_DigitalHourglass.ino",
+        "type": "file"
+      },
+      {
+        "id": "p09_motorizedpinwheel",
+        "text": "p09: MotorizedPinwheel",
+        "data": "examples/10.StarterKit/p09_MotorizedPinwheel/p09_MotorizedPinwheel.ino",
+        "type": "file"
+      },
+      {
+        "id": "p10_zoetrope",
+        "text": "p10: Zoetrope",
+        "data": "examples/10.StarterKit/p10_Zoetrope/p10_Zoetrope.ino",
+        "type": "file"
+      },
+      {
+        "id": "p11_crystalball",
+        "text": "p11: CrystalBall",
+        "data": "examples/10.StarterKit/p11_CrystalBall/p11_CrystalBall.ino",
+        "type": "file"
+      },
+      {
+        "id": "p12_knocklock",
+        "text": "p12: KnockLock",
+        "data": "examples/10.StarterKit/p12_KnockLock/p12_KnockLock.ino",
+        "type": "file"
+      },
+      {
+        "id": "p13_touchsensorlamp",
+        "text": "p13: TouchSensorLamp",
+        "data": "examples/10.StarterKit/p13_TouchSensorLamp/p13_TouchSensorLamp.ino",
+        "type": "file"
+      },
+      {
+        "id": "p14_tweakthearduinologo",
+        "text": "p14: TweakTheArduinoLogo",
+        "data": "examples/10.StarterKit/p14_TweakTheArduinoLogo/p14_TweakTheArduinoLogo.ino",
+        "type": "file"
+      },
+      {
+        "id": "p15_hackingbuttons",
+        "text": "p15: HackingButtons",
+        "data": "examples/10.StarterKit/p15_HackingButtons/p15_HackingButtons.ino",
+        "type": "file"
+      }
+    ]
+  }
+]

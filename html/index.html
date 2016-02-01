@@ -1,0 +1,186 @@
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>Esplanade</title>
+	<meta name="viewport" content="width=device-width" />
+	<!--[if lt IE 9]><script src="//static.jstree.com/3.2.1/assets/html5.js"></script><![endif]-->
+
+	<meta name="robots" content="index,follow" />
+
+	<script>window.$q=[];window.$=window.jQuery=function(a){window.$q.push(a);};</script>
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="/feed.xml" />
+	<script>WR = "/";</script>
+	<meta property="og:title" content="jstree" />
+	<meta property="og:type" content="website" />
+	<link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+
+	<form method="post" id="show-result" target="result" action="/build">
+
+		<div id="wrapper">
+			<header><u style="font-color: blue"><div id="buildandrun">Build and run</div></u> <div id="buildoutput"></div></header>
+			<div id="content">
+				<div id="sidebar">
+					<div id="treething"></div>
+				</div>
+
+				<div id="editorthing">void setup() {
+	// One-time setup stuff goes here
+}
+
+void loop() {
+	// Loop code goes here
+}</div>
+			</div>
+
+		</div>
+	</form>
+
+	<script src="/js/jquery-2.2.0.min.js" type="text/javascript" charset="utf-8"></script>
+	<link rel="stylesheet" href="/css/style.min.css" />
+	<script src="js/jstree.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/base64-binary.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/fsk.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js//murmurhash3_gc.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		var editor = ace.edit("editorthing");
+		editor.setTheme("ace/theme/monokai");
+		editor.getSession().setMode("ace/mode/c_cpp");
+
+		$('#treething').jstree({
+		  "core": {
+		    "animation": 0,
+		    "check_callback": true,
+		    "themes": { "stripes" : true },
+		    'data': {
+		      'url': function (node) {
+			return node.id === '#' ?
+			  'items.json' : 'examples.json';
+		      },
+		      'data': function (node) {
+			return { 'id' : node.id };
+		      }
+		    }
+		  },
+		  "types": {
+		    "#": {
+		      "max_children": 1,
+		      "max_depth": 4,
+		      "valid_children": ["root"]
+		    },
+		    "root": {
+		      "icon": "/css/tree_icon.png",
+		      "valid_children" : ["default"]
+		    },
+		    "default": {
+		      "valid_children" : ["default", "file"]
+		    },
+		    "file": {
+		      "icon" : "glyphicon glyphicon-file",
+		      "valid_children" : []
+		    }
+		  },
+		  "plugins" : [
+		    "state", "types", "wholerow"
+		  ]
+		})
+		.on('changed.jstree', function (e, data) {
+			if(data && data.selected && data.selected.length) {
+				console.log("Selected " + data.selected);
+
+				if (data.node.data) {
+					$.get(data.node.data, function (d) {
+						editor.setValue(d, -1);
+					});
+				}
+				else {
+					var ref = $('#treething').jstree(true);
+					ref.open_node(data.node);
+				}
+			}
+		});
+
+		var codeobj = new Object();
+		function buildResult(results, textStatus, jqXHR) {
+			if (textStatus != "success") {
+				console.log("Don't know what to do.  Backend failure?");
+				return;
+			}
+			if (results.success) {
+				$("#buildoutput").html("Build complete");
+				var data = atob(results.output);
+
+				var total_packets = Math.ceil(data.length / 512);
+				console.log("Will make " + total_packets + " 520-byte packets");
+//				var packets = new Array(total_packets);
+				var audio_stream = new Array();
+				for (var pktnum = 0; pktnum < total_packets; pktnum++) {
+					var pkt = new Uint8Array(520);
+					/*
+					    static struct packet {
+						uint8_t flags;
+						uint8_t page_number;
+						uint8_t total_pages;
+						uint8_t bootloader_minimum;
+						uint8_t data[512];
+						uint32_t murmurhash;
+					    };
+					 */
+					pkt[0] = 1; /* Flags: Normal program[1], Write[0] */
+					pkt[1] = pktnum;
+					pkt[2] = total_packets;
+					pkt[3] = 0;	/* No minimum bootloader version */
+					for (var pkt_offset = 0; pkt_offset < 512; pkt_offset++)
+						pkt[pkt_offset + 4] = data.charCodeAt(pktnum * 512 + pkt_offset);
+					var hash = murmurhash3_32_gc(data.slice(pktnum * 512, pktnum * 512 - 1), 0xc112c175);
+					pkt[516] = (hash >> 0) % 256;
+					pkt[517] = (hash >> 8) % 256;
+					pkt[518] = (hash >> 16) % 256;
+					pkt[519] = (hash >> 24) % 256;
+
+					for (var i = 0; i < 520; i++)
+						audio_stream.push(pkt[i]);
+				}
+				console.log("Done.  Generating audio...");
+				fsk.generate(audio_stream);
+				console.log("Done.  Playing audio...");
+				window.setTimeout(function() { fsk.play(); }, 1000);
+			}
+			else {
+				$("#buildoutput").html(results.message);
+			}
+		}
+
+		$(document).ready(function () {
+			$("#buildandrun").click(function() {
+				console.log("Building code...");
+				codeobj = {
+					"type": "compiler",
+					"data": {
+						"files": [
+							{
+								"filename": "project.ino",
+								"content": editor.getValue()
+							}
+						],
+						"format": "binary",
+						"version": "105",
+						"build": {
+//							"mcu": "atmega328p",
+							"mcu": "atmega32u4",
+							"vid": "0x2341",
+							"pid": "0x8037",
+							"f_cpu": "16000000L",
+							"core": "arduino",
+							"variant":"micro"
+						}
+					}
+				}
+				$.post("//cb-library.xobs.io/app.php/mycoolkey/v1", JSON.stringify(codeobj), buildResult, "json")
+			});
+		});
+	</script>
+</body>
+</html>
