@@ -60,6 +60,10 @@
 		this.freqLow = params.freqLow || 4900;
 		this.baud = params.baud || 1225;
 		this.sampleRate = params.sampleRate || 29400;
+
+		this.playing = false;
+		this.done = false;
+		this.stoppedAt = 0;
 	}
 
 	FSK.prototype = {
@@ -105,18 +109,65 @@
 			var fixme = this;
 			this.audioContext.decodeAudioData(arrayBuff, function (audioData) {
 				fixme.buffer = audioData;
+				if (fixme.shouldPlay)
+					fixme.play();
 			});
 		},
 
 		play: function () {
+			/* If the buffer hasn't yet loaded, set the "shouldPlay" flag
+			 * to start playback as soon as it's done.
+			 */
+			if (typeof(this.buffer) === "undefined") {
+				this.shouldPlay = true;
+				this.stoppedAt = 0;
+				this.playing = true;
+				return;
+			}
+			this.shouldPlay = false;
+			if (typeof(this.source) !== "undefined")
+				this.stop();
 			this.source = this.audioContext.createBufferSource();
 			this.source.buffer = this.buffer;
 			this.source.connect(this.audioContext.destination);
+			var fsk = this;
+			this.source.onended = function() {
+				fsk.playing = false;
+				fsk.done = true;
+			}
 			if ('AudioContext' in window) {
 				this.source.start(0);
 			} else if ('webkitAudioContext' in window) {
 				this.source.noteOn(0);
 			} 
+			this.playing = true;
+			this.done = false;
+			this.startTime = this.audioContext.currentTime;
+		},
+
+		progress: function () {
+			if (this.shouldPlay) /* Waiting for buffer to fill */
+				return 0;
+			if (this.playing)
+				return (this.audioContext.currentTime - this.startTime) / this.source.buffer.duration;
+			if (this.stoppedAt)
+				return this.stoppedAt;
+			if (this.done)
+				return 1;
+			return 0;
+		},
+
+		isRunning: function() {
+			return this.playing;
+		},
+
+		stop: function () {
+			if ('AudioContext' in window)
+				this.source.stop(0);
+			else if ('webkitAudioContext' in window)
+				this.source.noteOff(0);
+			this.playing = false;
+			this.stoppedAt = (this.audioContext.currentTime - this.startTime) / this.source.buffer.duration;
 		}
 	};
 
