@@ -42,66 +42,11 @@ void loop() {
 	<script src="js/jstree.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script src="js/base64-binary.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/WAAPISim-master/waapisim.js" type="text/javascript" charset="utf-8"></script>
 	<script src="js/fsk.js" type="text/javascript" charset="utf-8"></script>
 	<script src="js//murmurhash3_gc.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
-		var editor = ace.edit("editorthing");
-		editor.setTheme("ace/theme/monokai");
-		editor.getSession().setMode("ace/mode/c_cpp");
-
-		$('#treething').jstree({
-		  "core": {
-		    "animation": 0,
-		    "check_callback": true,
-		    "themes": { "stripes" : true },
-		    'data': {
-		      'url': function (node) {
-			return node.id === '#' ?
-			  'items.json' : 'examples.json';
-		      },
-		      'data': function (node) {
-			return { 'id' : node.id };
-		      }
-		    }
-		  },
-		  "types": {
-		    "#": {
-		      "max_children": 1,
-		      "max_depth": 4,
-		      "valid_children": ["root"]
-		    },
-		    "root": {
-		      "icon": "/css/tree_icon.png",
-		      "valid_children" : ["default"]
-		    },
-		    "default": {
-		      "valid_children" : ["default", "file"]
-		    },
-		    "file": {
-		      "icon" : "glyphicon glyphicon-file",
-		      "valid_children" : []
-		    }
-		  },
-		  "plugins" : [
-		    "state", "types", "wholerow"
-		  ]
-		})
-		.on('changed.jstree', function (e, data) {
-			if(data && data.selected && data.selected.length) {
-				console.log("Selected " + data.selected);
-
-				if (data.node.data) {
-					$.get(data.node.data, function (d) {
-						editor.setValue(d, -1);
-					});
-				}
-				else {
-					var ref = $('#treething').jstree(true);
-					ref.open_node(data.node);
-				}
-			}
-		});
-
+		var editor;
 		var codeobj = new Object();
 		function buildResult(results, textStatus, jqXHR) {
 			if (textStatus != "success") {
@@ -144,6 +89,12 @@ void loop() {
 						audio_stream.push(pkt[i]);
 				}
 				console.log("Done.  Generating audio...");
+				var fsk = new FSK({
+                freqHigh: 7350,
+                freqLow: 4900,
+                baud: 1225,
+                sampleRate: 29400
+				});
 				fsk.generate(audio_stream);
 				console.log("Done.  Playing audio...");
 				window.setTimeout(function() { fsk.play(); }, 1000);
@@ -180,6 +131,63 @@ void loop() {
 				}
 				$.post("//cb-library.xobs.io/app.php/mycoolkey/v1", JSON.stringify(codeobj), buildResult, "json")
 			});
+			editor = ace.edit("editorthing");
+			editor.setTheme("ace/theme/monokai");
+			editor.getSession().setMode("ace/mode/c_cpp");
+
+			$('#treething').jstree({
+			  "core": {
+			    "animation": 0,
+			    "check_callback": true,
+			    "themes": { "stripes" : true },
+			    'data': {
+			      'url': function (node) {
+				return node.id === '#' ?
+				  'items.json' : 'examples.json';
+			      },
+			      'data': function (node) {
+				return { 'id' : node.id };
+			      }
+			    }
+			  },
+			  "types": {
+			    "#": {
+			      "max_children": 1,
+			      "max_depth": 4,
+			      "valid_children": ["root"]
+			    },
+			    "root": {
+			      "icon": "/css/tree_icon.png",
+			      "valid_children" : ["default"]
+			    },
+			    "default": {
+			      "valid_children" : ["default", "file"]
+			    },
+			    "file": {
+			      "icon" : "glyphicon glyphicon-file",
+			      "valid_children" : []
+			    }
+			  },
+			  "plugins" : [
+			    "state", "types", "wholerow"
+			  ]
+			})
+			.on('changed.jstree', function (e, data) {
+				if(data && data.selected && data.selected.length) {
+					console.log("Selected " + data.selected);
+
+					if (data.node.data) {
+						$.get(data.node.data, function (d) {
+							editor.setValue(d, -1);
+						});
+					}
+					else {
+						var ref = $('#treething').jstree(true);
+						ref.open_node(data.node);
+					}
+				}
+			});
+
 		});
 	</script>
 </body>
