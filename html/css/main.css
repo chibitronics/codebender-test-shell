@@ -6,7 +6,7 @@ body {
 }
 
 #wrapper {
-	padding-top: 50px;
+	padding-top: 150px;
 	padding-left: 0;
 	padding-right: 0;
 	padding-bottom: 0;
@@ -31,21 +31,21 @@ body {
 }
 
 header {
-	margin-top: -50px;
-	height: 50px;
+	margin-top: -150px;
+	height: 150px;
 	/*background-color: red;*/
 }
 
 footer {
-	margin-bottom: -50px;
-	height: 50px;
+	margin-bottom: -150px;
+	height: 150px;
 	/*background-color: red;*/
 }
 
 #sidebar {
 	width: 250px;
 	left: 0;
-	top: 50px;
+	top: 150px;
 	position: absolute;
 	padding: 0;
 	margins: 0;
