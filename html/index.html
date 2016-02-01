@@ -19,7 +19,7 @@
 	<form method="post" id="show-result" target="result" action="/build">
 
 		<div id="wrapper">
-			<header><u style="font-color: blue"><div id="buildandrun">Build and run</div></u> <div id="buildoutput"></div></header>
+			<header><u style="font-color: blue"><div id="buildandrun">Build and run</div></u> <div style="display: none" id="stoprunning">Stop Running</div><div id="runprogressbar"></div><div id="runprogresstxt"></div><div id="buildoutput"></div></header>
 			<div id="content">
 				<div id="sidebar">
 					<div id="treething"></div>
@@ -37,7 +37,9 @@ void loop() {
 		</div>
 	</form>
 
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 	<script src="/js/jquery-2.2.0.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 	<link rel="stylesheet" href="/css/style.min.css" />
 	<script src="js/jstree.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -48,6 +50,22 @@ void loop() {
 	<script type="text/javascript">
 		var editor;
 		var codeobj = new Object();
+		var fsk;
+		var totalSize;
+
+		function updateProgress() {
+			if (fsk.isRunning()) {
+				$("#runprogresstxt").html("Loading " + totalSize + " bytes: " + fsk.progress());
+				$("#runprogressbar").progressbar({value: fsk.progress() * 100});
+				window.setTimeout(updateProgress, 100);
+			}
+			else {
+				$("#runprogresstxt").html("Done");
+				$("#runprogressbar").progressbar({value: fsk.progress() * 100});
+				$("#buildandrun").show("slow");
+				$("#stoprunning").hide("slow");
+			}
+		}
 		function buildResult(results, textStatus, jqXHR) {
 			if (textStatus != "success") {
 				console.log("Don't know what to do.  Backend failure?");
@@ -55,6 +73,10 @@ void loop() {
 			}
 			if (results.success) {
 				$("#buildoutput").html("Build complete");
+
+				$("#buildandrun").hide("slow");
+				$("#stoprunning").show("slow");
+				totalSize = results.size;
 				var data = atob(results.output);
 
 				var total_packets = Math.ceil(data.length / 512);
@@ -89,7 +111,9 @@ void loop() {
 						audio_stream.push(pkt[i]);
 				}
 				console.log("Done.  Generating audio...");
-				var fsk = new FSK({
+				if (fsk)
+					fsk.stop();
+				fsk = new FSK({
                 freqHigh: 7350,
                 freqLow: 4900,
                 baud: 1225,
@@ -97,7 +121,9 @@ void loop() {
 				});
 				fsk.generate(audio_stream);
 				console.log("Done.  Playing audio...");
-				window.setTimeout(function() { fsk.play(); }, 1000);
+				fsk.play();
+				updateProgress();
+				//window.setTimeout(function() { fsk.play(); updateProgress(); }, 1000);
 			}
 			else {
 				$("#buildoutput").html(results.message);
@@ -105,8 +131,14 @@ void loop() {
 		}
 
 		$(document).ready(function () {
+			$("#stoprunning").click(function() {
+				if (fsk)
+					fsk.stop();
+			});
 			$("#buildandrun").click(function() {
 				console.log("Building code...");
+				if (fsk)
+					fsk.stop();
 				codeobj = {
 					"type": "compiler",
 					"data": {
