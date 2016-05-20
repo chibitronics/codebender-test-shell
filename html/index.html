@@ -1,165 +1,130 @@
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<title>Esplanade</title>
-	<meta name="viewport" content="width=device-width" />
-	<!--[if lt IE 9]><script src="//static.jstree.com/3.2.1/assets/html5.js"></script><![endif]-->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Esplanade</title>
+    <meta name="viewport" content="width=device-width" />
+    <!--[if lt IE 9]><script src="//static.jstree.com/3.2.1/assets/html5.js"></script><![endif]-->
 
-	<meta name="robots" content="index,follow" />
+    <meta name="robots" content="index,follow" />
 
-	<script>window.$q=[];window.$=window.jQuery=function(a){window.$q.push(a);};</script>
-	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="/feed.xml" />
-	<script>WR = "/";</script>
-	<meta property="og:title" content="jstree" />
-	<meta property="og:type" content="website" />
-	<link rel="stylesheet" href="/css/main.css" />
+    <script>window.$q=[];window.$=window.jQuery=function(a){window.$q.push(a);};</script>
+    <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="/feed.xml" />
+    <script>WR = "/";</script>
+    <meta property="og:title" content="jstree" />
+    <meta property="og:type" content="website" />
+    <link rel="stylesheet" href="/css/main.css" />
 </head>
 <body>
 
-	<form method="post" id="show-result" target="result" action="/build">
+    <form method="post" id="show-result" target="result" action="/build">
 
-		<div id="wrapper">
-			<header>
-				<div style="color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="buildandrun">Build and run</div>
-				<div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
-				<div id="buildoutput"></div>
-				<div id="runprogressbar"></div>
-				<div id="runprogresstxt"></div>
-				<select name="fqbn" id="fqbn">
-					<option value="chibitronics:esplanade:code">Chibitronics Code</option>
-					<option value="arduino:avr:uno">Arduino Uno</option>
-					<option value="arduino:sam:arduino_due_x_dbg">Arduino Due (Programming Port)</option>
-					<option value="arduino:sam:arduino_due_x">Arduino Due (Native Port)</option>
-				</select>
-			</header>
-			<div id="content">
-				<div id="sidebar">
-					<div id="treething"></div>
-				</div>
+        <div id="wrapper">
+            <header>
+                <div style="color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="buildandrun">Build and run</div>
+                <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
+                <select name="fqbn" id="fqbn">
+                    <option value="chibitronics:esplanade:code">Chibitronics Code</option>
+                    <option value="arduino:avr:uno">Arduino Uno</option>
+                    <option value="arduino:sam:arduino_due_x_dbg">Arduino Due (Programming Port)</option>
+                    <option value="arduino:sam:arduino_due_x">Arduino Due (Native Port)</option>
+                </select>
+                <div id="buildoutput"></div>
+                <div id="runprogressbar"></div>
+                <canvas id="wavStrip" width=6000 height=100 style="border: 1px solid #ddd"></canvas>
+                <div id="runprogresstxt"></div>
+            </header>
+            <div id="content">
+                <div id="sidebar">
+                    <div id="treething"></div>
+                </div>
 
-				<div id="editorthing">void setup() {
-	// One-time setup stuff goes here
+                <div id="editorthing">void setup() {
+    // One-time setup stuff goes here
 }
 
 void loop() {
-	// Loop code goes here
+    // Loop code goes here
 }</div>
-			</div>
+            </div>
 
-		</div>
-	</form>
+        </div>
+    </form>
 
-	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-	<script src="/js/jquery-2.2.0.min.js" type="text/javascript" charset="utf-8"></script>
-	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-	<link rel="stylesheet" href="/css/style.min.css" />
-	<script src="js/jstree.min.js" type="text/javascript" charset="utf-8"></script>
-	<script src="/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-	<script src="js/base64-binary.js" type="text/javascript" charset="utf-8"></script>
-	<script src="js/WAAPISim-master/waapisim.js" type="text/javascript" charset="utf-8"></script>
-	<script src="js/fsk.js" type="text/javascript" charset="utf-8"></script>
-	<script src="js//murmurhash3_gc.js" type="text/javascript" charset="utf-8"></script>
-	<script type="text/javascript">
-		var editor;
-		var codeobj = new Object();
-		var fsk;
-		var totalSize;
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="/js/jquery-2.2.0.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="/css/style.min.css" />
+    <script src="js/jstree.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/base64-binary.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/WAAPISim-master/waapisim.js" type="text/javascript" charset="utf-8"></script>
 
-		Number.prototype.toFixedDown = function(digits) {
-		    var re = new RegExp("(\\d+\\.\\d{" + digits + "})(\\d)"),
-			m = this.toString().match(re);
-		    return m ? parseFloat(m[1]) : this.valueOf();
-		};
+    <script src="js/modulate-controller.js"></script>
+    <script src="js/modulate.js"></script>
+    <script src="js/murmurhash3_gc.js"></script>
+    <script src="js/afsk-encoder.js"></script>
+    <script src="js/spark-md5.js"></script>
 
-		function updateProgress() {
-			progress = fsk.progress() * 100;
-			if (fsk.isRunning()) {
-				$("#runprogresstxt").html("Loading " + totalSize + " bytes: " + progress.toFixedDown(2) + "%");
-				$("#runprogressbar").progressbar({value: progress});
-				window.setTimeout(updateProgress, 100);
-			}
-			else {
-				$("#runprogresstxt").html("Done");
-				$("#runprogressbar").progressbar({value: progress});
-				$("#stoprunning").hide("slow");
-				$("#buildandrun").show("slow");
-			}
-		}
-		function buildResult(results, textStatus, jqXHR) {
-			if (textStatus != "success") {
-				console.log("Don't know what to do.  Backend failure?");
-				return;
-			}
-			if (results.success) {
-				$("#buildoutput").html("Build complete");
+    <script type="text/javascript">
+        var editor;
+        var codeobj = new Object();
+        var mod_controller;
+        var totalSize;
 
-				totalSize = results.size;
-				var data = atob(results.output);
+        Number.prototype.toFixedDown = function(digits) {
+            var re = new RegExp("(\\d+\\.\\d{" + digits + "})(\\d)"),
+            m = this.toString().match(re);
+            return m ? parseFloat(m[1]) : this.valueOf();
+        };
 
-				var total_packets = Math.ceil(data.length / 512);
-				console.log("Will make " + total_packets + " 520-byte packets");
-//				var packets = new Array(total_packets);
-				var audio_stream = new Array();
-				for (var pktnum = 0; pktnum < total_packets; pktnum++) {
-					var pkt = new Uint8Array(520);
-					/*
-					    static struct packet {
-						uint8_t flags;
-						uint8_t page_number;
-						uint8_t total_pages;
-						uint8_t bootloader_minimum;
-						uint8_t data[512];
-						uint32_t murmurhash;
-					    };
-					 */
-					pkt[0] = 1; /* Flags: Normal program[1], Write[0] */
-					pkt[1] = pktnum;
-					pkt[2] = total_packets;
-					pkt[3] = 0;	/* No minimum bootloader version */
-					for (var pkt_offset = 0; pkt_offset < 512; pkt_offset++)
-						pkt[pkt_offset + 4] = data.charCodeAt(pktnum * 512 + pkt_offset);
-					var hash = murmurhash3_32_gc(data.slice(pktnum * 512, pktnum * 512 - 1), 0xc112c175);
-					pkt[516] = (hash >> 0) % 256;
-					pkt[517] = (hash >> 8) % 256;
-					pkt[518] = (hash >> 16) % 256;
-					pkt[519] = (hash >> 24) % 256;
+        function updateProgress() {
+            progress = mod_controller.progress() * 100;
+            progress = 0;
+            if (mod_controller.isRunning()) {
+                $("#runprogresstxt").html("Loading " + totalSize + " bytes: " + progress.toFixedDown(2) + "%");
+                $("#runprogressbar").progressbar({value: progress});
+                window.setTimeout(updateProgress, 100);
+            }
+            else {
+                $("#runprogresstxt").html("Done");
+                $("#runprogressbar").progressbar({value: progress});
+                $("#stoprunning").hide("slow");
+                $("#buildandrun").show("slow");
+            }
+        }
+        function buildResult(results, textStatus, jqXHR) {
+            if (textStatus != "success") {
+                console.log("Don't know what to do.  Backend failure?");
+                return;
+            }
+            if (results.success) {
+                $("#buildoutput").html("Build complete");
 
-					for (var i = 0; i < 520; i++)
-						audio_stream.push(pkt[i]);
-				}
-				console.log("Done.  Generating audio...");
-				if (fsk)
-					fsk.stop();
-				fsk = new FSK({
-                freqHigh: 1400,
-                freqLow: 700,
-                baud: 1225,
-                sampleRate: 29400
-				});
-				fsk.generate(audio_stream);
-				console.log("Done.  Playing audio...");
-				fsk.play();
-				updateProgress();
-				$("#buildandrun").hide("slow");
-				$("#stoprunning").show("slow");
-			}
-			else {
-				$("#buildoutput").html(editor.getValue());
-			}
-		}
+                totalSize = results.size;
+                var data = atob(results.output);
 
-		$(document).ready(function () {
-			$("#stoprunning").click(function() {
-				if (fsk)
-					fsk.stop();
-			});
-			$("#buildandrun").click(function() {
-				console.log("Building code...");
-				$("#buildoutput").html("Building code...");
-				if (fsk)
-					fsk.stop();
-				fqbn_array = $("#fqbn").val().split(":");
-				codeobj = {
+                if (mod_controller)
+                    mod_controller.stop();
+                mod_controller = new ModulationController();
+                mod_controller.sendData(data);
+            }
+            else {
+                $("#buildoutput").html("<pre>" + results.message + "</pre>");
+            }
+        }
+
+        $(document).ready(function () {
+            $("#stoprunning").click(function() {
+                if (mod_controller)
+                    mod_controller.stop();
+            });
+            $("#buildandrun").click(function() {
+                console.log("Building code...");
+                $("#buildoutput").html("Building code...");
+                if (mod_controller)
+                    mod_controller.stop();
+                fqbn_array = $("#fqbn").val().split(":");
+                codeobj = {
                     "files": [
                         {
                             "filename": "project.ino",
@@ -170,68 +135,67 @@ void loop() {
                     "version": "167",
                     "libraries":[],
                     "fqbn": $("#fqbn").val()
-				}
+                }
                 console.log(JSON.stringify(codeobj));
-				$.post("//cb-compile.xobs.io/app.php/mycoolkey/v2", JSON.stringify(codeobj), buildResult, "json");
-			});
-			editor = ace.edit("editorthing");
-			editor.setTheme("ace/theme/monokai");
-			editor.getSession().setMode("ace/mode/c_cpp");
+                $.post("//cb-compile.xobs.io/app.php/mycoolkey/v2", JSON.stringify(codeobj), buildResult, "json");
+            });
+            editor = ace.edit("editorthing");
+            editor.setTheme("ace/theme/monokai");
+            editor.getSession().setMode("ace/mode/c_cpp");
 
-			$('#treething').jstree({
-			  "core": {
-			    "animation": 0,
-			    "check_callback": true,
-			    "themes": { "stripes" : true },
-			    'data': {
-			      'url': function (node) {
-				return node.id === '#' ?
-				  'items.json' : 'examples.json';
-			      },
-			      'data': function (node) {
-				return { 'id' : node.id };
-			      }
-			    }
-			  },
-			  "types": {
-			    "#": {
-			      "max_children": 1,
-			      "max_depth": 4,
-			      "valid_children": ["root"]
-			    },
-			    "root": {
-			      "icon": "/css/tree_icon.png",
-			      "valid_children" : ["default"]
-			    },
-			    "default": {
-			      "valid_children" : ["default", "file"]
-			    },
-			    "file": {
-			      "icon" : "glyphicon glyphicon-file",
-			      "valid_children" : []
-			    }
-			  },
-			  "plugins" : [
-			    "state", "types", "wholerow"
-			  ]
-			})
-			.on('changed.jstree', function (e, data) {
-				if(data && data.selected && data.selected.length) {
-					console.log("Selected " + data.selected);
+            $('#treething').jstree({
+              "core": {
+                "animation": 0,
+                "check_callback": true,
+                "themes": { "stripes" : true },
+                'data': {
+                  'url': function (node) {
+                return node.id === '#' ?
+                  'items.json' : 'examples.json';
+                  },
+                  'data': function (node) {
+                return { 'id' : node.id };
+                  }
+                }
+              },
+              "types": {
+                "#": {
+                  "max_children": 1,
+                  "max_depth": 4,
+                  "valid_children": ["root"]
+                },
+                "root": {
+                  "icon": "/css/tree_icon.png",
+                  "valid_children" : ["default"]
+                },
+                "default": {
+                  "valid_children" : ["default", "file"]
+                },
+                "file": {
+                  "icon" : "glyphicon glyphicon-file",
+                  "valid_children" : []
+                }
+              },
+              "plugins" : [
+                "state", "types", "wholerow"
+              ]
+            })
+            .on('changed.jstree', function (e, data) {
+                if(data && data.selected && data.selected.length) {
+                    console.log("Selected " + data.selected);
 
-					if (data.node.data) {
-						$.get(data.node.data, function (d) {
-							editor.setValue(d, -1);
-						});
-					}
-					else {
-						var ref = $('#treething').jstree(true);
-						ref.open_node(data.node);
-					}
-				}
-			});
-
-		});
-	</script>
+                    if (data.node.data) {
+                        $.get(data.node.data, function (d) {
+                            editor.setValue(d, -1);
+                        });
+                    }
+                    else {
+                        var ref = $('#treething').jstree(true);
+                        ref.open_node(data.node);
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
