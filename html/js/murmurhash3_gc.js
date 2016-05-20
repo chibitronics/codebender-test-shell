@@ -11,6 +11,8 @@
  * @return {number} 32-bit positive integer hash 
  */
 
+// note: MIT licensed (https://github.com/garycourt/murmurhash-js)
+
 function murmurhash3_32_gc(key, seed) {
 	var remainder, bytes, h1, h1b, c1, c1b, c2, c2b, k1, i;
 	
@@ -23,10 +25,10 @@ function murmurhash3_32_gc(key, seed) {
 	
 	while (i < bytes) {
 	  	k1 = 
-	  	  ((key.charCodeAt(i) & 0xff)) |
-	  	  ((key.charCodeAt(++i) & 0xff) << 8) |
-	  	  ((key.charCodeAt(++i) & 0xff) << 16) |
-	  	  ((key.charCodeAt(++i) & 0xff) << 24);
+	  	  ((key[i] & 0xff)) |
+	  	  ((key[++i] & 0xff) << 8) |
+	  	  ((key[++i] & 0xff) << 16) |
+	  	  ((key[++i] & 0xff) << 24);
 		++i;
 		
 		k1 = ((((k1 & 0xffff) * c1) + ((((k1 >>> 16) * c1) & 0xffff) << 16))) & 0xffffffff;
@@ -42,9 +44,9 @@ function murmurhash3_32_gc(key, seed) {
 	k1 = 0;
 	
 	switch (remainder) {
-		case 3: k1 ^= (key.charCodeAt(i + 2) & 0xff) << 16;
-		case 2: k1 ^= (key.charCodeAt(i + 1) & 0xff) << 8;
-		case 1: k1 ^= (key.charCodeAt(i) & 0xff);
+		case 3: k1 ^= (key[i + 2] & 0xff) << 16;
+		case 2: k1 ^= (key[i + 1] & 0xff) << 8;
+		case 1: k1 ^= (key[i] & 0xff);
 		
 		k1 = (((k1 & 0xffff) * c1) + ((((k1 >>> 16) * c1) & 0xffff) << 16)) & 0xffffffff;
 		k1 = (k1 << 15) | (k1 >>> 17);

@@ -19,7 +19,19 @@
 	<form method="post" id="show-result" target="result" action="/build">
 
 		<div id="wrapper">
-			<header><div style="color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="buildandrun">Build and run</div> <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div><div id="buildoutput"></div><div id="runprogressbar"></div><div id="runprogresstxt"></div></header>
+			<header>
+				<div style="color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="buildandrun">Build and run</div>
+				<div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
+				<div id="buildoutput"></div>
+				<div id="runprogressbar"></div>
+				<div id="runprogresstxt"></div>
+				<select name="fqbn" id="fqbn">
+					<option value="chibitronics:esplanade:code">Chibitronics Code</option>
+					<option value="arduino:avr:uno">Arduino Uno</option>
+					<option value="arduino:sam:arduino_due_x_dbg">Arduino Due (Programming Port)</option>
+					<option value="arduino:sam:arduino_due_x">Arduino Due (Native Port)</option>
+				</select>
+			</header>
 			<div id="content">
 				<div id="sidebar">
 					<div id="treething"></div>
@@ -119,8 +131,8 @@ void loop() {
 				if (fsk)
 					fsk.stop();
 				fsk = new FSK({
-                freqHigh: 7350,
-                freqLow: 4900,
+                freqHigh: 1400,
+                freqLow: 700,
                 baud: 1225,
                 sampleRate: 29400
 				});
@@ -132,7 +144,7 @@ void loop() {
 				$("#stoprunning").show("slow");
 			}
 			else {
-				$("#buildoutput").html(results.message);
+				$("#buildoutput").html(editor.getValue());
 			}
 		}
 
@@ -146,29 +158,21 @@ void loop() {
 				$("#buildoutput").html("Building code...");
 				if (fsk)
 					fsk.stop();
+				fqbn_array = $("#fqbn").val().split(":");
 				codeobj = {
-					"type": "compiler",
-					"data": {
-						"files": [
-							{
-								"filename": "project.ino",
-								"content": editor.getValue()
-							}
-						],
-						"format": "binary",
-						"version": "105",
-						"build": {
-//							"mcu": "atmega328p",
-							"mcu": "atmega32u4",
-							"vid": "0x2341",
-							"pid": "0x8037",
-							"f_cpu": "16000000L",
-							"core": "arduino",
-							"variant":"micro"
-						}
-					}
+                    "files": [
+                        {
+                            "filename": "project.ino",
+                            "content": editor.getValue()
+                        }
+                    ],
+                    "format": "binary",
+                    "version": "167",
+                    "libraries":[],
+                    "fqbn": $("#fqbn").val()
 				}
-				$.post("//cb-library.xobs.io/app.php/mycoolkey/v1", JSON.stringify(codeobj), buildResult, "json")
+                console.log(JSON.stringify(codeobj));
+				$.post("//cb-compile.xobs.io/app.php/mycoolkey/v2", JSON.stringify(codeobj), buildResult, "json");
 			});
 			editor = ace.edit("editorthing");
 			editor.setTheme("ace/theme/monokai");
