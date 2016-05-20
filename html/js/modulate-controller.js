@@ -21,6 +21,7 @@
         this.baud = params.baud || 1225;
         this.sampleRate = params.sampleRate || 29400;
         */
+        this.canvas = params.canvas || undefined;
 
         /* Are these needed? */
         this.saveState = false;
@@ -35,7 +36,8 @@
 
         this.modData = new modulator(this); // the modulator object contains our window's audio context
 
-        this.preamble = [0x00,0x00,0x00,0x00,0xaa,0x55,0x42];
+        /* Preamble sent before every audio packet */
+        this.preamble = [0x00, 0x00, 0x00, 0x00, 0xaa, 0x55, 0x42];
     }
 
     ModulationController.prototype = {
@@ -85,7 +87,7 @@
             }
             this.modData.modulate(buffer);
             this.modData.playBuffer(this);
-            this.modData.drawWaveform();
+            this.modData.drawWaveform(this.canvas);
 
             if (this.saveState)
                 this.modData.saveWAV();
@@ -125,7 +127,7 @@
 
             this.modData.modulate(buffer);
             this.modData.playBuffer(this);
-            this.modData.drawWaveform();
+            this.modData.drawWaveform(this.canvas);
 
             if (this.saveState)
                 this.modData.saveWAV();
@@ -169,7 +171,7 @@
 
                 this.modData.modulate(ctlPacket);
                 this.modData.playLoop(this, index + 1);
-                this.modData.drawWaveform();
+                this.modData.drawWaveform(this.canvas);
             }
             else {
                 // data index starts at 2, due to two sends of the control packet up front
@@ -179,14 +181,14 @@
                     var dataPacket = this.makeDataPacket(this.byteArray.subarray(i * 256, i * 256 + 256), i);
                     this.modData.modulate(dataPacket);
                     this.modData.playLoop(this, index + 1);
-                    this.modData.drawWaveform();
+                    this.modData.drawWaveform(this.canvas);
                 }
                 else {
                     // handle last block of data, which may not be 256 bytes long
                     var dataPacket = this.makeDataPacket(this.byteArray.subarray(i * 256, fileLen), i);
                     this.modData.modulate(dataPacket);
                     this.modData.playLoop(this, index + 1);
-                    this.modData.drawWaveform();
+                    this.modData.drawWaveform(this.canvas);
                 }
             }
         },

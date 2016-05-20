@@ -45,9 +45,9 @@ modulator.prototype = {
 
     // draw the waveform to the canvas, assuming the proper UI element is provided
     // for debug, of course
-    drawWaveform: function() {
+    drawWaveform: function(canvas) {
         var b = this.outputAudioBuffer.getChannelData(0);
-        drawWaveformToCanvas(b, 0);
+        drawWaveformToCanvas(b, 0, canvas);
     },
     // immediately play the modulated audio exactly once. Useful for debugging single packets
     playBuffer: function(callBack) {
@@ -211,9 +211,8 @@ function encodeWAV(samples, mono){
 
 /* ============================================================ */
 
-function drawWaveformToCanvas(buffer, start) {
+function drawWaveformToCanvas(buffer, start, canvas) {
     console.log("-- drawWaveformToCanvas --");
-    var canvas = document.getElementById('wavStrip');
 
     if (!canvas)
         return;
