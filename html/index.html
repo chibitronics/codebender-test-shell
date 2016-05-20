@@ -105,7 +105,9 @@ void loop() {
 
                 if (mod_controller)
                     mod_controller.stop();
-                mod_controller = new ModulationController();
+                mod_controller = new ModulationController({
+                    canvas: $("#wavStrip")
+                });
                 mod_controller.sendData(data);
             }
             else {
