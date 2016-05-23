@@ -214,7 +214,7 @@ function encodeWAV(samples, mono){
 function drawWaveformToCanvas(buffer, start, canvas) {
     console.log("-- drawWaveformToCanvas --");
 
-    if (!canvas)
+    if (!canvas || !canvas.getContext)
         return;
 
     var strip = canvas.getContext('2d');
