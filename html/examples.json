@@ -538,5 +538,17 @@
         "type": "file"
       }
     ]
+  },
+  {
+    "id": "chibitronics",
+    "text": "Chibitronics",
+    "children": [
+      {
+        "id": "neopixel",
+        "text": "NeoPixel LED",
+        "data": "examples/chibitronics/neopixel/neopixel.ino",
+        "type": "file"
+      }
+    ]
   }
 ]
