@@ -10,10 +10,10 @@ function FskEncoder(sampleRate) {
     
 }
 FskEncoder.prototype = {
-    f_lo: 10400,
-    f_hi: 15000,
+    f_lo: 8666,
+    f_hi: 12500,
     sample_rate: 0, // comes from calling function based on browser/computer config
-    baud_rate: 9600,
+    baud_rate: 8000,
     samplesPerBit: 0.0,
 
     state : {
