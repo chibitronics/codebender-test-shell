@@ -1,10 +1,11 @@
+//  This example is Chibitronics Love to Code tested!
 /*
   AnalogReadSerial
   Reads an analog input on pin 1, prints the result to the serial monitor.
 
   Attach the center pin of a potentiometer to pin A1, 
   and the outside pins to A0 (set to gnd) and A2 (set to VMCU).
- 
+
  This example code is in the public domain.
  */
 
