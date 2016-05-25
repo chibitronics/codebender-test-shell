@@ -16,7 +16,7 @@
  modified 30 Aug 2011
  by Tom Igoe
  modified 25 May 2016
- by chibitronics
+ by bunnie
 
  This example code is in the public domain.
  
