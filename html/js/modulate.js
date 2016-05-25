@@ -5,16 +5,17 @@
 
 function modulator(ui) {
     // this odd construct is for safari compatibility
-    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (!("audioContext" in window))
+        window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-    this.samplerate = this.audioCtx.sampleRate;
+    this.samplerate = window.audioContext.sampleRate;
 
     console.log("speakerSampleRate is " + this.samplerate);
 
     this.encoder = new FskEncoder(this.samplerate);
     this.ui = ui;
-
 }
+
 modulator.prototype = {
     audioCtx: null,  // AudioContext object
     samplerate: 48000, // updated by the initializer
@@ -30,7 +31,7 @@ modulator.prototype = {
     // into the audio context for later playback
     modulate: function(data) {
         var bufLen = Math.ceil(data.length * 8 * this.encoder.samplesPerBit());
-        this.outputAudioBuffer = this.audioCtx.createBuffer(1, bufLen, this.samplerate);
+        this.outputAudioBuffer = window.audioContext.createBuffer(1, bufLen, this.samplerate);
 
         var timeStart = performance.now();
 
@@ -54,9 +55,9 @@ modulator.prototype = {
         if( callBack )
             uiCallback = callBack;
         console.log("-- playAudioBuffer --");
-        var bufferNode = this.audioCtx.createBufferSource();
+        var bufferNode = window.audioContext.createBufferSource();
         bufferNode.buffer = this.outputAudioBuffer;
-        bufferNode.connect(this.audioCtx.destination); // Connect to speakers
+        bufferNode.connect(window.audioContext.destination); // Connect to speakers
         bufferNode.addEventListener("ended", audioEnded);
         playTimeStart = performance.now();
         bufferNode.start(0); // play immediately
@@ -71,9 +72,9 @@ modulator.prototype = {
             loopCallback = callBack;
             loopIndex = index;
         }
-        var bufferNode = this.audioCtx.createBufferSource();
+        var bufferNode = window.audioContext.createBufferSource();
         bufferNode.buffer = this.outputAudioBuffer;
-        bufferNode.connect(this.audioCtx.destination); // Connect to speakers
+        bufferNode.connect(window.audioContext.destination); // Connect to speakers
 
         // our callback to trigger the next packet
         var thismod = this;
@@ -99,14 +100,15 @@ modulator.prototype = {
             }
         };
 
+        document.addEventListener('touchend', function() { bufferNode.start(0).bind(this); }, false);
         if (index == 1)
             bufferNode.start(0); // this one goes immediately
         else if (index == 2)
-            bufferNode.start(this.audioCtx.currentTime + 0.1); // redundant send of control packet
+            bufferNode.start(window.audioContext.currentTime + 0.1); // redundant send of control packet
         else if (index == 3)
-            bufferNode.start(this.audioCtx.currentTime + 0.5); // 0.5s for bulk flash erase to complete
+            bufferNode.start(window.audioContext.currentTime + 0.5); // 0.5s for bulk flash erase to complete
         else
-            bufferNode.start(this.audioCtx.currentTime + 0.08); // slight pause between packets to allow burning
+            bufferNode.start(window.audioContext.currentTime + 0.08); // slight pause between packets to allow burning
     },
 
     saveWAV: function() {

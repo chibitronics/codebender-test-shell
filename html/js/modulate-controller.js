@@ -6,15 +6,6 @@
         if (!params)
             params = new Object();
 
-        if ('AudioContext' in window) {
-            this.audioContext = new AudioContext();
-        }
-        else if ('webkitAudioContext' in window) {
-            this.audioContext = new webkitAudioContext();
-        }
-        else
-            alert('Your browser does not support yet Web Audio API');
-
         /*
         this.freqHigh = params.freqHigh || 7350;
         this.freqLow = params.freqLow || 4900;
