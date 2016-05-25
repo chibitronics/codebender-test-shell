@@ -133,11 +133,11 @@ void loop() {
   colorWipe(strip.Color(0, 0, 255), 50); // Blue
 //colorWipe(strip.Color(0, 0, 0, 255), 50); // White RGBW
   // Send a theater pixel chase in...
-  theaterChase(strip.Color(127, 127, 127), 50); // White
-  theaterChase(strip.Color(127, 0, 0), 50); // Red
-  theaterChase(strip.Color(0, 0, 127), 50); // Blue
+//  theaterChase(strip.Color(127, 127, 127), 50); // White
+//  theaterChase(strip.Color(127, 0, 0), 50); // Red
+//  theaterChase(strip.Color(0, 0, 127), 50); // Blue
 
   rainbow(20);
   rainbowCycle(20);
-  theaterChaseRainbow(50);
+//  theaterChaseRainbow(50);
 }
