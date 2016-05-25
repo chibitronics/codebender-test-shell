@@ -1,15 +1,18 @@
+//  This example is Chibitronics Love to Code tested!
 /*
  Fading
  
  This example shows how to fade an LED using the analogWrite() function.
  
  The circuit:
- * LED attached from digital pin 9 to ground.
+ * LED attached from A2 to ground
  
  Created 1 Nov 2008
  By David A. Mellis
  modified 30 Aug 2011
  By Tom Igoe
+ modified 25 May 2016
+ by bunnie
  
  http://arduino.cc/en/Tutorial/Fading
  
@@ -18,7 +21,7 @@
  */
 
 
-int ledPin = 9;    // LED connected to digital pin 9
+int ledPin = A2;    // LED connected to pin A2
 
 void setup()  { 
   // nothing happens in setup 
