@@ -28,7 +28,7 @@
 
 void setup() {
   // initialize the serial communication:
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 
 void loop() {
