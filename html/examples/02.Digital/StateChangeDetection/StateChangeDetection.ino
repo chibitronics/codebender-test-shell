@@ -1,3 +1,4 @@
+//  This example is Chibitronics Love to Code tested!
 /*
   State change detection (edge detection)
  	
@@ -8,16 +9,18 @@
  
  This example shows how to detect when a button or button changes from off to on
  and on to off.
+ 
+ Sometimes the LED doesn't switch every 4 presses, but sooner. Can you explain why?
  	
  The circuit:
- * pushbutton attached to pin 2 from +5V
- * 10K resistor attached to pin 2 from ground
- * LED attached from pin 13 to ground (or use the built-in LED on
-   most Arduino boards)
+ * switch attached to pin A3 to ground
+ * LED attached from pin A2 to ground 
  
  created  27 Sep 2005
  modified 30 Aug 2011
  by Tom Igoe
+ modified 25 May 2016
+ by bunnie
 
 This example code is in the public domain.
  	
@@ -26,21 +29,21 @@ This example code is in the public domain.
  */
 
 // this constant won't change:
-const int  buttonPin = 2;    // the pin that the pushbutton is attached to
-const int ledPin = 13;       // the pin that the LED is attached to
+const int  buttonPin = A3;    // the pin that the pushbutton is attached to
+const int ledPin = A2;       // the pin that the LED is attached to
 
 // Variables will change:
 int buttonPushCounter = 0;   // counter for the number of button presses
-int buttonState = 0;         // current state of the button
-int lastButtonState = 0;     // previous state of the button
+int buttonState = HIGH;         // current state of the button
+int lastButtonState = HIGH;     // previous state of the button
 
 void setup() {
   // initialize the button pin as a input:
-  pinMode(buttonPin, INPUT);
+  pinMode(buttonPin, INPUT_PULLUP);
   // initialize the LED as an output:
   pinMode(ledPin, OUTPUT);
   // initialize serial communication:
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 
 
@@ -51,7 +54,7 @@ void loop() {
   // compare the buttonState to its previous state
   if (buttonState != lastButtonState) {
     // if the state has changed, increment the counter
-    if (buttonState == HIGH) {
+    if (buttonState == LOW) {
       // if the current state is HIGH then the button
       // wend from off to on:
       buttonPushCounter++;
