@@ -1,3 +1,4 @@
+//  This example is Chibitronics Love to Code tested!
 void setup() {
   // put your setup code here, to run once:
 
