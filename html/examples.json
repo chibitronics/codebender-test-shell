@@ -76,12 +76,6 @@
         "type": "file"
       },
       {
-        "id": "tonekeyboard",
-        "text": "toneKeyboard",
-        "data": "examples/02.Digital/toneKeyboard/toneKeyboard.ino",
-        "type": "file"
-      },
-      {
         "id": "tonemelody",
         "text": "toneMelody",
         "data": "examples/02.Digital/toneMelody/toneMelody.ino",
@@ -115,12 +109,6 @@
         "id": "analoginput",
         "text": "AnalogInput",
         "data": "examples/03.Analog/AnalogInput/AnalogInput.ino",
-        "type": "file"
-      },
-      {
-        "id": "analogwritemega",
-        "text": "AnalogWriteMega",
-        "data": "examples/03.Analog/AnalogWriteMega/AnalogWriteMega.ino",
         "type": "file"
       },
       {
@@ -166,39 +154,9 @@
         "type": "file"
       },
       {
-        "id": "midi",
-        "text": "MIDI",
-        "data": "examples/04.Communication/MIDI/Midi.ino",
-        "type": "file"
-      },
-      {
-        "id": "multiserialmega",
-        "text": "MultiSerialMega",
-        "data": "examples/04.Communication/MultiSerialMega/MultiSerialMega.ino",
-        "type": "file"
-      },
-      {
         "id": "physicalpixel",
         "text": "PhysicalPixel",
         "data": "examples/04.Communication/PhysicalPixel/PhysicalPixel.ino",
-        "type": "file"
-      },
-      {
-        "id": "readasciistring",
-        "text": "ReadASCIIString",
-        "data": "examples/04.Communication/ReadASCIIString/ReadASCIIString.ino",
-        "type": "file"
-      },
-      {
-        "id": "serialcallresponseascii",
-        "text": "SerialCallResponseASCII",
-        "data": "examples/04.Communication/SerialCallResponseASCII/SerialCallResponseASCII.ino",
-        "type": "file"
-      },
-      {
-        "id": "serialcallresponse",
-        "text": "SerialCallResponse",
-        "data": "examples/04.Communication/SerialCallResponse/SerialCallResponse.ino",
         "type": "file"
       },
       {
@@ -253,54 +211,6 @@
         "id": "whilestatementconditional",
         "text": "WhileStatementConditional",
         "data": "examples/05.Control/WhileStatementConditional/WhileStatementConditional.ino",
-        "type": "file"
-      }
-    ]
-  },
-  {
-    "id": "sensors",
-    "text": "06. Sensors",
-    "children": [
-      {
-        "id": "adxl3xx",
-        "text": "ADXL3xx",
-        "data": "examples/06.Sensors/ADXL3xx/ADXL3xx.ino",
-        "type": "file"
-      },
-      {
-        "id": "knock",
-        "text": "Knock",
-        "data": "examples/06.Sensors/Knock/Knock.ino",
-        "type": "file"
-      },
-      {
-        "id": "memsic2125",
-        "text": "Memsic2125",
-        "data": "examples/06.Sensors/Memsic2125/Memsic2125.ino",
-        "type": "file"
-      },
-      {
-        "id": "ping",
-        "text": "Ping",
-        "data": "examples/06.Sensors/Ping/Ping.ino",
-        "type": "file"
-      }
-    ]
-  },
-  {
-    "id": "display",
-    "text": "07. Display",
-    "children": [
-      {
-        "id": "bargraph",
-        "text": "barGraph",
-        "data": "examples/07.Display/barGraph/barGraph.ino",
-        "type": "file"
-      },
-      {
-        "id": "rowcolumnscanning",
-        "text": "RowColumnScanning",
-        "data": "examples/07.Display/RowColumnScanning/RowColumnScanning.ino",
         "type": "file"
       }
     ]
@@ -412,140 +322,50 @@
         "type": "file"
       },
       {
-        "id": "keyboardlogout",
-        "text": "Keyboard Logout",
+        "id": "keyboard",
+        "text": "Keyboard",
         "data": "examples/09.USB/Keyboard/KeyboardLogout/KeyboardLogout.ino",
         "type": "file"
       },
       {
-        "id": "keyboardmessage",
-        "text": "Keyboard Message",
+        "id": "keyboard",
+        "text": "Keyboard",
         "data": "examples/09.USB/Keyboard/KeyboardMessage/KeyboardMessage.ino",
         "type": "file"
       },
       {
-        "id": "keyboardreprogram",
-        "text": "Keyboard Reprogram",
+        "id": "keyboard",
+        "text": "Keyboard",
         "data": "examples/09.USB/Keyboard/KeyboardReprogram/KeyboardReprogram.ino",
         "type": "file"
       },
       {
-        "id": "keyboardserial",
-        "text": "Keyboard Serial",
+        "id": "keyboard",
+        "text": "Keyboard",
         "data": "examples/09.USB/Keyboard/KeyboardSerial/KeyboardSerial.ino",
         "type": "file"
       },
       {
-        "id": "buttonmouse",
-        "text": "Button Mouse Control",
+        "id": "mouse",
+        "text": "Mouse",
         "data": "examples/09.USB/Mouse/ButtonMouseControl/ButtonMouseControl.ino",
         "type": "file"
       },
       {
-        "id": "joystickmousecontrol",
-        "text": "Joystick Mouse Control",
+        "id": "mouse",
+        "text": "Mouse",
         "data": "examples/09.USB/Mouse/JoystickMouseControl/JoystickMouseControl.ino",
         "type": "file"
       }
     ]
   },
   {
-    "id": "starterkit",
-    "text": "10. StarterKit",
-    "children": [
-      {
-        "id": "p02_spaceshipinterface",
-        "text": "p02: SpaceshipInterface",
-        "data": "examples/10.StarterKit/p02_SpaceshipInterface/p02_SpaceshipInterface.ino",
-        "type": "file"
-      },
-      {
-        "id": "p03_loveometer",
-        "text": "p03: LoveOMeter",
-        "data": "examples/10.StarterKit/p03_LoveOMeter/p03_LoveOMeter.ino",
-        "type": "file"
-      },
-      {
-        "id": "p04_colormixinglamp",
-        "text": "p04: ColorMixingLamp",
-        "data": "examples/10.StarterKit/p04_ColorMixingLamp/p04_ColorMixingLamp.ino",
-        "type": "file"
-      },
-      {
-        "id": "p05_servomoodindicator",
-        "text": "p05: ServoMoodIndicator",
-        "data": "examples/10.StarterKit/p05_ServoMoodIndicator/p05_ServoMoodIndicator.ino",
-        "type": "file"
-      },
-      {
-        "id": "p06_lighttheremin",
-        "text": "p06: LightTheremin",
-        "data": "examples/10.StarterKit/p06_LightTheremin/p06_LightTheremin.ino",
-        "type": "file"
-      },
-      {
-        "id": "p07_keyboard",
-        "text": "p07: Keyboard",
-        "data": "examples/10.StarterKit/p07_Keyboard/p07_Keyboard.ino",
-        "type": "file"
-      },
-      {
-        "id": "p08_digitalhourglass",
-        "text": "p08: DigitalHourglass",
-        "data": "examples/10.StarterKit/p08_DigitalHourglass/p08_DigitalHourglass.ino",
-        "type": "file"
-      },
-      {
-        "id": "p09_motorizedpinwheel",
-        "text": "p09: MotorizedPinwheel",
-        "data": "examples/10.StarterKit/p09_MotorizedPinwheel/p09_MotorizedPinwheel.ino",
-        "type": "file"
-      },
-      {
-        "id": "p10_zoetrope",
-        "text": "p10: Zoetrope",
-        "data": "examples/10.StarterKit/p10_Zoetrope/p10_Zoetrope.ino",
-        "type": "file"
-      },
-      {
-        "id": "p11_crystalball",
-        "text": "p11: CrystalBall",
-        "data": "examples/10.StarterKit/p11_CrystalBall/p11_CrystalBall.ino",
-        "type": "file"
-      },
-      {
-        "id": "p12_knocklock",
-        "text": "p12: KnockLock",
-        "data": "examples/10.StarterKit/p12_KnockLock/p12_KnockLock.ino",
-        "type": "file"
-      },
-      {
-        "id": "p13_touchsensorlamp",
-        "text": "p13: TouchSensorLamp",
-        "data": "examples/10.StarterKit/p13_TouchSensorLamp/p13_TouchSensorLamp.ino",
-        "type": "file"
-      },
-      {
-        "id": "p14_tweakthearduinologo",
-        "text": "p14: TweakTheArduinoLogo",
-        "data": "examples/10.StarterKit/p14_TweakTheArduinoLogo/p14_TweakTheArduinoLogo.ino",
-        "type": "file"
-      },
-      {
-        "id": "p15_hackingbuttons",
-        "text": "p15: HackingButtons",
-        "data": "examples/10.StarterKit/p15_HackingButtons/p15_HackingButtons.ino",
-        "type": "file"
-      }
-    ]
-  },
-  {
-    "id": "chibitronics",
-    "text": "Chibitronics",
+    "id": "examples/chibitronics",
+    "text": "chibitronics. chibitronics",
     "children": [
       {
         "id": "neopixel",
-        "text": "NeoPixel LED",
+        "text": "neopixel",
         "data": "examples/chibitronics/neopixel/neopixel.ino",
         "type": "file"
       }
