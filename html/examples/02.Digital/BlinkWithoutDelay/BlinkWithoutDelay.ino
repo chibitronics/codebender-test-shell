@@ -14,7 +14,7 @@
  modified 8 Feb 2010
  by Paul Stoffregen
  modified 25 May 2016
- by chibitronics
+ by bunnie
   
  This example code is in the public domain.
 
