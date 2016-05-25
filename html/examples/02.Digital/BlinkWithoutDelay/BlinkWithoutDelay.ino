@@ -1,3 +1,4 @@
+//  This example is Chibitronics Love to Code tested!
 /* Blink without Delay
  
  Turns on and off a light emitting diode(LED) connected to a digital  
@@ -5,16 +6,16 @@
  can run at the same time without being interrupted by the LED code.
  
  The circuit:
- * LED attached from pin 13 to ground.
- * Note: on most Arduinos, there is already an LED on the board
- that's attached to pin 13, so no hardware is needed for this example.
- 
+ * LED attached from pin A2 to ground.
+ * Note: on the chibitronics board, this LED is already attached
  
  created 2005
  by David A. Mellis
  modified 8 Feb 2010
  by Paul Stoffregen
- 
+ modified 25 May 2016
+ by chibitronics
+  
  This example code is in the public domain.
 
  
@@ -23,7 +24,7 @@
 
 // constants won't change. Used here to 
 // set pin numbers:
-const int ledPin =  13;      // the number of the LED pin
+const int ledPin =  A2;      // the number of the LED pin
 
 // Variables will change:
 int ledState = LOW;             // ledState used to set the LED
