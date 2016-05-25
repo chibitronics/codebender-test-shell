@@ -1,3 +1,8 @@
+//  This example is Chibitronics Love to Code tested!
+#include "Adafruit_NeoPixel.h"
+
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(1, LED_BUILTIN_RGB,
+                                            NEO_GRB + NEO_KHZ800);
 /*
   Reading a serial ASCII-encoded string.
  
@@ -17,18 +22,12 @@
  This example code is in the public domain.
  */
 
-// pins for the LEDs:
-const int redPin = 3;
-const int greenPin = 5;
-const int bluePin = 6;
-
 void setup() {
   // initialize serial:
-  Serial.begin(9600);
-  // make the pins outputs:
-  pinMode(redPin, OUTPUT); 
-  pinMode(greenPin, OUTPUT); 
-  pinMode(bluePin, OUTPUT); 
+  Serial.begin(115200);
+
+  strip.begin();
+  strip.show(); // Initialize all pixels to 'off'
 
 }
 
@@ -45,17 +44,11 @@ void loop() {
 
     // look for the newline. That's the end of your
     // sentence:
-    if (Serial.read() == '\n') {
-      // constrain the values to 0 - 255 and invert
-      // if you're using a common-cathode LED, just use "constrain(color, 0, 255);"
-      red = 255 - constrain(red, 0, 255);
-      green = 255 - constrain(green, 0, 255);
-      blue = 255 - constrain(blue, 0, 255);
-
-      // fade the red, green, and blue legs of the LED: 
-      analogWrite(redPin, red);
-      analogWrite(greenPin, green);
-      analogWrite(bluePin, blue);
+    int inChar = Serial.read();
+    if (inChar == '\n' || inChar == '\r') {
+      // use the on-board neopixel
+      strip.setPixelColor(0, strip.Color(red, green, blue));
+      strip.show();
 
       // print the three numbers in one string as hexadecimal:
       Serial.print(red, HEX);
