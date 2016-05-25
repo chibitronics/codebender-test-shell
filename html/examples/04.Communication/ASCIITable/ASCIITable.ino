@@ -1,3 +1,4 @@
+//  This example is Chibitronics Love to Code tested!
 /*
   ASCII table
  
