@@ -1,3 +1,4 @@
+//  This example is Chibitronics Love to Code tested!
 /*
   Dimmer
  
@@ -14,6 +15,8 @@
  by David A. Mellis
  modified 30 Aug 2011
  by Tom Igoe and Scott Fitzgerald
+ modified 25 May 2016
+ by bunnie
  
  This example code is in the public domain.
  
@@ -21,12 +24,12 @@
  
  */
 
-const int ledPin = 9;      // the pin that the LED is attached to
+const int ledPin = A2;      // the pin that the LED is attached to
 
 void setup()
 {
   // initialize the serial communication:
-  Serial.begin(9600);
+  Serial.begin(115200);
   // initialize the ledPin as an output:
   pinMode(ledPin, OUTPUT);
 }
