@@ -1,3 +1,4 @@
+//  This example is Chibitronics Love to Code tested!
 /*
   Calibration
  
@@ -12,13 +13,15 @@
  maximum low and listen for anything higher as the new maximum.
  
  The circuit:
- * Analog sensor (potentiometer will do) attached to analog input 0
- * LED attached from digital pin 9 to ground
+ * Analog sensor (potentiometer will do) attached to analog input A1 (A0 & A3 are gnd and VMCU)
+ * LED attached from digital pin A2 to ground
  
  created 29 Oct 2008
  By David A Mellis
  modified 30 Aug 2011
  By Tom Igoe
+ modified 25 May 2016
+ by bunnie
  
  http://arduino.cc/en/Tutorial/Calibration
  
@@ -27,19 +30,27 @@
  */
 
 // These constants won't change:
-const int sensorPin = A0;    // pin that the sensor is attached to
-const int ledPin = 9;        // pin that the LED is attached to
+const int sensorPin = A1;    // pin that the sensor is attached to
+const int ledPin = A2;       // pin that the LED is attached to
 
 // variables:
 int sensorValue = 0;         // the sensor value
-int sensorMin = 1023;        // minimum sensor value
+int sensorMin = 4095;        // minimum sensor value
 int sensorMax = 0;           // maximum sensor value
 
 
 void setup() {
+  pinMode(A0, OUTPUT);
+  digitalWrite(A0, LOW);   // A0 is the - reference
+  
+  pinMode(A3, OUTPUT);
+  digitalWrite(A3, HIGH);  // A3 is the + voltage
+  
+  pinMode(A1, INPUT);      // A1 is the sensor input
+
   // turn on LED to signal the start of the calibration period:
-  pinMode(13, OUTPUT);
-  digitalWrite(13, HIGH);
+  pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, HIGH);
 
   // calibrate during the first five seconds 
   while (millis() < 5000) {
@@ -57,7 +68,7 @@ void setup() {
   }
 
   // signal the end of the calibration period
-  digitalWrite(13, LOW);
+  digitalWrite(ledPin, LOW);
 }
 
 void loop() {
