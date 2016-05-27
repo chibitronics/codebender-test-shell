@@ -1,3 +1,4 @@
+//  This example is Chibitronics Love to Code tested!
 /*
 
   Smoothing
@@ -7,12 +8,16 @@
   continually averages them.
   
   The circuit:
-    * Analog sensor (potentiometer will do) attached to analog input 0
+    * Analog sensor (potentiometer will do) attached to analog input A1
+    * A0 and A2 are available as ground and VMCU, respectively
 
   Created 22 April 2007
   By David A. Mellis  <dam@mellis.org>
   modified 9 Apr 2012
   by Tom Igoe
+  modified 25 May 2016
+  by bunnie
+
   http://www.arduino.cc/en/Tutorial/Smoothing
   
   This example code is in the public domain.
@@ -32,12 +37,20 @@ int index = 0;                  // the index of the current reading
 int total = 0;                  // the running total
 int average = 0;                // the average
 
-int inputPin = A0;
+int inputPin = A1;
 
 void setup()
 {
+  pinMode(A0, OUTPUT);
+  digitalWrite(A0, LOW);   // A0 is the - reference
+  
+  pinMode(A2, OUTPUT);
+  digitalWrite(A2, HIGH);  // A2 is the + voltage
+  
+  pinMode(inputPin, INPUT);      // A1 is the sensor input
+
   // initialize serial communication with computer:
-  Serial.begin(9600);                   
+  Serial.begin(115200);                   
   // initialize all the readings to 0: 
   for (int thisReading = 0; thisReading < numReadings; thisReading++)
     readings[thisReading] = 0;          

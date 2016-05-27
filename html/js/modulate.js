@@ -47,8 +47,9 @@ modulator.prototype = {
     // draw the waveform to the canvas, assuming the proper UI element is provided
     // for debug, of course
     drawWaveform: function(canvas) {
-        var b = this.outputAudioBuffer.getChannelData(0);
-        drawWaveformToCanvas(b, 0, canvas);
+        // comment out now for performonce
+        //var b = this.outputAudioBuffer.getChannelData(0);
+        //drawWaveformToCanvas(b, 0, canvas);
     },
     // immediately play the modulated audio exactly once. Useful for debugging single packets
     playBuffer: function(callBack) {

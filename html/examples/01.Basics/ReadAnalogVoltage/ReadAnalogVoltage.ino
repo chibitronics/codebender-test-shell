@@ -1,23 +1,39 @@
+//  This example is Chibitronics Love to Code tested!
 /*
   ReadAnalogVoltage
-  Reads an analog input on pin 0, converts it to voltage, and prints the result to the serial monitor.
-  Attach the center pin of a potentiometer to pin A0, and the outside pins to +5V and ground.
+  Reads an analog input on pin A1, converts it to voltage, and prints the result to the serial monitor.
+  Attach the center pin of a potentiometer to pin A1, and the outside pins to A2 and A0.
  
  This example code is in the public domain.
  */
 
 // the setup routine runs once when you press reset:
+float calibrationValue;
 void setup() {
-  // initialize serial communication at 9600 bits per second:
-  Serial.begin(9600);
+  // the chibitronics implementation always runs at 115200 regardless of the argument
+  Serial.begin(115200);
+
+  pinMode(A0, OUTPUT);
+  digitalWrite(A0, LOW);   // A0 is the - reference
+  
+  pinMode(A2, OUTPUT);
+  digitalWrite(A2, HIGH);  // A2 is the + voltage
+  
+  pinMode(A1, INPUT);      // A1 is the sensor input
+
+  pinMode(A6, INPUT);      // A6 is the "bandgap" reference, it is stable at 1V over temperature and different chips
+
+  // use A6 bandgap value to calibrate our voltage!
+  calibrationValue = (float) analogRead(A6);  // calibrationValue is the digital code equivalent to 1.0V!
+  // just divide by calibtrationValue to get the actual voltage in volts
 }
 
 // the loop routine runs over and over again forever:
 void loop() {
   // read the input on analog pin 0:
-  int sensorValue = analogRead(A0);
-  // Convert the analog reading (which goes from 0 - 1023) to a voltage (0 - 5V):
-  float voltage = sensorValue * (5.0 / 1023.0);
+  int sensorValue = analogRead(A1);
+  // Convert the analog reading (which goes from 0 - 4096) to a voltage (0 - 3.3V):
+  float voltage = (sensorValue / calibrationValue);
   // print out the value you read:
   Serial.println(voltage);
 }

@@ -1,3 +1,4 @@
+//  This example is Chibitronics Love to Code tested!
 /*
   Physical Pixel
  
@@ -11,24 +12,26 @@
  proxy), PD, or Max/MSP.
  
  The circuit:
- * LED connected from digital pin 13 to ground
+ * LED connected from digital pin A2 to ground
  
  created 2006
  by David A. Mellis
  modified 30 Aug 2011
  by Tom Igoe and Scott Fitzgerald
+ modified 25 May 2016
+ by bunnie
  
  This example code is in the public domain.
 
  http://www.arduino.cc/en/Tutorial/PhysicalPixel
  */
 
-const int ledPin = 13; // the pin that the LED is attached to
+const int ledPin = A2; // the pin that the LED is attached to
 int incomingByte;      // a variable to read incoming serial data into
 
 void setup() {
   // initialize serial communication:
-  Serial.begin(9600);
+  Serial.begin(115200);
   // initialize the LED pin as an output:
   pinMode(ledPin, OUTPUT);
 }

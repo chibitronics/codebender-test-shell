@@ -12,7 +12,7 @@ var themeData = [
     ["GitHub"         ],
     ["IPlastic"       ],
     ["Solarized Light"],
-    ["TextMate"       ],
+    ["TextMate"             ,"textmate"                , "light"],
     ["Tomorrow"       ],
     ["XCode"          ],
     ["Kuroir"],

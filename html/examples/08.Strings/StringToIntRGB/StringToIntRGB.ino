@@ -1,3 +1,6 @@
+//  This example is Chibitronics Love to Code tested!
+#include "Adafruit_NeoPixel.h"
+
 /*
   Serial RGB controller
  
@@ -20,13 +23,16 @@
  This example code is in the public domain. 
  */
 
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(1, LED_BUILTIN_RGB,
+                                            NEO_GRB + NEO_KHZ800);
+
 String inString = "";    // string to hold input
 int currentColor = 0;
 int red, green, blue = 0;
 
 void setup() {
   // Open serial communications and wait for port to open:
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for Leonardo only
   }
@@ -34,17 +40,13 @@ void setup() {
   // send an intro:
   Serial.println("\n\nString toInt() RGB:");
   Serial.println();
-  // set LED cathode pins as outputs:
-  pinMode(9, OUTPUT);
-  pinMode(10, OUTPUT);
-  pinMode(11, OUTPUT);
-  // turn on pin 13 to power the LEDs:
-  pinMode(13, OUTPUT);
-  digitalWrite(13, HIGH);
+
+  strip.begin();
+  strip.show(); // Initialize all pixels to 'off'
 }
 
 void loop() {
-  int inChar;
+  int inChar = '\0';
 
   // Read serial input:
   if (Serial.available() > 0) {
@@ -78,16 +80,15 @@ void loop() {
   }
   // if you get a newline, you know you've got
   // the last color, i.e. blue:
-  if (inChar == '\n') {
+  if (inChar == '\n' || inChar == '\r') {
     blue = inString.toInt();
 
     // set the levels of the LED.
     // subtract value from 255 because a higher
     // analogWrite level means a dimmer LED, since
     // you're raising the level on the anode:
-    analogWrite(11,  255 - red);
-    analogWrite(9, 255 - green);
-    analogWrite(10, 255 - blue);
+    strip.setPixelColor(0, strip.Color(red, green, blue));
+    strip.show();
 
     // print the colors:
     Serial.print("Red: ");
