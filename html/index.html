@@ -17,16 +17,7 @@
     <link rel="stylesheet" href="css/main.css" />
 </head>
 <body class="Site">
-            <div id="header" class="Site-header">
-                <!--<div id="play_button_container">
-                    <div id="play_button_hole">
-                        <div id="play_button">
-                            <div id="play_button_triangle"></div>
-                            <div id="play_button_lighter_triangle"></div>
-                            <div id="play_button_darker_triangle"></div>
-                        </div>
-                    </div>
-                </div>-->
+            <header class="Site-header">
                 <div class="red_button" id="upload_button">Upload</div>
                 <div class="red_button" id="showhideexamples_button">Show Examples</div>
                 <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
@@ -37,7 +28,7 @@
                     <option value="arduino:sam:arduino_due_x">Arduino Due (Native Port)</option>
                 </select>
                 <div id="buildoutput" style="display: none"></div>
-            </div>
+            </header>
             <div id="main" class="Site-content">
                 <div id="sidebar">
                     <div id="treething"></div>
@@ -47,9 +38,9 @@
                     <textarea id="editorthing"></textarea>
                 </form>
             </div>
-            <div id="footer" class="Site-footer">
+            <footer class="Site-footer" id="Site-footer">
                 <canvas id="wavStrip"></canvas>
-            </div>
+            </footer>
 
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="js/jquery-2.2.0.min.js" type="text/javascript" charset="utf-8"></script>
@@ -96,9 +87,11 @@
                 if (mod_controller)
                     mod_controller.stop();
                 mod_controller = new ModulationController({
-                    canvas: document.getElementById("wavStrip")
+                    canvas: document.getElementById("wavStrip"),
+                    endCallback: function() { $("#Site-footer").hide(); }
                 });
                 mod_controller.sendData(data);
+                $("#Site-footer").show();
             }
             else {
                 $("#buildoutput").html("<pre>" + results.message + "</pre>");
