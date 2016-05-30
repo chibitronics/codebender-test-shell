@@ -70,6 +70,12 @@
         "type": "file"
       },
       {
+        "id": "resistivetouch",
+        "text": "ResistiveTouch",
+        "data": "examples/02.Digital/ResistiveTouch/ResistiveTouch.ino",
+        "type": "file"
+      },
+      {
         "id": "statechangedetection",
         "text": "StateChangeDetection",
         "data": "examples/02.Digital/StateChangeDetection/StateChangeDetection.ino",
@@ -361,17 +367,17 @@
   },
   {
     "id": "examples/chibitronics",
-    "text": "Chibitronics",
+    "text": "chibitronics. chibitronics",
     "children": [
       {
         "id": "neopixel",
-        "text": "Neopixel",
+        "text": "neopixel",
         "data": "examples/chibitronics/neopixel/neopixel.ino",
         "type": "file"
       },
       {
         "id": "threading",
-        "text": "Multithreading",
+        "text": "threading",
         "data": "examples/chibitronics/threading/threading.ino",
         "type": "file"
       }
