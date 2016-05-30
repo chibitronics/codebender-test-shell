@@ -121,11 +121,19 @@
             $("#showhideexamples_button").click(function() {
                 var examples_window = $("#sidebar");
                 if (examples_window.is(":visible")) {
-                    examples_window.hide();
+                    examples_window.hide({
+                        effect: "blind",
+                        easing: "swing",
+                        direction: "right"
+                    });
                     this.innerHTML = "Show Examples";
                 }
                 else {
-                    examples_window.show();
+                    examples_window.show({
+                        effect: "blind",
+                        easing: "swing",
+                        direction: "right"
+                    });
                     this.innerHTML = "Hide Examples";
                 }
             });
