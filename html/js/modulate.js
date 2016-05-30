@@ -48,8 +48,8 @@ modulator.prototype = {
     // for debug, of course
     drawWaveform: function(canvas) {
         // comment out now for performonce
-        //var b = this.outputAudioBuffer.getChannelData(0);
-        //drawWaveformToCanvas(b, 0, canvas);
+        var b = this.outputAudioBuffer.getChannelData(0);
+        drawWaveformToCanvas(b, 0, canvas);
     },
     // immediately play the modulated audio exactly once. Useful for debugging single packets
     playBuffer: function(callBack) {
@@ -215,12 +215,15 @@ function encodeWAV(samples, mono){
 /* ============================================================ */
 
 function drawWaveformToCanvas(buffer, start, canvas) {
-    console.log("-- drawWaveformToCanvas --");
 
     if (!canvas || !canvas.getContext)
         return;
 
     var strip = canvas.getContext('2d');
+
+    // Resize the canvas to be the window size.
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
 
     var h = strip.canvas.height;
     var w = strip.canvas.width;
@@ -250,7 +253,8 @@ function drawWaveformToCanvas(buffer, start, canvas) {
 
     for (var x = 1; x < canvas.width; x++) {
         var sample = (buffer[b++] + 1) / 2;
-        if (b > buffer.length) break;
+        if (b > buffer.length)
+            break;
         strip.beginPath();
         strip.moveTo(x - 1, h - lastSample * h);
         strip.lineTo(x, h - sample * h);
