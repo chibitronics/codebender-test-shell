@@ -16,8 +16,10 @@ CodeMirror.registerHelper("lint", "text/x-c++src", function(text, passOptions, c
   var internal_error_str = "";
 
   var error_message = cm.chibi_error_string;
-  if (!error_message)
+  if (!error_message) {
+    cm.last_internal_error_str = internal_error_str;
     return found;
+  }
 
   var lines = error_message.split("\n");
   var i;
