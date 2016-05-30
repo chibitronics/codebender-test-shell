@@ -54,6 +54,16 @@ CodeMirror.registerHelper("lint", "text/x-c++src", function(text, passOptions, c
       ;
     }
 
+    // Ignore "changing start of text section" messages.
+    else if (line.indexOf("warning: changing start of section .text by 4 bytes") > -1) {
+      ;
+    }
+
+    // Ignore "[filename]: In function [function]" messages, since they're followed by the error
+    else if (line.indexOf(": In function ") > -1) {
+      ;
+    }
+
     // Ignore blank lines.
     else if (!line) {
       ;
