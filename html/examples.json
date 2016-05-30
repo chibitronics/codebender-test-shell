@@ -361,12 +361,18 @@
   },
   {
     "id": "examples/chibitronics",
-    "text": "chibitronics. chibitronics",
+    "text": "Chibitronics",
     "children": [
       {
         "id": "neopixel",
-        "text": "neopixel",
+        "text": "Neopixel",
         "data": "examples/chibitronics/neopixel/neopixel.ino",
+        "type": "file"
+      },
+      {
+        "id": "threading",
+        "text": "Multithreading",
+        "data": "examples/chibitronics/threading/threading.ino",
         "type": "file"
       }
     ]
