@@ -15,6 +15,7 @@
     <meta property="og:title" content="jstree" />
     <meta property="og:type" content="website" />
     <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/lint.css" />
 </head>
 <body class="Site">
             <header class="Site-header">
@@ -34,6 +35,11 @@
                     <div id="treething"></div>
                 </div>
 
+                <div id="internal_error_dialog" style="display:none" title="Internal Error">
+                    <p>An internal compiler error occurred:</p>
+                    <pre id="internal_error_text"></pre>
+                </div>
+
                 <form method="post" id="show-result" target="result" action="/build">
                     <textarea id="editorthing"></textarea>
                 </form>
@@ -51,6 +57,8 @@
     <script src="lib/codemirror.js"></script>
     <link rel="stylesheet" href="lib/codemirror.css">
     <script src="mode/clike/clike.js"></script>
+    <script src="lib/lint.js"></script>
+    <script src="lib/chibi-lint.js"></script>
 
     <script src="js/base64-binary.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/WAAPISim-master/waapisim.js" type="text/javascript" charset="utf-8"></script>
@@ -91,14 +99,21 @@
                     endCallback: function() { $("#Site-footer").hide(); }
                 });
                 mod_controller.sendData(data);
+                editor.chibi_error_string = "";
                 $("#Site-footer").show();
             }
             else {
-                $("#buildoutput").html("<pre>" + results.message + "</pre>");
+                editor.chibi_error_string = results.message;
+                editor.performLint();
             }
         }
 
         $(document).ready(function () {
+            $("#internal_error_dialog").dialog({
+                autoOpen: false,
+                height: 300,
+                width: 600
+            });
             $("#stoprunning").click(function() {
                 if (mod_controller)
                     mod_controller.stop();
@@ -143,6 +158,8 @@
                 matchBrackets: true,
                 mode: "text/x-c++src",
                 scrollbarStyle: "null",
+                lint: true,
+                gutters: ["CodeMirror-lint-markers"],
                 useCPP: true
             });
             var mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault;
