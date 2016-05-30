@@ -6,13 +6,8 @@
         if (!params)
             params = new Object();
 
-        /*
-        this.freqHigh = params.freqHigh || 7350;
-        this.freqLow = params.freqLow || 4900;
-        this.baud = params.baud || 1225;
-        this.sampleRate = params.sampleRate || 29400;
-        */
         this.canvas = params.canvas || undefined;
+        this.endCallback = params.endCallback || undefined;
 
         /* Are these needed? */
         this.saveState = false;
@@ -284,6 +279,8 @@
         // once all audio is done playing, call this to reset UI elements to idle state
         audioEndCB: function() {
             this.isSending = false;
+            if (this.endCallback)
+                this.endCallback();
         },
 
         stop: function() {
