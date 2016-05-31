@@ -51,6 +51,7 @@ modulator.prototype = {
         var b = this.outputAudioBuffer.getChannelData(0);
         drawWaveformToCanvas(b, 0, canvas);
     },
+
     // immediately play the modulated audio exactly once. Useful for debugging single packets
     playBuffer: function(callBack) {
         if( callBack )
@@ -63,6 +64,7 @@ modulator.prototype = {
         playTimeStart = performance.now();
         bufferNode.start(0); // play immediately
     },
+
     // Plays through an entire file. You need to set the callback so once
     // a single audio packet is finished, the next can start. The index
     // tells where to start playing. You could, in theory, start modulating
@@ -78,10 +80,9 @@ modulator.prototype = {
         bufferNode.connect(window.audioContext.destination); // Connect to speakers
 
         // our callback to trigger the next packet
-        var thismod = this;
         bufferNode.onended = function audioLoopEnded() {
             if (loopCallback) {
-                if (((loopIndex - 2) * 256) < thismod.ui.byteArray.length) {
+                if (((loopIndex - 2) * 256) < this.ui.byteArray.length) {
                     // if we've got more data, transcode and loop
                     loopCallback.transcodeFile(loopIndex);
                 }
@@ -90,8 +91,8 @@ modulator.prototype = {
                     // many times we've played the entire file back. We want to play
                     // it back a couple of times because sometimes packets get
                     // lost or corrupted.
-                    if (thismod.ui.playCount < 2) { // set this higher for more loops!
-                        thismod.ui.playCount++;
+                    if (this.ui.playCount < 2) { // set this higher for more loops!
+                        this.ui.playCount++;
                         loopCallback.transcodeFile(0); // start it over!
                     }
                     else {
@@ -99,7 +100,7 @@ modulator.prototype = {
                     }
                 }
             }
-        };
+        }.bind(this);
 
         document.addEventListener('touchend', function() { bufferNode.start(0).bind(this); }, false);
         if (index == 1)
