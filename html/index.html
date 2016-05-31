@@ -231,6 +231,22 @@
                 }
             });
         });
+
+        // This will unblock audio on iOS devices.  Otherwise, they will have silence.
+        if (!("audioContext" in window))
+            window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        var had_touch;
+        document.addEventListener("touchend", function () {
+            if (had_touch)
+                return;
+            // play empty buffer to unmute audio
+            var buffer = window.audioContext.createBuffer(1, 1, window.audioContext.sampleRate);
+            var source = window.audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.connect(window.audioContext.destination);
+            source.start(0);
+            had_touch = true;
+        });
     </script>
 </body>
 </html>
