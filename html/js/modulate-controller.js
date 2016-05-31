@@ -67,36 +67,28 @@
         transcodeFile: function(index) {
             var fileLen = this.byteArray.length;
             var blocks = Math.ceil(fileLen / 256);
+            var packet;
 
             // index 0 & 1 create identical control packets. We transmit the control packet
             // twice in the beginning because (a) it's tiny and almost free and (b) if we
             // happen to miss it, we waste an entire playback cycle before we start committing
             // data to memory
             if (index == 0  || index == 1) {
-                var ctlPacket = this.makeCtlPacket(this.byteArray.subarray(0, fileLen));
-
-                this.modData.modulate(ctlPacket);
-                this.modData.playLoop(this, index + 1);
-                this.modData.drawWaveform(this.canvas);
+                packet = this.makeCtlPacket(this.byteArray.subarray(0, fileLen));
             }
             else {
                 // data index starts at 2, due to two sends of the control packet up front
-                var i = index - 2;
-                // handle whole blocks
-                if (i < blocks - 1) {
-                    var dataPacket = this.makeDataPacket(this.byteArray.subarray(i * 256, i * 256 + 256), i);
-                    this.modData.modulate(dataPacket);
-                    this.modData.playLoop(this, index + 1);
-                    this.modData.drawWaveform(this.canvas);
-                }
-                else {
-                    // handle last block of data, which may not be 256 bytes long
-                    var dataPacket = this.makeDataPacket(this.byteArray.subarray(i * 256, fileLen), i);
-                    this.modData.modulate(dataPacket);
-                    this.modData.playLoop(this, index + 1);
-                    this.modData.drawWaveform(this.canvas);
-                }
+                var block = index - 2;
+                var start = block * 256;
+                var end = start + 256;
+                if (end > fileLen)
+                    end = fileLen;
+                packet = this.makeDataPacket(this.byteArray.subarray(start, end), block);
             }
+
+            this.modData.modulate(packet);
+            this.modData.playLoop(this, index + 1);
+            this.modData.drawWaveform(this.canvas);
         },
 
         makeUint32: function(num) {
