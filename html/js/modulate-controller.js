@@ -237,4 +237,3 @@
         return new ModulationController(params);
     };
 }(this));
-
