@@ -17,7 +17,7 @@ html {
     background: purple;
     padding: 5px;
     margin: 0;
-	z-index: 500;
+	z-index: 5000;
 	width: 100%;
 }
 
