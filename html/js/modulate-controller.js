@@ -16,7 +16,6 @@
         this.playing = false;
         this.done = false;
         this.stoppedAt = 0;
-        this.modData = null;
         this.byteArray = null;
         this.playCount = 0;
 
@@ -25,7 +24,7 @@
         this.CONTROL_PACKET = 0x01;
         this.DATA_PACKET = 0x02;
 
-        this.modData = new modulator(this); // the modulator object contains our window's audio context
+        this.modulator = new modulator(this); // the modulator object contains our window's audio context
 
         /* Preamble sent before every audio packet */
         this.preamble = [0x00, 0x00, 0x00, 0x00, 0xaa, 0x55, 0x42];
@@ -86,9 +85,9 @@
                 packet = this.makeDataPacket(this.byteArray.subarray(start, end), block);
             }
 
-            this.modData.modulate(packet);
-            this.modData.playLoop(this, index + 1);
-            this.modData.drawWaveform(this.canvas);
+            this.modulator.modulate(packet);
+            this.modulator.playLoop(this, index + 1);
+            this.modulator.drawWaveform(this.canvas);
         },
 
         makeUint32: function(num) {
