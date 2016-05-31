@@ -103,6 +103,34 @@
                    (num >> 8) & 0xff];
         },
 
+        /* Appends "src" to "dst", beginning at offset "offset".
+         * Handy for populating data buffers.
+         */
+        appendData: function(dst, src, offset) {
+            var i;
+            for (i = 0; i < src.length; i++)
+                dst[offset + i] = src[i];
+            return i;
+        },
+
+        makeHash: function(data, hash) {
+            return this.makeUint32(murmurhash3_32_gc(data, hash));
+        },
+
+        makeFooter: function(packet) {
+            var hash = 0xdeadbeef;
+            var data = new Array();
+            var i;
+            var j;
+
+            // Join all argument arrays together into "data"
+            for (i = 0; i < arguments.length; i++)
+                for (j = 0; j < arguments[i].length; j++)
+                    data.push(arguments[i][j]);
+
+            return this.makeHash(data, hash);
+        },
+
         makePacket: function() {
             var len = 0;
             var i;
@@ -135,34 +163,6 @@
             var stop = [0xff];
 
             return this.makePacket(preamble, header, program_length, program_hash, program_guid, footer, stop);
-        },
-
-        /* Appends "src" to "dst", beginning at offset "offset".
-         * Handy for populating data buffers.
-         */
-        appendData: function(dst, src, offset) {
-            var i;
-            for (i = 0; i < src.length; i++)
-                dst[offset + i] = src[i];
-            return i;
-        },
-
-        makeHash: function(data, hash) {
-            return this.makeUint32(murmurhash3_32_gc(data, hash));
-        },
-
-        makeFooter: function(packet) {
-            var hash = 0xdeadbeef;
-            var data = new Array();
-            var i;
-            var j;
-
-            // Join all argument arrays together into "data"
-            for (i = 0; i < arguments.length; i++)
-                for (j = 0; j < arguments[i].length; j++)
-                    data.push(arguments[i][j]);
-
-            return this.makeHash(data, hash);
         },
 
         makeDataPacket: function(dataIn, blocknum) {
