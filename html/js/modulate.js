@@ -1,6 +1,9 @@
 (function (window) {
     'use strict';
-    var Modulator = function(controller) {
+    var Modulator = function(params) {
+
+        if (!params)
+            params = new Object();
 
         // this odd construct is for safari compatibility
         if (!("audioContext" in window))
@@ -11,7 +14,6 @@
         console.log("speakerSampleRate is " + this.samplerate);
 
         this.encoder = new FskEncoder(this.samplerate);
-        this.ui = controller;
     }
 
     Modulator.prototype = {
@@ -20,8 +22,6 @@
         encoder: null,  // FskEncoder object
         outputAudioBuffer: null,  // AudioBuffer object
         uiCallback: null,  // UI object for callback
-        loopCallback: null, // loop callback
-        loopIndex: null, // loop index on callback
 
         // modulate a single packet. The data to modulate should be Uint8 format
         // This function allocates an audio buffer based on the length of the data and the sample rate
@@ -51,9 +51,7 @@
         },
 
         // immediately play the modulated audio exactly once. Useful for debugging single packets
-        playBuffer: function(callBack) {
-            if (callBack)
-                this.uiCallback = callBack;
+        playBuffer: function(obj, func) {
             console.log("-- playAudioBuffer --");
             var bufferNode = window.audioContext.createBufferSource();
             bufferNode.buffer = this.outputAudioBuffer;
@@ -62,8 +60,8 @@
                 var playTimeEnd = performance.now();
                 var timeElapsed = playTimeEnd - this.playTimeStart;
                 console.log("got audio ended event after " + timeElapsed.toFixed(2) + "ms");
-                if (this.uiCallback)
-                    this.uiCallback.audioEndCB();
+                if (obj && func)
+                    func.call(obj);
             }.bind(this));
             this.playTimeStart = performance.now();
             bufferNode.start(0); // play immediately
@@ -74,40 +72,16 @@
         // tells where to start playing. You could, in theory, start modulating
         // part-way through an audio stream by setting index to a higher number on your
         // first call.
-        playLoop: function(callBack, index) {
-            var loopCallback;
-            var loopIndex;
+        playLoop: function(obj, end_func, index) {
 
-            if (callBack) {
-                loopCallback = callBack;
-                loopIndex = index;
-            }
             var bufferNode = window.audioContext.createBufferSource();
             bufferNode.buffer = this.outputAudioBuffer;
             bufferNode.connect(window.audioContext.destination); // Connect to speakers
 
             // our callback to trigger the next packet
             bufferNode.onended = function audioLoopEnded() {
-                if (loopCallback) {
-                    if (((loopIndex - 2) * 256) < this.ui.byteArray.length) {
-                        // if we've got more data, transcode and loop
-                        loopCallback.transcodeFile(loopIndex);
-                    }
-                    else {
-                        // if we've reached the end of our data, check to see how
-                        // many times we've played the entire file back. We want to play
-                        // it back a couple of times because sometimes packets get
-                        // lost or corrupted.
-                        if (this.ui.playCount < 2) { // set this higher for more loops!
-                            this.ui.playCount++;
-                            loopCallback.transcodeFile(0); // start it over!
-                        }
-                        else {
-                            loopCallback.audioEndCB(); // clean up the UI when done
-                        }
-                    }
-                }
-            }.bind(this);
+                end_func.call(obj, index);
+            };
 
             if (index == 1)
                 bufferNode.start(0); // this one goes immediately
