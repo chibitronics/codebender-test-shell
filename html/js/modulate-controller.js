@@ -16,15 +16,15 @@
         this.playing = false;
         this.done = false;
         this.stoppedAt = 0;
-        this.byteArray = null;
         this.playCount = 0;
+        this.byteArray = null;
 
         this.PROT_VERSION = 0x01;   // Protocol v1.0
 
         this.CONTROL_PACKET = 0x01;
         this.DATA_PACKET = 0x02;
 
-        this.modulator = new Modulator(this); // the modulator object contains our window's audio context
+        this.modulator = new Modulator(); // the modulator object contains our window's audio context
 
         /* Preamble sent before every audio packet */
         this.preamble = [0x00, 0x00, 0x00, 0x00, 0xaa, 0x55, 0x42];
@@ -56,9 +56,8 @@
 
         // this is the core function for transcoding
         // two object variables must be set:
-        // byteArray, and playCount.
+        // byteArray.
         // byteArray is the binary file to transmit
-        // playCount keeps track of how many times the entire file has been replayed
 
         // the parameter to this, "index", is a packet counter. We have to recursively call
         // transcodeFile using callbacks triggered by the completion of audio playback. I couldn't
@@ -86,8 +85,30 @@
             }
 
             this.modulator.modulate(packet);
-            this.modulator.playLoop(this, index + 1);
+            this.modulator.playLoop(this, this.finishPacketPlayback, index + 1);
             this.modulator.drawWaveform(this.canvas);
+        },
+
+        finishPacketPlayback: function(index) {
+
+            if (((index - 2) * 256) < this.byteArray.length) {
+                // if we've got more data, transcode and loop
+                this.transcodeFile(index);
+            }
+            else {
+                // if we've reached the end of our data, check to see how
+                // many times we've played the entire file back. We want to play
+                // it back a couple of times because sometimes packets get
+                // lost or corrupted.
+                if (this.playCount < 2) { // set this higher for more loops!
+                    this.playCount++;
+                    this.transcodeFile(0); // start it over!
+                }
+                else {
+                    this.audioEndCB(); // clean up the UI when done
+                }
+            }
+
         },
 
         makeUint32: function(num) {
