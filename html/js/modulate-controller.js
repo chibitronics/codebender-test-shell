@@ -174,7 +174,7 @@
 
             // Ensure the "data" payload is 256 bytes long.
             var data = new Uint8Array(256);
-            data.fill(0xff);    // Pad extra data with 0xff
+            for (i = 0; i < data.length; i++) data[i] = 0xff; // data.fill(0xff)
             this.appendData(data, dataIn, 0);
 
             var footer = this.makeFooter(header, data);
