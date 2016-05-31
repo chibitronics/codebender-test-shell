@@ -24,7 +24,7 @@
         this.CONTROL_PACKET = 0x01;
         this.DATA_PACKET = 0x02;
 
-        this.modulator = new modulator(this); // the modulator object contains our window's audio context
+        this.modulator = new Modulator(this); // the modulator object contains our window's audio context
 
         /* Preamble sent before every audio packet */
         this.preamble = [0x00, 0x00, 0x00, 0x00, 0xaa, 0x55, 0x42];
