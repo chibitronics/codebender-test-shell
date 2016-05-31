@@ -142,7 +142,7 @@
         }
     };
 
-    /* Set up the constructor, so we can do "new ModulationController()" */
+    /* Set up the constructor, so we can do "new Modulator()" */
     window.Modulator = function(params) {
         return new Modulator(params);
     };
