@@ -113,20 +113,7 @@ void setup() {
   strip.show(); // Initialize all pixels to 'off'
 }
 
-extern "C" double sin(double f);
-#define double float
-double test_d = 4.3L;
-int test_thingy(int start) {
-  static int val = start;
-
-  test_d += sin(start);
-  return ++val;
-}
-
 void loop() {
-  printf("Hello, world!\r\n");
-
-  test_thingy(micros());
   // Some example procedures showing how to display to the pixels:
   colorWipe(strip.Color(255, 0, 0), 50); // Red
   colorWipe(strip.Color(0, 255, 0), 50); // Green
