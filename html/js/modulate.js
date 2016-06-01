@@ -9,19 +9,35 @@
         if (!("audioContext" in window))
             window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-        this.samplerate = window.audioContext.sampleRate;
+        this.encoder = new FskEncoder(window.audioContext.sampleRate);
 
-        console.log("speakerSampleRate is " + this.samplerate);
+        // Create a "script node" that will actually generate audio samples.
+        this.script_node = Modulator.prototype.script_node;
 
-        this.encoder = new FskEncoder(this.samplerate);
+        if (!this.script_node) {
+            Modulator.prototype.script_node = window.audioContext.createScriptProcessor(4096, 0, 2);
+
+            // If the script node has an invalid buffer size, force one with a nonzero buffer.
+            if (!Modulator.prototype.script_node.bufferSize) {
+
+                // IE with a polyfill exhibits this problem, and crashes when you try to stop.
+                Modulator.prototype.script_node = window.audioContext.createScriptProcessor(4096, 0, 2);
+                this.prototype.can_stop = false;
+            }
+            this.script_node = Modulator.prototype.script_node;
+        }
+
+        // Start out in a not-playing state
+        this.playing = false;
     }
 
     Modulator.prototype = {
-        audioCtx: null,  // AudioContext object
-        samplerate: 48000, // updated by the initializer
-        encoder: null,  // FskEncoder object
+        audioCtx: null,     // AudioContext object
+        encoder: null,      // FskEncoder object
         outputAudioBuffer: null,  // AudioBuffer object
-        uiCallback: null,  // UI object for callback
+        uiCallback: null,   // UI object for callback
+        scriptNode: null,   // Re-used script node object for audio generation
+        can_stop: true,     // Whether we can stop (usually we can)
 
         // modulate a single packet. The data to modulate should be Uint8 format
         // This function allocates an audio buffer based on the length of the data and the sample rate
@@ -29,17 +45,29 @@
         // into the audio context for later playback
         modulate: function(data) {
             var bufLen = Math.ceil(data.length * 8 * this.encoder.samplesPerBit());
-            this.outputAudioBuffer = window.audioContext.createBuffer(1, bufLen, this.samplerate);
+            this.outputAudioBuffer = window.audioContext.createBuffer(1, bufLen, window.audioContext.sampleRate);
 
             var timeStart = performance.now();
 
             var outputFloatArray = this.outputAudioBuffer.getChannelData(0);
             this.encoder.modulate(data, outputFloatArray); // writes outputFloatArray in-place
 
+            // How far into the outputAudioBuffer we are.
+            this.script_node_offset = 0;
+
             var timeEnd = performance.now();
             var timeElapsed = timeEnd - timeStart;
             console.log("Rendered " + data.length + " data bytes in " +
                         timeElapsed.toFixed(2) + "ms");
+        },
+
+        silence: function(msecs) {
+            var bufLen = Math.ceil(window.audioContext.sampleRate / (1000.0/msecs));
+            this.outputAudioBuffer = window.audioContext.createBuffer(1, bufLen, window.audioContext.sampleRate);
+            var outputFloatArray = this.outputAudioBuffer.getChannelData(0);
+            for (var i = 0; i < outputFloatArray.length; i++)
+                outputFloatArray[i] = 0;
+            this.script_node_offset = 0;
         },
 
         // draw the waveform to the canvas, assuming the proper UI element is provided
@@ -48,6 +76,41 @@
             // comment out now for performonce
             var b = this.outputAudioBuffer.getChannelData(0);
             this.drawWaveformToCanvas(b, 0, canvas);
+        },
+
+        processAudio: function(ev) {
+            var outl=ev.outputBuffer.getChannelData(0);
+            var outr=ev.outputBuffer.getChannelData(1);
+
+            // If we're not playing, but still being called, just fill the channel with silence.
+            if (!this.playing) {
+                for (var i = 0; i < outl.length; i++)
+                    outl[i] = outr[i] = 0;
+
+                // Some browsers crash when you stop playing
+                if (this.can_stop)
+                    this.script_node.disconnect();
+                return;
+            }
+
+            var outputFloatArray = this.outputAudioBuffer.getChannelData(0);
+
+            for (var i = 0; i < outl.length; i++) {
+                if (this.script_node_offset >= outputFloatArray.length) {
+                    // If there's more data to play, reset the output float array.
+                    if (this.get_more_data())
+                        outputFloatArray = this.outputAudioBuffer.getChannelData(0);
+
+                    // Otherwise, fill the buffer with 0s, and we'll stop playing on the next iteration.
+                    else {
+                        for (var j = 0; j < outputFloatArray.length; j++)
+                            outputFloatArray[j] = 0;
+                    }
+                    this.script_node_offset = 0;
+                }
+
+                outl[i] = outr[i] = outputFloatArray[this.script_node_offset++];
+            }
         },
 
         // immediately play the modulated audio exactly once. Useful for debugging single packets
@@ -72,25 +135,23 @@
         // tells where to start playing. You could, in theory, start modulating
         // part-way through an audio stream by setting index to a higher number on your
         // first call.
-        playLoop: function(obj, end_func, index) {
-
-            var bufferNode = window.audioContext.createBufferSource();
-            bufferNode.buffer = this.outputAudioBuffer;
-            bufferNode.connect(window.audioContext.destination); // Connect to speakers
-
-            // our callback to trigger the next packet
-            bufferNode.onended = function audioLoopEnded() {
-                end_func.call(obj, index);
+        playLoop: function(obj, end_func, param) {
+            this.get_more_data = function() {
+                if (!end_func.call(obj, param)) {
+                    this.playing = false;
+                    return false;
+                }
+                return true;
             };
 
-            if (index == 1)
-                bufferNode.start(0); // this one goes immediately
-            else if (index == 2)
-                bufferNode.start(window.audioContext.currentTime + 0.1); // redundant send of control packet
-            else if (index == 3)
-                bufferNode.start(window.audioContext.currentTime + 0.5); // 0.5s for bulk flash erase to complete
-            else
-                bufferNode.start(window.audioContext.currentTime + 0.08); // slight pause between packets to allow burning
+            this.script_node.onaudioprocess = function(ev) {
+                Modulator.prototype.processAudio.call(this, ev);
+            }.bind(this);
+
+            if (!this.playing) {
+                this.playing = true;
+                this.script_node.connect(window.audioContext.destination);
+            }
         },
 
         drawWaveformToCanvas: function(buffer, start, canvas) {

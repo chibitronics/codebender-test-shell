@@ -28,6 +28,9 @@
 
         /* Preamble sent before every audio packet */
         this.preamble = [0x00, 0x00, 0x00, 0x00, 0xaa, 0x55, 0x42];
+
+        /* Stop bits, sent to pad the end of transmission */
+        this.stop_bytes = [0xff];
     }
 
     ModulationController.prototype = {
@@ -84,6 +87,7 @@
                 packet = this.makeDataPacket(this.byteArray.subarray(start, end), block);
             }
 
+            this.silence = false;
             this.modulator.modulate(packet);
             this.modulator.playLoop(this, this.finishPacketPlayback, index + 1);
             this.modulator.drawWaveform(this.canvas);
@@ -91,9 +95,27 @@
 
         finishPacketPlayback: function(index) {
 
+            if (!this.isSending)
+                return false;
+
+            // If "silence" is false, then we just played a data packet.  Play silence now.
+            if (this.silence == false) {
+                this.silence = true;
+
+                if (index == 1)
+                    this.modulator.silence(100); // redundant send of control packet
+                else if (index == 2)
+                    this.modulator.silence(500); // 0.5s for bulk flash erase to complete
+                else
+                    this.modulator.silence(80); // slight pause between packets to allow burning
+                this.modulator.playLoop(this, this.finishPacketPlayback, index);
+                return true;
+            }
+
             if (((index - 2) * 256) < this.byteArray.length) {
                 // if we've got more data, transcode and loop
                 this.transcodeFile(index);
+                return true;
             }
             else {
                 // if we've reached the end of our data, check to see how
@@ -103,9 +125,11 @@
                 if (this.playCount < 2) { // set this higher for more loops!
                     this.playCount++;
                     this.transcodeFile(0); // start it over!
+                    return true;
                 }
                 else {
                     this.audioEndCB(); // clean up the UI when done
+                    return false;
                 }
             }
 
@@ -180,7 +204,7 @@
                 program_guid.push(parseInt(program_guid_str.substr(i,2),16));
 
             var footer = this.makeFooter(header, program_length, program_hash, program_guid);
-            var stop = [0xff];
+            var stop = this.stop_bytes;
 
             return this.makePacket(preamble, header, program_length, program_hash, program_guid, footer, stop);
         },
@@ -199,7 +223,7 @@
             this.appendData(data, dataIn, 0);
 
             var footer = this.makeFooter(header, data);
-            var stop = [0xff];
+            var stop = this.stop_bytes;
 
             // 256 byte payload, preamble, sector offset + 4 bytes hash + 1 byte stop
             var packetlen = preamble.length + header.length + data.length + footer.length + stop.length;
@@ -224,7 +248,7 @@
         },
 
         stop: function() {
-            ;
+            this.isSending = false;
         },
 
         isRunning: function() {
