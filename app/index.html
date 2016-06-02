@@ -131,13 +131,14 @@
             allSaveAsFields.removeClass("ui-state-error");
 
             var localSketches = localStorage.getItem('sketches');
-            if (localSketches)
+            if (localSketches) {
+                console.log("localSketches: " + localSketches);
                 localSketches = JSON.parse(localSketches);
+            }
             else
-                localSketches = new Array();
+                localSketches = {};
 
             localSketches[saveAsFilename.val()] = editor.getValue();
-
             localStorage.setItem('sketches', JSON.stringify(localSketches));
             saveAsDialog.dialog("close");
         }
@@ -253,22 +254,24 @@
                         if (localSketches)
                             localSketches = JSON.parse(localSketches);
                         else
-                            localSketches = new Array();
+                            localSketches = {};
 
-                        if (!localSketches.length)
-                            callback(["(None)"]);
-                        else {
-                            var items = new Array();
-                            for (var i = 0; i < localSketches.length; i++) {
-                                items.push({
-                                    "id": "example" + i,
-                                    "text": "Item " + i,
-                                    "children": false,
-                                    "type" : "root"
-                                });
-                            }
-                            callback(items);
+                        var items = new Array();
+                        for (var file in localSketches) {
+                            if (!localSketches.hasOwnProperty(file))
+                                continue;
+                            items.push({
+                                "id": file,
+                                "text": file,
+                                "children": false,
+                                "type" : "root"
+                            });
                         }
+
+                        if (items.length)
+                            callback(items);
+                        else
+                            callback(["(None)"]);
                     }
                     else {
                         callback([]);
@@ -301,7 +304,15 @@
                 if(data && data.selected && data.selected.length) {
                     console.log("Selected " + data.selected);
 
-                    if (data.node.data) {
+                    if (data.node.parent === "local") {
+                        var localSketches = localStorage.getItem('sketches');
+                        if (localSketches)
+                            localSketches = JSON.parse(localSketches);
+                        else
+                            localSketches = {};
+                        editor.setValue(localSketches[data.node.id]);
+                    }
+                    else if (data.node.data) {
                         $.get(data.node.data, function (d) {
                             editor.setValue(d);
                         });
