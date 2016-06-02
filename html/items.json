@@ -1,13 +1,14 @@
 [
   {
-    "id": "examples",
-    "text": "Examples",
+    "id" : "local",
+    "text" : "Local Files",
     "children": true,
     "type" : "root"
   },
   {
-    "id" : "local",
-    "text" : "Local Files",
+    "id": "examples",
+    "text": "Examples",
+    "children": true,
     "type" : "root"
   }
 ]
