@@ -7,8 +7,8 @@ function FskEncoder(sampleRate) {
     this.state.current_bit = 0;
     this.state.baud_frac = 0;
     this.state.baud_incr = this.baud_rate / this.sample_rate;
-    
 }
+
 FskEncoder.prototype = {
     f_lo: 8666,
     f_hi: 12500,
@@ -72,5 +72,5 @@ FskEncoder.prototype = {
 
         this.state.datapos = 0;
         return outputData;
-    },
-}
+    }
+};
