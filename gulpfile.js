@@ -27,7 +27,6 @@ gulp.task('cpjson', function() {
 
 gulp.task('cpexamples', function() {
     return gulp.src('app/examples/**/*')
-        .pipe(imagemin())
         .pipe(gulp.dest('html/examples'))
 });
 
