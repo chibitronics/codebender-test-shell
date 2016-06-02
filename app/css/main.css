@@ -14,10 +14,17 @@ html {
 
 .Site-header {
 	position: fixed;
+	z-index: 5000;
+}
+
+.Site-header-fake {
+    visibility: hidden;
+}
+
+.Site-header, .Site-header-fake {
     background: Cornsilk;
     padding: 5px;
     margin: 0;
-	z-index: 5000;
 	width: 100%;
 }
 
@@ -35,7 +42,6 @@ html {
 
 .Site-content {
     margin: 0;
-    padding-top: 90px;
 	padding-bottom: 0;
 	padding-left: 0;
 	padding-right: 0;
