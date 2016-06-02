@@ -227,7 +227,7 @@
                 editor.chibi_error_string = "";
                 editor.performLint();
 
-                $.post("//cb-compile.xobs.io/app.php/mycoolkey/v2", JSON.stringify(codeobj), buildResult, "json");
+                $.post("//ltc-compiler.chibitronics.com/mycoolkey/v2", JSON.stringify(codeobj), buildResult, "json");
             });
 
             editorNode = document.getElementById("editorthing");
