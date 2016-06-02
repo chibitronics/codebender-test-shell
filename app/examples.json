@@ -376,6 +376,12 @@
         "type": "file"
       },
       {
+        "id": "physicalprogramming",
+        "text": "PhysicalProgramming",
+        "data": "examples/chibitronics/PhysicalProgramming/physical-programming.ino",
+        "type": "file"
+      },
+      {
         "id": "threading",
         "text": "threading",
         "data": "examples/chibitronics/threading/threading.ino",
