@@ -18,35 +18,46 @@
     <link rel="stylesheet" href="css/lint.css" />
 </head>
 <body class="Site">
-            <header class="Site-header">
-                <div class="red_button" id="upload_button">Upload</div>
-                <div class="red_button" id="showhideexamples_button">Show Examples</div>
-                <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
-                <select name="fqbn" id="fqbn">
-                    <option value="chibitronics:esplanade:code" selected>Chibitronics Code</option>
-                    <option value="arduino:avr:uno">Arduino Uno</option>
-                    <option value="arduino:sam:arduino_due_x_dbg">Arduino Due (Programming Port)</option>
-                    <option value="arduino:sam:arduino_due_x">Arduino Due (Native Port)</option>
-                </select>
-                <div id="buildoutput" style="display: none"></div>
-            </header>
-            <div id="main" class="Site-content">
-                <div id="sidebar">
-                    <div id="treething"></div>
-                </div>
+    <header class="Site-header">
+        <div class="red_button" id="upload_button">Upload</div>
+        <div class="red_button" id="showhideexamples_button">Examples</div>
+        <div class="red_button" id="saveas_button">Save As...</div>
+        <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
+        <select name="fqbn" id="fqbn">
+            <option value="chibitronics:esplanade:code" selected>Chibitronics Code</option>
+            <option value="arduino:avr:uno">Arduino Uno</option>
+            <option value="arduino:sam:arduino_due_x_dbg">Arduino Due (Programming Port)</option>
+            <option value="arduino:sam:arduino_due_x">Arduino Due (Native Port)</option>
+        </select>
+        <div id="buildoutput" style="display: none"></div>
+    </header>
+    <div id="main" class="Site-content">
+        <div id="sidebar">
+            <div id="treething"></div>
+        </div>
 
-                <div id="internal_error_dialog" style="display:none" title="Internal Error">
-                    <p>An internal compiler error occurred:</p>
-                    <pre id="internal_error_text"></pre>
-                </div>
+        <div id="saveAsDialog" style="display:none" title="Save As...">
+            <form>
+                <fieldset>
+                    <label for="saveas_filename">Filename</label>
+                    <input type="text" name="saveas_filename" id="saveas_filename" class="text ui-widget-content ui-corner-all">
+                    <input type="submit" tabindex="-1" style="position: absolute; top: -1000px">
+                </fieldset>
+            </form>
+        </div>
 
-                <form method="post" id="show-result" target="result" action="/build">
-                    <textarea id="editorthing"></textarea>
-                </form>
-            </div>
-            <footer class="Site-footer" id="Site-footer">
-                <canvas id="wavStrip"></canvas>
-            </footer>
+        <div id="internal_error_dialog" style="display:none" title="Internal Error">
+            <p>An internal compiler error occurred:</p>
+            <pre id="internal_error_text"></pre>
+        </div>
+
+        <form method="post" id="show-result" target="result" action="/build">
+            <textarea id="editorthing"></textarea>
+        </form>
+    </div>
+    <footer class="Site-footer" id="Site-footer">
+        <canvas id="wavStrip"></canvas>
+    </footer>
 
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="js/jquery-2.2.0.min.js" type="text/javascript" charset="utf-8"></script>
@@ -108,6 +119,23 @@
             }
         }
 
+        var saveAsFilename = $("#saveas_filename");
+        var allSaveAsFields = $([]).add(saveAsFilename);
+        function saveFileAs() {
+            allSaveAsFields.removeClass("ui-state-error");
+
+            var localSketches = localStorage.getItem('sketches');
+            if (localSketches)
+                localSketches = JSON.parse(localSketches);
+            else
+                localSketches = new Array();
+
+            localSketches[saveAsFilename.val()] = editor.getValue();
+
+            localStorage.setItem('sketches', JSON.stringify(localSketches));
+            saveAsDialog.dialog("close");
+        }
+
         $(document).ready(function () {
             $("#internal_error_dialog").dialog({
                 autoOpen: false,
@@ -118,6 +146,32 @@
                 if (mod_controller)
                     mod_controller.stop();
             });
+
+            saveAsDialog = $("#saveAsDialog").dialog({
+                autoOpen: false,
+                height: 300,
+                width: 350,
+                modal: true,
+                buttons: {
+                    "Save as": saveFileAs,
+                    Cancel: function() {
+                        saveAsDialog.dialog("close");
+                    }
+                },
+                close: function() {
+                    saveasForm[0].reset();
+                    allSaveAsFields.removeClass("ui-state-error");
+                }
+            });
+            saveasForm = saveAsDialog.find("form").on("submit", function(event) {
+                event.preventDefault();
+                saveFileAs();
+            });
+
+            $("#saveas_button").click(function() {
+                $("#saveAsDialog").dialog("open");
+            });
+
             $("#showhideexamples_button").click(function() {
                 var examples_window = $("#sidebar");
                 if (examples_window.is(":visible")) {
@@ -126,7 +180,7 @@
                         easing: "swing",
                         direction: "right"
                     });
-                    this.innerHTML = "Show Examples";
+                    this.innerHTML = "Examples";
                 }
                 else {
                     examples_window.show({
@@ -134,7 +188,7 @@
                         easing: "swing",
                         direction: "right"
                     });
-                    this.innerHTML = "Hide Examples";
+                    this.innerHTML = "Examples";
                 }
             });
             $("#upload_button").click(function() {
@@ -181,14 +235,38 @@
                 "animation": 0,
                 "check_callback": true,
                 "themes": { "stripes" : true },
-                'data': {
-                  'url': function (node) {
-                return node.id === '#' ?
-                  'items.json' : 'examples.json';
-                  },
-                  'data': function (node) {
-                return { 'id' : node.id };
-                  }
+                'data': function(node, callback) {
+                    if (node.id === "#") {
+                        $.get("items.json", "", callback);
+                    }
+                    else if (node.id === "examples") {
+                        $.get("examples.json", "", callback);
+                    }
+                    else if (node.id === "local") {
+                        var localSketches = localStorage.getItem('sketches');
+                        if (localSketches)
+                            localSketches = JSON.parse(localSketches);
+                        else
+                            localSketches = new Array();
+
+                        if (!localSketches.length)
+                            callback(["(None)"]);
+                        else {
+                            var items = new Array();
+                            for (var i = 0; i < localSketches.length; i++) {
+                                items.push({
+                                    "id": "examples",
+                                    "text": "Item " + i,
+                                    "children": false,
+                                    "type" : "root"
+                                });
+                            }
+                            callback(items);
+                        }
+                    }
+                    else {
+                        callback([]);
+                    }
                 }
               },
               "types": {
