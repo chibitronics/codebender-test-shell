@@ -14,7 +14,7 @@ html {
 
 .Site-header {
 	position: fixed;
-    background: purple;
+    background: Cornsilk;
     padding: 5px;
     margin: 0;
 	z-index: 5000;
@@ -35,7 +35,7 @@ html {
 
 .Site-content {
     margin: 0;
-    padding-top: 50px;
+    padding-top: 90px;
 	padding-bottom: 0;
 	padding-left: 0;
 	padding-right: 0;
@@ -48,7 +48,7 @@ html {
 #sidebar {
 	width: -150px;
 	right: 0;
-	top: 80px;
+	top: 120px;
 	position: absolute;
 	padding: 0;
 	margin: 0;
@@ -187,12 +187,11 @@ html {
 .red_button {
 	border-top: 1px solid #f79797;
 	background: #d66565;
-	background: -webkit-gradient(linear, left top, left bottom, from(#9c3e3e), to(#d66565));
-	background: -webkit-linear-gradient(top, #9c3e3e, #d66565);
-	background: -moz-linear-gradient(top, #9c3e3e, #d66565);
-	background: -ms-linear-gradient(top, #9c3e3e, #d66565);
-	background: -o-linear-gradient(top, #9c3e3e, #d66565);
-	padding: 8.5px 17px;
+    background: -webkit-gradient(linear, left top, left bottom, from(#9c3e3e), to(#ee3124));
+	background: -webkit-linear-gradient(top, #9c3e3e, #ee3124);
+	background: -moz-linear-gradient(top, #9c3e3e, #ee3124);
+	background: -ms-linear-gradient(top, #9c3e3e, #ee3124);
+	background: -o-linear-gradient(top, #9c3e3e, #ee3124);padding: 8.5px 17px;
 	-webkit-border-radius: 34px;
 	-moz-border-radius: 34px;
 	border-radius: 34px;
