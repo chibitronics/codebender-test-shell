@@ -31,7 +31,7 @@ gulp.task('cpexamples', function() {
 });
 
 gulp.task('cpimages', function() {
-    return gulp.src('app/images/**/*.+(png|gif|jpg|svg)')
+    return gulp.src('app/images/**/*.{png,gif,jpg,svg}')
         .pipe(imagemin())
         .pipe(gulp.dest('html/images'))
 });
