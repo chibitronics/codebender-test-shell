@@ -14,8 +14,6 @@
     <script>WR = "/";</script>
     <meta property="og:title" content="jstree" />
     <meta property="og:type" content="website" />
-    <link rel="stylesheet" href="css/main.css" />
-    <link rel="stylesheet" href="css/lint.css" />
 </head>
 <body class="Site">
     <header class="Site-header">
@@ -59,14 +57,20 @@
         <canvas id="wavStrip"></canvas>
     </footer>
 
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-    <script src="js/jquery-2.2.0.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <!-- build:css main.min.css -->
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/lint.css" />
+    <link rel="stylesheet" href="css/jquery-ui.css">
     <link rel="stylesheet" href="css/style.min.css" />
+    <link rel="stylesheet" href="lib/codemirror.css">
+    <!-- endbuild -->
+
+    <!-- build:js main.min.js -->
+    <script src="js/jquery-2.2.0.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/jquery-ui.js"></script>
     <script src="js/jstree.min.js" type="text/javascript" charset="utf-8"></script>
 
     <script src="lib/codemirror.js"></script>
-    <link rel="stylesheet" href="lib/codemirror.css">
     <script src="mode/clike/clike.js"></script>
     <script src="lib/lint.js"></script>
     <script src="lib/chibi-lint.js"></script>
@@ -79,6 +83,8 @@
     <script src="js/murmurhash3_gc.js"></script>
     <script src="js/afsk-encoder.js"></script>
     <script src="js/spark-md5.js"></script>
+    <!-- endbuild -->
+
 
     <script type="text/javascript">
         var editor;
