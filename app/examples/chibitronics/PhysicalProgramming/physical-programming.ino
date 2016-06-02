@@ -20,7 +20,7 @@
 uint8_t led_vals[LOOP_LENGTH];
 uint8_t rgb_vals[LOOP_LENGTH];
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(1, LED_BUILTIN_RGB, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(2, LED_BUILTIN_RGB, NEO_GRB + NEO_KHZ800);
 
 int led = A2;
 int ledInput = A1;
@@ -112,9 +112,16 @@ void setup() {
 
   pinMode(A0, OUTPUT);
   digitalWrite(A0, HIGH);  // provide an easy +3V reference for pots on A0
-  
+
+  // this example works fine without the following line of code, but
+  // the RGB LED is quite sensitive to noise and activating a hidden pullup
+  // feature on the LTC sticker improves the aesthetics by reducing the idle
+  // noise of the analog input line.
+#ifdef __CHIBITRONICS_LTC__  
   // activate a hidden feature pullup on PTB2 to stabilize color when input is floating
-  *((unsigned int *)0x4004A008) |= 0x103;
+  *((unsigned int *)0x4004A008) |= 0x103; // bonus points for figuring out what this bit of magic does!
+#endif
+
 }
 
 
@@ -127,6 +134,7 @@ void playTimeStep() {
   analogWrite(led, led_vals[index]);
   rgb = hueToRgb(rgb_vals[index]);
   strip.setPixelColor(0, strip.Color(rgb.r, rgb.g, rgb.b));
+  strip.setPixelColor(1, strip.Color(rgb.r, rgb.g, rgb.b));
   strip.show();
 }
 
@@ -187,6 +195,7 @@ void recordTimeStep() {
   analogWrite(led, led_vals[index]);
   rgb = hueToRgb(rgb_vals[index]);
   strip.setPixelColor(0, strip.Color(rgb.r, rgb.g, rgb.b));
+  strip.setPixelColor(1, strip.Color(rgb.r, rgb.g, rgb.b));
   strip.show();
 }
 
