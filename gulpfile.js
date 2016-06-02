@@ -25,6 +25,12 @@ gulp.task('cpjson', function() {
         .pipe(gulp.dest('html'))
 });
 
+gulp.task('cpexamples', function() {
+    return gulp.src('app/examples/**/*')
+        .pipe(imagemin())
+        .pipe(gulp.dest('html/examples'))
+});
+
 gulp.task('cpimages', function() {
     return gulp.src('app/images/**/*.+(png|gif|jpg|svg)')
         .pipe(imagemin())
@@ -54,7 +60,7 @@ gulp.task('watch', ['browserSync'], function() {
 
 gulp.task('build', function(callback) {
     runSequence('clean:html',
-                ['useref', 'cpimages', 'cpjson'],
+                ['useref', 'cpimages', 'cpjson', 'cpexamples'],
                 callback
     );
 });
