@@ -7,6 +7,7 @@ var imagemin = require('gulp-imagemin');
 var del = require('del');
 var runSequence = require('run-sequence');
 var browserSync = require('browser-sync').create();
+var htmlmin = require('gulp-htmlmin');
 
 gulp.task('hello', function() {
         console.log("Hello, world!");
@@ -17,6 +18,7 @@ gulp.task('useref', function() {
         .pipe(useref())                     /* Combine files into one */
         .pipe(gulpIf('*.js', uglify()))     /* minify javascript files */
         .pipe(gulpIf('*.css', cssnano()))   /* minify css files */
+        .pipe(gulpIf('*.html', htmlmin({collapseWhitespace: true, minifyJS: true, minifyCSS: true})))  /* also minify html */
         .pipe(gulp.dest('html'))            /* Write out to 'html' output directory */
 });
 
