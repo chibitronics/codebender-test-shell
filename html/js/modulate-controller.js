@@ -210,7 +210,6 @@
         },
 
         makeDataPacket: function(dataIn, blocknum) {
-            var data;
             var i;
 
             // now assemble the packet
