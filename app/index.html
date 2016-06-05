@@ -16,7 +16,7 @@
     <meta property="og:type" content="website" />
 </head>
 <body class="Site">
-    <header class="Site-header">
+    <header class="Site-header" id="Site-header">
         <img src="//chibitronics.com/ltc/chibitronics_demo-header.png" hspace="10">
         <div class="red_button" id="upload_button">Upload</div>
         <div class="red_button" id="showhideexamples_button">Examples</div>
@@ -31,12 +31,6 @@
         <div id="buildoutput" style="display: none"></div>
     </header>
     <div id="main" class="Site-content">
-        <div class="Site-header-fake" id="fakeheader"> <!-- Duplicate the header here, to allow it to have a flexible height -->
-            <img src="//chibitronics.com/ltc/chibitronics_demo-header.png" hspace="10">
-            <div class="red_button">Upload</div>
-            <div class="red_button">Examples</div>
-            <div class="red_button">Save As...</div>
-        </div>
         <div id="sidebar">
             <div id="treething"></div>
         </div>
@@ -153,6 +147,11 @@
         }
 
         $(document).ready(function () {
+            var header = document.getElementById("Site-header");
+            var height = header.offsetHeight;
+            document.getElementById("main").style.marginTop = height + 'px';
+            header.style.top = 0;
+
             $("#internal_error_dialog").dialog({
                 autoOpen: false,
                 height: 300,
@@ -332,6 +331,13 @@
                     }
                 }
             });
+        });
+
+        $(window).on('resize', function() {
+            var header = document.getElementById("Site-header");
+            var height = header.offsetHeight;
+            document.getElementById("main").style.marginTop = height + 'px';
+            header.style.top = 0;
         });
 
         // This will unblock audio on iOS devices.  Otherwise, they will have silence.
