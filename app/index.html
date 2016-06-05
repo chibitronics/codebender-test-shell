@@ -147,11 +147,6 @@
         }
 
         $(document).ready(function () {
-            var header = document.getElementById("Site-header");
-            var height = header.offsetHeight;
-            document.getElementById("main").style.marginTop = height + 'px';
-            header.style.top = 0;
-
             $("#internal_error_dialog").dialog({
                 autoOpen: false,
                 height: 300,
@@ -331,6 +326,12 @@
                     }
                 }
             });
+
+            /* Resize the header */
+            var header = document.getElementById("Site-header");
+            var height = header.offsetHeight;
+            document.getElementById("main").style.marginTop = height + 'px';
+            header.style.top = 0;
         });
 
         $(window).on('resize', function() {
