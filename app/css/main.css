@@ -16,14 +16,6 @@ html {
 	position: fixed;
 	z-index: 5000;
 	width: 100%;
-}
-
-.Site-header-fake {
-    visibility: hidden;
-	width: 50%; /* Don't make this 100%, it causes a horizontal scroll bar */
-}
-
-.Site-header, .Site-header-fake {
     background: Cornsilk;
     padding: 5px;
     margin: 0;
