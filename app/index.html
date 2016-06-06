@@ -16,8 +16,8 @@
     <meta property="og:type" content="website" />
 </head>
 <body class="Site">
-    <header class="Site-header">
-        <img src="//chibitronics.com/ltc/chibitronics_demo-header.png" hspace="10">
+    <header class="Site-header" id="Site-header">
+        <img src="//chibitronics.com/ltc/chibitronics_demo-header.png" hspace="10" width="200" height="46">
         <div class="red_button" id="upload_button">Upload</div>
         <div class="red_button" id="showhideexamples_button">Examples</div>
         <div class="red_button" id="saveas_button">Save As...</div>
@@ -31,12 +31,6 @@
         <div id="buildoutput" style="display: none"></div>
     </header>
     <div id="main" class="Site-content">
-        <div class="Site-header-fake" id="fakeheader"> <!-- Duplicate the header here, to allow it to have a flexible height -->
-            <img src="//chibitronics.com/ltc/chibitronics_demo-header.png" hspace="10">
-            <div class="red_button">Upload</div>
-            <div class="red_button">Examples</div>
-            <div class="red_button">Save As...</div>
-        </div>
         <div id="sidebar">
             <div id="treething"></div>
         </div>
@@ -64,23 +58,25 @@
         <canvas id="wavStrip"></canvas>
     </footer>
 
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/codemirror.min.css"/>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/addon/lint/lint.min.css"/>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css"/>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.1/themes/default-dark/style.min.css"/>
+
     <!-- build:css main.min.css -->
     <link rel="stylesheet" href="css/main.css" />
-    <link rel="stylesheet" href="css/lint.css" />
-    <link rel="stylesheet" href="css/jquery-ui.css">
-    <link rel="stylesheet" href="css/style.css" />
-    <link rel="stylesheet" href="lib/codemirror.css">
     <!-- endbuild -->
 
-    <!-- build:js main.min.js -->
-    <script src="js/jquery-2.2.0.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="js/jquery-ui.js"></script>
-    <script src="js/jstree.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.1/jstree.min.js" type="text/javascript" charset="utf-8"></script>
 
-    <script src="lib/codemirror.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/codemirror.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/addon/lint/lint.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/mode/clike/clike.min.js" type="text/javascript" charset="utf-8"></script>
+
+    <!-- build:js main.min.js -->
     <script src="mode/clike/clike.js"></script>
-    <script src="lib/lint.js"></script>
-    <script src="lib/chibi-lint.js"></script>
 
     <script src="js/base64-binary.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/WAAPISim-master/waapisim.js" type="text/javascript" charset="utf-8"></script>
@@ -330,6 +326,19 @@
                     }
                 }
             });
+
+            /* Resize the header */
+            var header = document.getElementById("Site-header");
+            var height = header.offsetHeight;
+            document.getElementById("main").style.marginTop = height + 'px';
+            header.style.top = 0;
+        });
+
+        $(window).on('resize', function() {
+            var header = document.getElementById("Site-header");
+            var height = header.offsetHeight;
+            document.getElementById("main").style.marginTop = height + 'px';
+            header.style.top = 0;
         });
 
         // This will unblock audio on iOS devices.  Otherwise, they will have silence.
@@ -340,7 +349,7 @@
             if (had_touch)
                 return;
             // play empty buffer to unmute audio
-            var buffer = window.audioContext.createBuffer(0, 1, window.audioContext.sampleRate);
+            var buffer = window.audioContext.createBuffer(2, 2, window.audioContext.sampleRate);
             var source = window.audioContext.createBufferSource();
             source.buffer = buffer;
             source.connect(window.audioContext.destination);

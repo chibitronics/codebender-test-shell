@@ -15,13 +15,13 @@
         this.script_node = Modulator.prototype.script_node;
 
         if (!this.script_node) {
-            Modulator.prototype.script_node = window.audioContext.createScriptProcessor(4096, 0, 2);
+            Modulator.prototype.script_node = window.audioContext.createScriptProcessor(4096, 2, 2);
 
             // If the script node has an invalid buffer size, force one with a nonzero buffer.
             if (!Modulator.prototype.script_node.bufferSize) {
 
                 // IE with a polyfill exhibits this problem, and crashes when you try to stop.
-                Modulator.prototype.script_node = window.audioContext.createScriptProcessor(4096, 0, 2);
+                Modulator.prototype.script_node = window.audioContext.createScriptProcessor(4096, 2, 2);
                 this.prototype.can_stop = false;
             }
             this.script_node = Modulator.prototype.script_node;
