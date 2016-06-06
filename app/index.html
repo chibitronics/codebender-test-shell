@@ -350,7 +350,7 @@
             if (had_touch)
                 return;
             // play empty buffer to unmute audio
-            var buffer = window.audioContext.createBuffer(2, 2, window.audioContext.sampleRate);
+            var buffer = window.audioContext.createBuffer(2, 4096, window.audioContext.sampleRate);
             var source = window.audioContext.createBufferSource();
             source.buffer = buffer;
             source.connect(window.audioContext.destination);
