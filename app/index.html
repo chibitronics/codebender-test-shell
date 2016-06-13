@@ -19,7 +19,7 @@
     <header class="Site-header" id="Site-header">
         <img src="//chibitronics.com/ltc/chibitronics_demo-header.png" hspace="10" width="200" height="46">
         <div class="red_button" id="upload_button">Upload</div>
-        <div class="red_button" id="showhideexamples_button">Examples</div>
+        <div class="red_button" id="showhideexamples_button">Show Examples</div>
         <div class="red_button" id="saveas_button">Save As...</div>
         <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
         <select name="fqbn" id="fqbn">
@@ -191,7 +191,7 @@
                         easing: "swing",
                         direction: "right"
                     });
-                    this.innerHTML = "Examples";
+                    this.innerHTML = "Show Examples";
                 }
                 else {
                     examples_window.show({
@@ -199,7 +199,7 @@
                         easing: "swing",
                         direction: "right"
                     });
-                    this.innerHTML = "Examples";
+                    this.innerHTML = "Hide Examples";
                 }
             });
             $("#upload_button").click(function() {
