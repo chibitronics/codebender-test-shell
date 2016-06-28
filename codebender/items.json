@@ -1,0 +1,14 @@
+[
+  {
+    "id" : "local",
+    "text" : "Local Files",
+    "children": true,
+    "type" : "root"
+  },
+  {
+    "id": "examples",
+    "text": "Examples",
+    "children": true,
+    "type" : "root"
+  }
+]

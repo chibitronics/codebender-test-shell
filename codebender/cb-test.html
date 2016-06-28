@@ -1,0 +1,88 @@
+<html>
+<head>
+    <title>chibitronics - codebender embedded view test page</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.min.css">
+    <style>
+        #container {
+            text-align: center;
+        }
+
+        #container iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+        }
+
+        #operation-output {
+            width: 410px;
+            height: 40px;
+            margin: 10px auto 0;
+            overflow-y: auto;
+            border: 1px solid #333;
+            line-height: 40px;
+        }
+
+        .action-button {
+            width: 100px;
+            height: 40px;
+        }
+
+        #debug-messages {
+            height: 300px;
+            padding: 10px;
+            overflow-y: auto;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+    <iframe id="codebender-iframe" src="https://codebender.cc/embed/chibitronics_editor"></iframe>
+    <button id="verify-button" class="action-button">Verify</button>
+    <button id="restore-button" class="action-button">Restore</button>
+    <button id="set-blink" class="action-button">Set Blink.ino</button>
+    <button id="set-empty" class="action-button">Set Empty.ino</button>
+    <div id="operation-output"></div>
+    <div id="debug-messages"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+<script src="assets/chibitronics-client.js"></script>
+<script>
+    $(function () {
+        var options = {
+            id: 0,
+            CODEBENDER_DOMAIN: 'https://codebender.cc',
+            iframe: document.getElementById('codebender-iframe').contentWindow,
+            verify: document.getElementById('verify-button'),
+            restore: document.getElementById('restore-button'),
+            operationOutput: document.getElementById('operation-output')
+        };
+        var chibitronicsClient = new ChibitronicsClient(options);
+
+        var $messagesDebug = $('#debug-messages');
+        $(window).on('iframe-message-received', function (event, message) {
+            var $message = $('<p>');
+            $message.text(message);
+            $messagesDebug.append($message);
+        });
+
+        // Handler for the Set Blink.ino button
+        $('#set-blink').on('click', function () {
+            var filelist = {
+                'Blink.ino': '/*\nTurns on an LED on for one second, then off for one second, repeatedly.\nThis example code is in the public domain.\n*/\n// Pin 13 has an LED connected on most Arduino boards.\n// give it a name:\nint led = 13;\n\n// the setup routine runs once when you press reset:\nvoid setup() \n{\n// initialize the digital pin as an output.\n\tpinMode(led, OUTPUT);\n}\n// the loop routine runs over and over again forever:\n\nvoid loop() {\n\tdigitalWrite(led, HIGH);   // turn the LED on (HIGH is the voltage level)\n\tdelay(1000);               // wait for a second\n\tdigitalWrite(led, LOW);    // turn the LED off by making the voltage LOW\n\tdelay(1000);               // wait for a second\n}'
+            };
+            chibitronicsClient.setFilelist(filelist);
+        });
+        // Handler for the Set Empty.ino button
+        $('#set-empty').on('click', function () {
+            var filelist = {
+                'Empty.ino': ''
+            };
+            chibitronicsClient.setFilelist(filelist);
+        });
+    });
+</script>
+</body>
+</html>

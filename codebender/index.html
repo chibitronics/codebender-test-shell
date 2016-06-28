@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Esplanade</title>
+    <meta name="viewport" content="width=device-width" />
+    <!--[if lt IE 9]><script src="//static.jstree.com/3.2.1/assets/html5.js"></script><![endif]-->
+
+    <meta name="robots" content="index,follow" />
+
+    <script>window.$q=[];window.$=window.jQuery=function(a){window.$q.push(a);};</script>
+    <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="/feed.xml" />
+    <script>WR = "/";</script>
+    <meta property="og:title" content="jstree" />
+    <meta property="og:type" content="website" />
+</head>
+<body class="Site">
+    <header class="Site-header" id="Site-header">
+        <img src="//chibitronics.com/ltc/chibitronics_demo-header.png" hspace="10" width="200" height="46">
+        <div class="red_button" id="upload_button">Upload</div>
+        <div class="red_button" id="showhideexamples_button">Show Examples</div>
+        <div class="red_button" id="saveas_button">Save As...</div>
+        <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
+        <select name="fqbn" id="fqbn">
+            <option value="chibitronics:esplanade:code" selected>Chibitronics Code</option>
+            <option value="arduino:avr:uno">Arduino Uno</option>
+            <option value="arduino:sam:arduino_due_x_dbg">Arduino Due (Programming Port)</option>
+            <option value="arduino:sam:arduino_due_x">Arduino Due (Native Port)</option>
+        </select>
+        <div id="buildoutput" style="display: none"></div>
+    </header>
+    <div id="main" class="Site-content">
+        <div id="sidebar">
+            <div id="treething"></div>
+        </div>
+
+        <div id="saveAsDialog" style="display:none" title="Save As...">
+            <form>
+                <fieldset>
+                    <label for="saveas_filename">Filename</label>
+                    <input type="text" name="saveas_filename" id="saveas_filename" class="text ui-widget-content ui-corner-all">
+                    <input type="submit" tabindex="-1" style="position: absolute; top: -1000px">
+                </fieldset>
+            </form>
+        </div>
+
+        <div id="internal_error_dialog" style="display:none" title="Internal Error">
+            <p>An internal compiler error occurred:</p>
+            <pre id="internal_error_text"></pre>
+        </div>
+
+        <iframe id="codebender-iframe" src="https://codebender.cc/embed/chibitronics_editor"></iframe>
+    </div>
+    <footer class="Site-footer" id="Site-footer">
+        <canvas id="wavStrip"></canvas>
+    </footer>
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css"/>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.1/themes/default/style.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.min.css">
+
+    <!-- build:css main.min.css -->
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/jstree.css" />
+    <!-- endbuild -->
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.1/jstree.min.js" type="text/javascript" charset="utf-8"></script>
+
+    <!-- build:js main.min.js -->
+    <script src="js/base64-binary.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/WAAPISim-master/waapisim.js" type="text/javascript" charset="utf-8"></script>
+
+    <script src="js/afsk-encoder.js"></script>
+    <script src="js/modulate-controller.js"></script>
+    <script src="js/modulate.js"></script>
+    <script src="js/murmurhash3_gc.js"></script>
+    <script src="js/spark-md5.js"></script>
+    <script src="assets/chibitronics-client.js"></script>
+    <!-- endbuild -->
+
+    <script type="text/javascript">
+        var codeobj = new Object();
+        var mod_controller;
+        var totalSize;
+
+        Number.prototype.toFixedDown = function(digits) {
+            var re = new RegExp("(\\d+\\.\\d{" + digits + "})(\\d)"),
+            m = this.toString().match(re);
+            return m ? parseFloat(m[1]) : this.valueOf();
+        };
+
+/*
+        function buildResult(results, textStatus, jqXHR) {
+            if (textStatus != "success") {
+                console.log("Don't know what to do.  Backend failure?");
+                return;
+            }
+            if (results.success) {
+            }
+            else {
+                editor.chibi_error_string = results.message;
+                editor.performLint();
+            }
+        }
+*/
+
+        $(window).on('iframe-message-received', function (event, message) {
+            if (message.action == 'verify') {
+                var response = message.response;
+                if (response.success) {
+                    $("#buildoutput").html("Build complete");
+
+                    totalSize = response.size;
+                    var data = atob(response.output);
+
+                    if (mod_controller)
+                        mod_controller.stop();
+                    mod_controller = new ModulationController({
+                        canvas: document.getElementById("wavStrip"),
+                        endCallback: function() { $("#Site-footer").hide(); }
+                    });
+                    mod_controller.sendData(data);
+
+                    $("#Site-footer").show();
+                }
+                else {
+                    console.log("Error: " + message.response.message);
+                }
+            }
+        });
+
+
+        var saveAsFilename = $("#saveas_filename");
+        var allSaveAsFields = $([]).add(saveAsFilename);
+        function saveFileAs() {
+            allSaveAsFields.removeClass("ui-state-error");
+
+            var localSketches = localStorage.getItem('sketches');
+            if (localSketches) {
+                console.log("localSketches: " + localSketches);
+                localSketches = JSON.parse(localSketches);
+            }
+            else
+                localSketches = {};
+
+            localSketches[saveAsFilename.val()] = editor.getValue();
+            localStorage.setItem('sketches', JSON.stringify(localSketches));
+            saveAsDialog.dialog("close");
+        }
+
+        $(document).ready(function () {
+            $("#internal_error_dialog").dialog({
+                autoOpen: false,
+                height: 300,
+                width: 600
+            });
+            $("#stoprunning").click(function() {
+                if (mod_controller)
+                    mod_controller.stop();
+            });
+
+            saveAsDialog = $("#saveAsDialog").dialog({
+                autoOpen: false,
+                height: 300,
+                width: 350,
+                modal: true,
+                buttons: {
+                    "Save as": saveFileAs,
+                    Cancel: function() {
+                        saveAsDialog.dialog("close");
+                    }
+                },
+                close: function() {
+                    saveasForm[0].reset();
+                    allSaveAsFields.removeClass("ui-state-error");
+                }
+            });
+            saveasForm = saveAsDialog.find("form").on("submit", function(event) {
+                event.preventDefault();
+                saveFileAs();
+            });
+
+            $("#saveas_button").click(function() {
+                $("#saveAsDialog").dialog("open");
+            });
+
+            $("#showhideexamples_button").click(function() {
+                var examples_window = $("#sidebar");
+                if (examples_window.is(":visible")) {
+                    examples_window.hide({
+                        effect: "blind",
+                        easing: "swing",
+                        direction: "right"
+                    });
+                    this.innerHTML = "Show Examples";
+                }
+                else {
+                    examples_window.show({
+                        effect: "blind",
+                        easing: "swing",
+                        direction: "right"
+                    });
+                    this.innerHTML = "Hide Examples";
+                }
+            });
+
+            var options = {
+                id: 0,
+                CODEBENDER_DOMAIN: 'https://codebender.cc',
+                iframe: document.getElementById('codebender-iframe').contentWindow,
+                verify: document.getElementById('upload_button'),
+                restore: document.getElementById('restore-button'),
+                operationOutput: document.getElementById('operation-output')
+            };
+            var chibitronicsClient = new ChibitronicsClient(options);
+
+            $('#treething').jstree({
+              "core": {
+                "animation": 0,
+                "check_callback": true,
+                "themes": { "stripes" : true },
+                'data': function(node, callback) {
+                    if (node.id === "#") {
+                        $.get("items.json", "", callback);
+                    }
+                    else if (node.id === "examples") {
+                        $.get("examples.json", "", callback);
+                    }
+                    else if (node.id === "local") {
+                        var localSketches = localStorage.getItem('sketches');
+                        if (localSketches)
+                            localSketches = JSON.parse(localSketches);
+                        else
+                            localSketches = {};
+
+                        var items = new Array();
+                        for (var file in localSketches) {
+                            if (!localSketches.hasOwnProperty(file))
+                                continue;
+                            items.push({
+                                "id": file,
+                                "text": file,
+                                "children": false,
+                                "type" : "root"
+                            });
+                        }
+
+                        if (items.length)
+                            callback(items);
+                        else
+                            callback(["(None)"]);
+                    }
+                    else {
+                        callback([]);
+                    }
+                }
+              },
+              "types": {
+                "#": {
+                  "max_children": 1,
+                  "max_depth": 4,
+                  "valid_children": ["root"]
+                },
+                "root": {
+                  "icon": "images/tree-icon.png",
+                  "valid_children" : ["default"]
+                },
+                "default": {
+                  "valid_children" : ["default", "file"]
+                },
+                "file": {
+                  "icon" : "glyphicon glyphicon-file",
+                  "valid_children" : []
+                }
+              },
+              "plugins" : [
+                "state", "types", "wholerow"
+              ]
+            })
+            .on('changed.jstree', function (e, data) {
+                if(data && data.selected && data.selected.length) {
+                    console.log("Selected " + data.selected);
+
+                    if (data.node.parent === "local") {
+                        var localSketches = localStorage.getItem('sketches');
+                        if (localSketches)
+                            localSketches = JSON.parse(localSketches);
+                        else
+                            localSketches = {};
+                        var filelist = { 'file.ino': localSketches[data.node.id] };
+                        chibitronicsClient.setFilelist(filelist);
+
+                    }
+                    else if (data.node.data) {
+                        $.get(data.node.data, function (d) {
+                            var filelist = { 'file.ino': d };
+                            chibitronicsClient.setFilelist(filelist);
+                        });
+                    }
+                    else {
+                        var ref = $('#treething').jstree(true);
+                        ref.open_node(data.node);
+                    }
+                }
+            });
+
+            /* Resize the header */
+            var header = document.getElementById("Site-header");
+            var height = header.offsetHeight;
+            document.getElementById("main").style.marginTop = height + 'px';
+            header.style.top = 0;
+        });
+
+        $(window).on('resize', function() {
+            var header = document.getElementById("Site-header");
+            var height = header.offsetHeight;
+            document.getElementById("main").style.marginTop = height + 'px';
+            header.style.top = 0;
+        });
+
+        // This will unblock audio on iOS devices.  Otherwise, they will have silence.
+        if (!("audioContext" in window))
+            window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        var had_touch = false;
+        document.addEventListener("touchend", function () {
+            if (had_touch)
+                return;
+            // play empty buffer to unmute audio
+            var buffer = window.audioContext.createBuffer(2, 4096, window.audioContext.sampleRate);
+            var source = window.audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.connect(window.audioContext.destination);
+            source.start(0);
+            had_touch = true;
+        });
+    </script>
+</body>
+</html>
