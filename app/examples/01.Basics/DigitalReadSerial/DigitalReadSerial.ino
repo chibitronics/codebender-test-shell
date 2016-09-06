@@ -6,12 +6,12 @@
  This example code is in the public domain.
  */
 
-// pin A3 has a pushbutton attached to it. Give it a name:
-int pushButton = A3;
+// pin A0 has a pushbutton attached to it. Give it a name:
+int pushButton = A0;
 
 // the setup routine runs once when you press reset:
 void setup() {
-  Serial.begin(115200);  // currently, the only speed supported
+  Serial.begin(9600);  // currently, the only speed supported
   // make the pushbutton's pin an input:
   pinMode(pushButton, INPUT);
 }

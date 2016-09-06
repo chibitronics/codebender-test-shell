@@ -26,12 +26,12 @@
  http://www.arduino.cc/en/Tutorial/PhysicalPixel
  */
 
-const int ledPin = A2; // the pin that the LED is attached to
+const int ledPin = A1; // the pin that the LED is attached to
 int incomingByte;      // a variable to read incoming serial data into
 
 void setup() {
   // initialize serial communication:
-  Serial.begin(115200);
+  Serial.begin(9600);
   // initialize the LED pin as an output:
   pinMode(ledPin, OUTPUT);
 }

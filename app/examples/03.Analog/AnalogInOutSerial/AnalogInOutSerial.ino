@@ -7,10 +7,10 @@
  Also prints the results to the serial monitor.
  
  The circuit:
- * potentiometer connected to pin A1.
+ * potentiometer connected to pin A2.
    Center pin of the potentiometer goes to the analog pin.
    side pins of the potentiometer go to A0 and A3
- * LED connected from digital pin A2 to ground
+ * LED connected from digital pin A1 to ground
  
  created 29 Dec. 2008
  modified 9 Apr 2012
@@ -24,24 +24,24 @@
 
 // These constants won't change.  They're used to give names
 // to the pins used:
-const int analogInPin = A1;  // Analog input pin that the potentiometer is attached to
-const int analogOutPin = A2; // Analog output pin that the LED is attached to
+const int analogInPin = A2;  // Analog input pin that the potentiometer is attached to
+const int analogOutPin = A1; // Analog output pin that the LED is attached to
 
 int sensorValue = 0;        // value read from the pot
 int outputValue = 0;        // value output to the PWM (analog out)
 
 void setup() {
-  Serial.begin(115200); 
+  Serial.begin(9600); 
 
-  pinMode(A0, OUTPUT);
-  digitalWrite(A0, LOW);   // A0 is the - reference
-  
   pinMode(A3, OUTPUT);
-  digitalWrite(A3, HIGH);  // A3 is the + voltage
+  digitalWrite(A3, LOW);   // A3 is the - reference
   
-  pinMode(A1, INPUT);      // A1 is the sensor input
+  pinMode(A0, OUTPUT);
+  digitalWrite(A0, HIGH);  // A0 is the + voltage
+  
+  pinMode(A2, INPUT);      // A2 is the sensor input
 
-  pinMode(A2, OUTPUT);     // A2 has the LED
+  pinMode(A1, OUTPUT);     // A1 has the LED
 
 }
 

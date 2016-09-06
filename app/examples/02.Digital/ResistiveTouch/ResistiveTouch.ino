@@ -46,7 +46,7 @@ void setup() {
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
 
-  Serial.begin(115200);
+  Serial.begin(9600);
 }
 
 void updatePinState() {

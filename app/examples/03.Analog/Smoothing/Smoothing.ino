@@ -8,8 +8,8 @@
   continually averages them.
   
   The circuit:
-    * Analog sensor (potentiometer will do) attached to analog input A1
-    * A0 and A2 are available as ground and VMCU, respectively
+    * Analog sensor (potentiometer will do) attached to analog input A2
+    * A3 and A1 are available as ground and VMCU, respectively
 
   Created 22 April 2007
   By David A. Mellis  <dam@mellis.org>
@@ -37,20 +37,20 @@ int index = 0;                  // the index of the current reading
 int total = 0;                  // the running total
 int average = 0;                // the average
 
-int inputPin = A1;
+int inputPin = A2;
 
 void setup()
 {
-  pinMode(A0, OUTPUT);
-  digitalWrite(A0, LOW);   // A0 is the - reference
+  pinMode(A3, OUTPUT);
+  digitalWrite(A3, LOW);   // A3 is the - reference
   
-  pinMode(A2, OUTPUT);
-  digitalWrite(A2, HIGH);  // A2 is the + voltage
+  pinMode(A1, OUTPUT);
+  digitalWrite(A1, HIGH);  // A1 is the + voltage
   
-  pinMode(inputPin, INPUT);      // A1 is the sensor input
+  pinMode(inputPin, INPUT);      // A2 is the sensor input
 
   // initialize serial communication with computer:
-  Serial.begin(115200);                   
+  Serial.begin(9600);                   
   // initialize all the readings to 0: 
   for (int thisReading = 0; thisReading < numReadings; thisReading++)
     readings[thisReading] = 0;          

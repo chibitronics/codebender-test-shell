@@ -22,7 +22,7 @@ const int bluePin = A2;		// sensor to control blue color
 
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(9600);
 }
 
 void loop()

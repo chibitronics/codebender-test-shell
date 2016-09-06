@@ -8,9 +8,9 @@
  noise).  
  
  The circuit:
- * LED attached from pin A2 to ground
- * pushbutton attached to pin A3 from ground
- * on chibitronics boards, A3 can be configured to have an intenal pull-up
+ * LED attached from pin A1 to ground
+ * pushbutton attached to pin A0 from ground
+ * on chibitronics boards, A0 can be configured to have an intenal pull-up
  
  created 21 November 2006
  by David A. Mellis
@@ -28,8 +28,8 @@
 
 // constants won't change. They're used here to 
 // set pin numbers:
-const int buttonPin = A3;    // the number of the pushbutton pin
-const int ledPin = A2;      // the number of the LED pin
+const int buttonPin = A0;    // the number of the pushbutton pin
+const int ledPin = A1;      // the number of the LED pin
 
 // Variables will change:
 int ledState = HIGH;         // the current state of the output pin

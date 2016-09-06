@@ -3,7 +3,7 @@
   Button
  
  Turns on and off a light emitting diode(LED) connected to
- pin A2, when pressing a pushbutton attached to pin A3. 
+ pin A1, when pressing a pushbutton attached to pin A0. 
  
  
  The circuit:
@@ -25,8 +25,8 @@
 
 // constants won't change. They're used here to 
 // set pin numbers:
-const int buttonPin = A3;     // the number of the pushbutton pin
-const int ledPin =  A2;      // the number of the LED pin
+const int buttonPin = A0;     // the number of the pushbutton pin
+const int ledPin =  A1;      // the number of the LED pin
 
 // variables will change:
 int buttonState = 0;         // variable for reading the pushbutton status

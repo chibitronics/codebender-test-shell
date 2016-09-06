@@ -13,8 +13,8 @@
  Sometimes the LED doesn't switch every 4 presses, but sooner. Can you explain why?
  	
  The circuit:
- * switch attached to pin A3 to ground
- * LED attached from pin A2 to ground 
+ * switch attached to pin A0 to ground
+ * LED attached from pin A1 to ground 
  
  created  27 Sep 2005
  modified 30 Aug 2011
@@ -29,8 +29,8 @@ This example code is in the public domain.
  */
 
 // this constant won't change:
-const int  buttonPin = A3;    // the pin that the pushbutton is attached to
-const int ledPin = A2;       // the pin that the LED is attached to
+const int  buttonPin = A0;    // the pin that the pushbutton is attached to
+const int ledPin = A1;       // the pin that the LED is attached to
 
 // Variables will change:
 int buttonPushCounter = 0;   // counter for the number of button presses

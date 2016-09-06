@@ -6,9 +6,9 @@
   This example code is in the public domain.
  */
  
-// Pin A2 has an LED connected to it on the chibitronics LtC board
+// Pin A1 has an LED connected to it on the chibitronics LtC board
 // give it a name:
-int led = A2;
+int led = A1;
 
 // the setup routine runs once when you press reset:
 void setup() {                

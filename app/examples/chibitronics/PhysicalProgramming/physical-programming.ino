@@ -1,11 +1,11 @@
 /*
   Physical programming demo (default for LtC stickers)
 
-  Tap patterns onto buttons A1 or A3 to make the led on A2 or RGB LED flash.
+  Tap patterns onto buttons A2 or A0 to make the led on A1 or RGB LED flash.
   Pattern can be up to 5 seconds long and is stored in nonvolatile memory (persistent through power outage).
 
   Pattern is actually stored as an analog value, so if one were to connect
-  a variable voltage source to pins A1 or A3, the pattern stored is analog.
+  a variable voltage source to pins A2 or A0, the pattern stored is analog.
 
   bunnie - June 2 2016
   
@@ -22,9 +22,9 @@ uint8_t rgb_vals[LOOP_LENGTH];
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(2, LED_BUILTIN_RGB, NEO_GRB + NEO_KHZ800);
 
-int led = A2;
-int ledInput = A1;
-int rgbInput = A3;
+int led = A1;
+int ledInput = A2;
+int rgbInput = A0;
 int recInput = BUTTON_REC;  // special button for physical programming mode
 
 enum operation_modes {
@@ -110,16 +110,16 @@ void setup() {
 
   play_start = millis();
 
-  pinMode(A0, OUTPUT);
-  digitalWrite(A0, HIGH);  // provide an easy +3V reference for pots on A0
+  pinMode(A3, OUTPUT);
+  digitalWrite(A3, HIGH);  // provide an easy +3V reference for pots on A3
 
   // this example works fine without the following line of code, but
   // the RGB LED is quite sensitive to noise and activating a hidden pullup
   // feature on the LTC sticker improves the aesthetics by reducing the idle
   // noise of the analog input line.
 #ifdef __CHIBITRONICS_LTC__  
-  // activate a hidden feature pullup on PTB2 to stabilize color when input is floating
-  *((unsigned int *)0x4004A008) |= 0x103; // bonus points for figuring out what this bit of magic does!
+  // activate a hidden feature pullup on PTB4 to stabilize color when input is floating
+  *((unsigned int *)0x4004A010) |= 0x103; // bonus points for figuring out what this bit of magic does!
 #endif
 
 }

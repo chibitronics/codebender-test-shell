@@ -2,13 +2,13 @@
 /*
  Fade
  
- This example shows how to fade an LED on pin A2
+ This example shows how to fade an LED on pin A1
  using the analogWrite() function.
  
  This example code is in the public domain.
  */
 
-int led = A2;          // the pin that the LED is attached to
+int led = A1;          // the pin that the LED is attached to
 int brightness = 0;    // how bright the LED is
 int fadeAmount = 5;    // how many points to fade the LED by
 
@@ -27,7 +27,7 @@ void loop()  {
   brightness = brightness + fadeAmount;
 
   // reverse the direction of the fading at the ends of the fade: 
-  if (brightness == 0 || brightness == 255) {
+  if (brightness <= 0 || brightness >= 255) {
     fadeAmount = -fadeAmount ; 
   }     
   // wait for 30 milliseconds to see the dimming effect    

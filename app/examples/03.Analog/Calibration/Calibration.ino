@@ -13,8 +13,8 @@
  maximum low and listen for anything higher as the new maximum.
  
  The circuit:
- * Analog sensor (potentiometer will do) attached to analog input A1 (A0 & A3 are gnd and VMCU)
- * LED attached from digital pin A2 to ground
+ * Analog sensor (potentiometer will do) attached to analog input A1 (A3 & A0 are gnd and VMCU)
+ * LED attached from digital pin A1 to ground
  
  created 29 Oct 2008
  By David A Mellis
@@ -30,8 +30,8 @@
  */
 
 // These constants won't change:
-const int sensorPin = A1;    // pin that the sensor is attached to
-const int ledPin = A2;       // pin that the LED is attached to
+const int sensorPin = A2;    // pin that the sensor is attached to
+const int ledPin = A1;       // pin that the LED is attached to
 
 // variables:
 int sensorValue = 0;         // the sensor value
@@ -40,13 +40,13 @@ int sensorMax = 0;           // maximum sensor value
 
 
 void setup() {
-  pinMode(A0, OUTPUT);
-  digitalWrite(A0, LOW);   // A0 is the - reference
-  
   pinMode(A3, OUTPUT);
-  digitalWrite(A3, HIGH);  // A3 is the + voltage
+  digitalWrite(A3, LOW);   // A3 is the - reference
   
-  pinMode(A1, INPUT);      // A1 is the sensor input
+  pinMode(A0, OUTPUT);
+  digitalWrite(A0, HIGH);  // A0 is the + voltage
+  
+  pinMode(A2, INPUT);      // A2 is the sensor input
 
   // turn on LED to signal the start of the calibration period:
   pinMode(ledPin, OUTPUT);

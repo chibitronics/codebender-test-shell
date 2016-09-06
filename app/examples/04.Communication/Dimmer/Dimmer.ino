@@ -24,12 +24,12 @@
  
  */
 
-const int ledPin = A2;      // the pin that the LED is attached to
+const int ledPin = A1;      // the pin that the LED is attached to
 
 void setup()
 {
   // initialize the serial communication:
-  Serial.begin(115200);
+  Serial.begin(9600);
   // initialize the ledPin as an output:
   pinMode(ledPin, OUTPUT);
 }

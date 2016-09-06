@@ -6,8 +6,8 @@
  digital input on pin 2 and prints the results to the serial monitor.
  
  The circuit: 
- * Momentary switch attached from pin A3 to ground 
- * Built-in LED on pin A2
+ * Momentary switch attached from pin A0 to ground 
+ * Built-in LED on pin A1
  
  Unlike pinMode(INPUT), there is no pull-down resistor necessary. An internal 
  20K-ohm resistor is pulled to 5V. This configuration causes the input to 
@@ -26,28 +26,28 @@
 
 void setup(){
   //start serial connection
-  Serial.begin(115200);
-  //configure A3 as an input and enable the internal pull-up resistor
-  pinMode(A3, INPUT_PULLUP);
-  pinMode(A2, OUTPUT); 
+  Serial.begin(9600);
+  //configure A0 as an input and enable the internal pull-up resistor
+  pinMode(A0, INPUT_PULLUP);
+  pinMode(A1, OUTPUT); 
 
 }
 
 void loop(){
   //read the pushbutton value into a variable
-  int sensorVal = digitalRead(A3);
+  int sensorVal = digitalRead(A0);
   //print out the value of the pushbutton
   Serial.println(sensorVal);
   
   // Keep in mind the pullup means the pushbutton's
   // logic is inverted. It goes HIGH when it's open,
-  // and LOW when it's pressed. Turn on pin A2 when the 
+  // and LOW when it's pressed. Turn on pin A1 when the 
   // button's pressed, and off when it's not:
   if (sensorVal == HIGH) {
-    digitalWrite(A2, LOW);
+    digitalWrite(A1, LOW);
   } 
   else {
-    digitalWrite(A2, HIGH);
+    digitalWrite(A1, HIGH);
   }
 }
 

@@ -5,7 +5,7 @@
  Plays multiple tones on multiple pins in sequence
  
  circuit:
- * 3 8-ohm speaker on pins A0, A1, and A3
+ * 3 8-ohm speaker on pins A3, A2, and A0
  
  created 8 March 2010
  by Tom Igoe 
@@ -24,22 +24,22 @@ void setup() {
 }
 
 void loop() {
-  // turn off tone function for pin A3:
-  noTone(A3);			
+  // turn off tone function for pin A0:
+  noTone(A0);			
   // play a note on pin 6 for 200 ms:
-  tone(A0, 440, 200);
+  tone(A3, 440, 200);
   delay(200);
 
-  // turn off tone function for pin A0:
-  noTone(A0);
+  // turn off tone function for pin A3:
+  noTone(A3);
   // play a note on pin 7 for 500 ms:
-  tone(A1, 494, 500);
+  tone(A2, 494, 500);
   delay(500);
   
-  // turn off tone function for pin A1:
-  noTone(A1);  
+  // turn off tone function for pin A2:
+  noTone(A2);  
   // play a note on pin 11 for 500 ms:
-  tone(A3, 523, 300);
+  tone(A0, 523, 300);
   delay(300);
 
 }

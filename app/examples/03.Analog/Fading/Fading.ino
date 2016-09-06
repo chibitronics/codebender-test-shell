@@ -5,7 +5,7 @@
  This example shows how to fade an LED using the analogWrite() function.
  
  The circuit:
- * LED attached from A2 to ground
+ * LED attached from A1 to ground
  
  Created 1 Nov 2008
  By David A. Mellis
@@ -21,7 +21,7 @@
  */
 
 
-int ledPin = A2;    // LED connected to pin A2
+int ledPin = A1;    // LED connected to pin A1
 
 void setup()  { 
   // nothing happens in setup 

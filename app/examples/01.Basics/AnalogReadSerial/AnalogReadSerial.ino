@@ -11,14 +11,14 @@
 
 // the setup routine runs once when you press reset:
 void setup() {
-  // the chibitronics implementation always runs at 115200 regardless of the argument
-  Serial.begin(115200);
+  // the chibitronics implementation always runs at 9600 regardless of the argument
+  Serial.begin(9600);
 
-  pinMode(A0, OUTPUT);
-  digitalWrite(A0, LOW);   // A0 is the - reference
-  
   pinMode(A2, OUTPUT);
-  digitalWrite(A2, HIGH);  // A2 is the + voltage
+  digitalWrite(A2, LOW);   // A0 is the - reference
+  
+  pinMode(A0, OUTPUT);
+  digitalWrite(A0, HIGH);  // A2 is the + voltage
   
   pinMode(A1, INPUT);      // A1 is the sensor input
 }
