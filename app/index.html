@@ -37,6 +37,7 @@
             <option value="arduino:sam:arduino_due_x_dbg">Arduino Due (Programming Port)</option>
             <option value="arduino:sam:arduino_due_x">Arduino Due (Native Port)</option>
         </select>
+        <audio id="a" autoplay controls></audio>
         <div id="buildoutput" style="display: none"></div>
     </header>
     <div id="main" class="Site-content">
@@ -113,6 +114,8 @@
     <script src="js/modulate.js"></script>
     <script src="js/murmurhash3_gc.js"></script>
     <script src="js/spark-md5.js"></script>
+
+    <script src="lib/pcm.js"></script>
     <!-- endbuild -->
 
     <script type="text/javascript">
@@ -137,7 +140,6 @@
 
                 totalSize = results.size;
                 var data = atob(results.output);
-
                 if (mod_controller)
                     mod_controller.stop();
                 mod_controller = new ModulationController({
@@ -378,6 +380,7 @@
             had_touch = true;
         });
     </script>
+
 </body>
 
 </html>

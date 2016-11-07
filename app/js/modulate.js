@@ -1,4 +1,4 @@
-(function (window) {
+(function(window) {
     'use strict';
     var Modulator = function(params) {
 
@@ -7,9 +7,9 @@
 
         // this odd construct is for safari compatibility
         if (!("audioContext" in window))
-            window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            window.audioContext = new(window.AudioContext || window.webkitAudioContext)();
 
-        this.encoder = new FskEncoder(window.audioContext.sampleRate);
+        this.encoder = new FskEncoder(44100); //window.audioContext.sampleRate);
 
         // Create a "script node" that will actually generate audio samples.
         this.script_node = Modulator.prototype.script_node;
@@ -32,12 +32,12 @@
     }
 
     Modulator.prototype = {
-        audioCtx: null,     // AudioContext object
-        encoder: null,      // FskEncoder object
-        outputAudioBuffer: null,  // AudioBuffer object
-        uiCallback: null,   // UI object for callback
-        scriptNode: null,   // Re-used script node object for audio generation
-        can_stop: true,     // Whether we can stop (usually we can)
+        audioCtx: null, // AudioContext object
+        encoder: null, // FskEncoder object
+        outputAudioBuffer: null, // AudioBuffer object
+        uiCallback: null, // UI object for callback
+        scriptNode: null, // Re-used script node object for audio generation
+        can_stop: true, // Whether we can stop (usually we can)
 
         // modulate a single packet. The data to modulate should be Uint8 format
         // This function allocates an audio buffer based on the length of the data and the sample rate
@@ -45,7 +45,7 @@
         // into the audio context for later playback
         modulate: function(data) {
             var bufLen = Math.ceil(data.length * 8 * this.encoder.samplesPerBit());
-            this.outputAudioBuffer = window.audioContext.createBuffer(1, bufLen, window.audioContext.sampleRate);
+            this.outputAudioBuffer = window.audioContext.createBuffer(1, bufLen, 44100); //window.audioContext.sampleRate);
 
             var timeStart = performance.now();
 
@@ -58,11 +58,11 @@
             var timeEnd = performance.now();
             var timeElapsed = timeEnd - timeStart;
             console.log("Rendered " + data.length + " data bytes in " +
-                        timeElapsed.toFixed(2) + "ms");
+                timeElapsed.toFixed(2) + "ms");
         },
 
         silence: function(msecs) {
-            var bufLen = Math.ceil(window.audioContext.sampleRate / (1000.0/msecs));
+            var bufLen = Math.ceil(window.audioContext.sampleRate / (1000.0 / msecs));
             this.outputAudioBuffer = window.audioContext.createBuffer(1, bufLen, window.audioContext.sampleRate);
             var outputFloatArray = this.outputAudioBuffer.getChannelData(0);
             for (var i = 0; i < outputFloatArray.length; i++)
@@ -79,8 +79,8 @@
         },
 
         processAudio: function(ev) {
-            var outl=ev.outputBuffer.getChannelData(0);
-            var outr=ev.outputBuffer.getChannelData(1);
+            var outl = ev.outputBuffer.getChannelData(0);
+            var outr = ev.outputBuffer.getChannelData(1);
 
             // If we're not playing, but still being called, just fill the channel with silence.
             if (!this.playing) {
@@ -136,23 +136,56 @@
         // part-way through an audio stream by setting index to a higher number on your
         // first call.
         playLoop: function(obj, end_func, param) {
-            this.get_more_data = function() {
+
+            /*
+                        this.get_more_data = function() {
+                            if (!end_func.call(obj, param)) {
+                                this.playing = false;
+                                return false;
+                            }
+                            return true;
+                        };
+
+                        this.script_node.onaudioprocess = function(ev) {
+                            Modulator.prototype.processAudio.call(this, ev);
+                        }.bind(this);
+
+                        if (!this.playing) {
+                            this.playing = true;
+                            this.script_node.connect(window.audioContext.destination);
+                        }
+                        */
+            var a = document.getElementById('a');
+
+
+            var inBuffer = this.outputAudioBuffer.getChannelData(0);
+            var outBuffer = new Array(inBuffer.length * 2);
+            for (var i = 0; i < inBuffer.length; i++) {
+                // Map -1 .. 1 to -32767 .. 32768
+                var sample = Math.round((inBuffer[i]) * 32767);
+                outBuffer[(i * 2) + 0] = Math.round(sample & 0xff);
+                outBuffer[(i * 2) + 1] = Math.round((sample >> 8) & 0xff);
+            }
+
+            var pcmObj = new pcm({
+                channels: 1,
+                rate: 44100,
+                depth: 16
+            }).toWav(outBuffer);
+            a.src = pcmObj.encode();
+            //pcmObj.play();
+            a.play();
+
+            window.setTimeout(function() {
                 if (!end_func.call(obj, param)) {
                     this.playing = false;
                     return false;
                 }
                 return true;
-            };
+            }, (inBuffer.length * 1000) / 44100);
 
-            this.script_node.onaudioprocess = function(ev) {
-                Modulator.prototype.processAudio.call(this, ev);
-            }.bind(this);
-
-            if (!this.playing) {
-                this.playing = true;
-                this.script_node.connect(window.audioContext.destination);
-            }
         },
+
 
         drawWaveformToCanvas: function(buffer, start, canvas) {
             if (!canvas || !canvas.getContext)
@@ -161,7 +194,7 @@
             var strip = canvas.getContext('2d');
 
             // Resize the canvas to be the window size.
-            canvas.width  = window.innerWidth;
+            canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
 
             var h = strip.canvas.height;
@@ -173,15 +206,33 @@
             strip.lineWidth = 1.0;
             strip.strokeStyle = "#55a";
             strip.beginPath();
-            y = 1 * (h/10); strip.moveTo(0, y); strip.lineTo(w, y);
-            y = 2 * (h/10); strip.moveTo(0, y); strip.lineTo(w, y);
-            y = 3 * (h/10); strip.moveTo(0, y); strip.lineTo(w, y);
-            y = 4 * (h/10); strip.moveTo(0, y); strip.lineTo(w, y);
-            y = 5 * (h/10); strip.moveTo(0, y); strip.lineTo(w, y);
-            y = 6 * (h/10); strip.moveTo(0, y); strip.lineTo(w, y);
-            y = 7 * (h/10); strip.moveTo(0, y); strip.lineTo(w, y);
-            y = 8 * (h/10); strip.moveTo(0, y); strip.lineTo(w, y);
-            y = 9 * (h/10); strip.moveTo(0, y); strip.lineTo(w, y);
+            y = 1 * (h / 10);
+            strip.moveTo(0, y);
+            strip.lineTo(w, y);
+            y = 2 * (h / 10);
+            strip.moveTo(0, y);
+            strip.lineTo(w, y);
+            y = 3 * (h / 10);
+            strip.moveTo(0, y);
+            strip.lineTo(w, y);
+            y = 4 * (h / 10);
+            strip.moveTo(0, y);
+            strip.lineTo(w, y);
+            y = 5 * (h / 10);
+            strip.moveTo(0, y);
+            strip.lineTo(w, y);
+            y = 6 * (h / 10);
+            strip.moveTo(0, y);
+            strip.lineTo(w, y);
+            y = 7 * (h / 10);
+            strip.moveTo(0, y);
+            strip.lineTo(w, y);
+            y = 8 * (h / 10);
+            strip.moveTo(0, y);
+            strip.lineTo(w, y);
+            y = 9 * (h / 10);
+            strip.moveTo(0, y);
+            strip.lineTo(w, y);
             strip.stroke();
 
             strip.strokeStyle = "#fff";
