@@ -9,7 +9,12 @@
         if (!("audioContext" in window))
             window.audioContext = new(window.AudioContext || window.webkitAudioContext)();
 
-        this.encoder = new FskEncoder(44100); //window.audioContext.sampleRate);
+        if ("rate" in params)
+            this.rate = params.rate;
+        else
+            this.rate = window.audioContext.sampleRate;
+
+        this.encoder = new FskEncoder(this.rate);
 
         // Create a "script node" that will actually generate audio samples.
         this.script_node = Modulator.prototype.script_node;
@@ -45,7 +50,7 @@
         // into the audio context for later playback
         modulate: function(data) {
             var bufLen = Math.ceil(data.length * 8 * this.encoder.samplesPerBit());
-            this.outputAudioBuffer = window.audioContext.createBuffer(1, bufLen, 44100); //window.audioContext.sampleRate);
+            this.outputAudioBuffer = window.audioContext.createBuffer(1, bufLen, this.rate);
 
             var timeStart = performance.now();
 
@@ -137,26 +142,26 @@
         // first call.
         playLoop: function(obj, end_func, param) {
 
-            /*
-                        this.get_more_data = function() {
-                            if (!end_func.call(obj, param)) {
-                                this.playing = false;
-                                return false;
-                            }
-                            return true;
-                        };
+            this.get_more_data = function() {
+                if (!end_func.call(obj, param)) {
+                    this.playing = false;
+                    return false;
+                }
+                return true;
+            };
 
-                        this.script_node.onaudioprocess = function(ev) {
-                            Modulator.prototype.processAudio.call(this, ev);
-                        }.bind(this);
+            this.script_node.onaudioprocess = function(ev) {
+                Modulator.prototype.processAudio.call(this, ev);
+            }.bind(this);
 
-                        if (!this.playing) {
-                            this.playing = true;
-                            this.script_node.connect(window.audioContext.destination);
-                        }
-                        */
+            if (!this.playing) {
+                this.playing = true;
+                this.script_node.connect(window.audioContext.destination);
+            }
+        },
+
+        makePcmData: function() {
             var a = document.getElementById('a');
-
 
             var inBuffer = this.outputAudioBuffer.getChannelData(0);
             var outBuffer = new Array(inBuffer.length * 2);
@@ -169,7 +174,7 @@
 
             var pcmObj = new pcm({
                 channels: 1,
-                rate: 44100,
+                rate: this.rate,
                 depth: 16
             }).toWav(outBuffer);
             a.src = pcmObj.encode();
@@ -182,7 +187,7 @@
                     return false;
                 }
                 return true;
-            }, (inBuffer.length * 1000) / 44100);
+            }, (inBuffer.length * 1000) / this.rate);
 
         },
 
