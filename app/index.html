@@ -37,7 +37,7 @@
             <option value="arduino:sam:arduino_due_x_dbg">Arduino Due (Programming Port)</option>
             <option value="arduino:sam:arduino_due_x">Arduino Due (Native Port)</option>
         </select>
-        <audio id="a" autoplay controls></audio>
+        <audio id="a" controls></audio>
         <div id="buildoutput" style="display: none"></div>
     </header>
     <div id="main" class="Site-content">
@@ -148,7 +148,7 @@
                         $("#Site-footer").hide();
                     }
                 });
-                mod_controller.sendData(data);
+                mod_controller.transcodePcm(data);
 
                 $("#Site-footer").show();
             } else {

@@ -17,14 +17,18 @@
         this.done = false;
         this.stoppedAt = 0;
         this.playCount = 0;
+        this.maxPlays = 3;
         this.byteArray = null;
+        this.rate = 44100;
 
         this.PROT_VERSION = 0x01;   // Protocol v1.0
 
         this.CONTROL_PACKET = 0x01;
         this.DATA_PACKET = 0x02;
 
-        this.modulator = new Modulator(); // the modulator object contains our window's audio context
+        this.modulator = new Modulator({
+            rate: this.rate
+        }); // the modulator object contains our window's audio context
 
         /* Preamble sent before every audio packet */
         this.preamble = [0x00, 0x00, 0x00, 0x00, 0xaa, 0x55, 0x42];
@@ -52,7 +56,7 @@
 
                 this.byteArray = array;
                 this.playCount = 0;
-                this.transcodeFile(0);
+                this.transcodePacket(0);
                 this.isSending = true;
             }
         },
@@ -63,9 +67,9 @@
         // byteArray is the binary file to transmit
 
         // the parameter to this, "index", is a packet counter. We have to recursively call
-        // transcodeFile using callbacks triggered by the completion of audio playback. I couldn't
+        // transcodePacket using callbacks triggered by the completion of audio playback. I couldn't
         // think of any other way to do it.
-        transcodeFile: function(index) {
+        transcodePacket: function(index) {
             var fileLen = this.byteArray.length;
             var blocks = Math.ceil(fileLen / 256);
             var packet;
@@ -93,6 +97,70 @@
             this.modulator.drawWaveform(this.canvas);
         },
 
+        transcodePcm: function(data) {
+            var array = new Uint8Array(new ArrayBuffer(data.length));
+            for (i = 0; i < data.length; i++)
+                array[i] = data.charCodeAt(i);
+
+            var fileLen = data.length;
+            var blocks = Math.ceil(fileLen / 256);
+            var rawPcmData = [];
+
+            var pcmPacket;
+
+            for (var repeatCount = 0; repeatCount < 1; repeatCount++) {
+                pcmPacket = this.modulator.modulatePcm(this.makeCtlPacket(array.subarray(0, fileLen)));
+                for (var i = 0; i < pcmPacket.length; i++)
+                    rawPcmData.push(pcmPacket[i]);
+
+                // Make silence here
+                this.makeSilence(rawPcmData, 100);
+
+                pcmPacket = this.modulator.modulatePcm(this.makeCtlPacket(array.subarray(0, fileLen)));
+                for (var i = 0; i < pcmPacket.length; i++)
+                    rawPcmData.push(pcmPacket[i]);
+
+                // More silence
+                this.makeSilence(rawPcmData, 500);
+
+                for (var block = 0; block < blocks; block++) {
+                    var start = block * 256;
+                    var end = start + 256;
+                    if (end > fileLen)
+                    end = fileLen;
+                    pcmPacket = this.modulator.modulatePcm(this.makeDataPacket(array.subarray(start, end), block));
+                    for (var i = 0; i < pcmPacket.length; i++)
+                        rawPcmData.push(pcmPacket[i]);
+
+                    // Inter-packet silence
+                    this.makeSilence(rawPcmData, 80);
+                }
+            }
+
+            var a = document.getElementById("a");
+            a.onended = function() {
+                // Play again if we haven't hit the limit'
+                if (this.playCount < this.maxPlays) {
+                    this.playCount++;
+                    document.getElementById("a").play();
+                }
+            }.bind(this);
+            this.playCount = 0;
+            var pcmObj = new pcm({
+                channels: 1,
+                rate: this.rate,
+                depth: 16
+            }).toWav(rawPcmData);
+            a.src = pcmObj.encode();
+            a.play();
+        },
+
+        makeSilence: function(buffer, msecs) {
+            var silenceLen = 2 * Math.ceil(this.rate / (1000.0 / msecs));
+            for (var i = 0; i < silenceLen; i++)
+                buffer.push(0);
+        },
+
         finishPacketPlayback: function(index) {
 
             if (!this.isSending)
@@ -114,7 +182,7 @@
 
             if (((index - 2) * 256) < this.byteArray.length) {
                 // if we've got more data, transcode and loop
-                this.transcodeFile(index);
+                this.transcodePacket(index);
                 return true;
             }
             else {
@@ -124,7 +192,7 @@
                 // lost or corrupted.
                 if (this.playCount < 2) { // set this higher for more loops!
                     this.playCount++;
-                    this.transcodeFile(0); // start it over!
+                    this.transcodePacket(0); // start it over!
                     return true;
                 }
                 else {

@@ -160,35 +160,31 @@
             }
         },
 
-        makePcmData: function() {
-            var a = document.getElementById('a');
+        modulatePcm: function(data) {
 
-            var inBuffer = this.outputAudioBuffer.getChannelData(0);
-            var outBuffer = new Array(inBuffer.length * 2);
-            for (var i = 0; i < inBuffer.length; i++) {
+            var bufLen = Math.ceil(data.length * 8 * this.encoder.samplesPerBit());
+            var modulatedData = new Float32Array(bufLen);
+
+            var timeStart = performance.now();
+            this.encoder.modulate(data, modulatedData); // writes outputFloatArray in-place
+            var timeEnd = performance.now();
+            var timeElapsed = timeEnd - timeStart;
+            console.log("Rendered " + data.length + " data bytes in " +
+                timeElapsed.toFixed(2) + "ms");
+
+            var pcmData = new Uint8Array(new ArrayBuffer(modulatedData.length * 2));
+            for (var i = 0; i < modulatedData.length; i++) {
                 // Map -1 .. 1 to -32767 .. 32768
-                var sample = Math.round((inBuffer[i]) * 32767);
-                outBuffer[(i * 2) + 0] = Math.round(sample & 0xff);
-                outBuffer[(i * 2) + 1] = Math.round((sample >> 8) & 0xff);
+                var sample = Math.round((modulatedData[i]) * 32767);
+
+                // Javascript doesn't really do two's compliment
+                if (sample < 0)
+                    sample = (0xffff - ~sample);
+
+                pcmData[(i * 2) + 0] = Math.round(sample & 0xff);
+                pcmData[(i * 2) + 1] = Math.round((sample >> 8) & 0xff);
             }
-
-            var pcmObj = new pcm({
-                channels: 1,
-                rate: this.rate,
-                depth: 16
-            }).toWav(outBuffer);
-            a.src = pcmObj.encode();
-            //pcmObj.play();
-            a.play();
-
-            window.setTimeout(function() {
-                if (!end_func.call(obj, param)) {
-                    this.playing = false;
-                    return false;
-                }
-                return true;
-            }, (inBuffer.length * 1000) / this.rate);
-
+            return pcmData;
         },
 
 
