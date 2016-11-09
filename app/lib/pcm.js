@@ -113,7 +113,13 @@ var pcm = function(options) {
         u32ToArray(header.subChunk2Size),
         (header.bitsPerSample == 16) ? data : data
         );
-    _.dataURI = 'data:audio/wav;base64,'+ btoa(String.fromCharCode.apply(String, _.wav));
+//    _.dataURI = 'data:audio/wav;base64,'+ btoa(String.fromCharCode.apply(String, _.wav));
+    _.dataURI = 'data:audio/wav;base64,';
+    var dataBin = "";
+    for (var i = 0; i < _.wav.length; i++) {
+      dataBin += String.fromCharCode(_.wav[i]);
+    }
+    _.dataURI += btoa(dataBin);
   };
   _.mixin = function (source, destination) {
     var prop, index;
