@@ -104,6 +104,31 @@ html {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background: purple;
     display: none;
+}
+
+.ExampleItem > a {
+    font-size: 25px;
+	font-family: Helvetica, Arial, Sans-Serif;
+    border-top: 1px solid #f79797;
+    margin-top: 10px;
+    vertical-align: middle;
+    text-decoration: none;
+}
+
+.ExampleItem {
+    display: block;
+}
+
+.ExampleCategory {
+    font-size: 25px;
+	font-family: Helvetica, Arial, Sans-Serif;
+    border-top: 1px solid #f79797;
+    margin-top: 10px;
+    vertical-align: middle;
+}
+
+/* ExampleItem groups */
+.ExamplesList > ol > ul {
+    padding: 3px;
 }

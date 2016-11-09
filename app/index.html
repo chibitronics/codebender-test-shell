@@ -20,7 +20,7 @@
     <header class="Site-header" id="Site-header">
         <img src="//chibitronics.com/ltc/chibitronics_demo-header.png" hspace="10" width="200" height="46">
         <div class="red_button" id="upload_button">Upload</div>
-        <div class="red_button" id="showhideexamples_button">Show Examples</div>
+        <div class="red_button" id="examples_button">Examples</div>
         <div class="red_button" id="saveas_button">Save As...</div>
         <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
         <select name="fqbn" id="fqbn">
@@ -54,11 +54,89 @@
 
         <form method="post" id="show-result" target="result" action="/build">
             <div id="examples_list" class="ExamplesList">
+                <ol>
+                <li class="ExampleCategory">Basics</li>
                 <ul>
-                    <li>Example 1</li>
-                    <li>Example 2</li>
-                    <li>Example 3</li>
+                    <li class="ExampleItem"><a href="examples/01.Basics/AnalogReadSerial/AnalogReadSerial.ino">AnalogReadSerial</a></li>
+                    <li class="ExampleItem"><a href="examples/01.Basics/BareMinimum/BareMinimum.ino">BareMinimum</a></li>
+                    <li class="ExampleItem"><a href="examples/01.Basics/Blink/Blink.ino">Blink</a></li>
+                    <li class="ExampleItem"><a href="examples/01.Basics/DigitalReadSerial/DigitalReadSerial.ino">DigitalReadSerial</a></li>
+                    <li class="ExampleItem"><a href="examples/01.Basics/Fade/Fade.ino">Fade</a></li>
+                    <li class="ExampleItem"><a href="examples/01.Basics/ReadAnalogVoltage/ReadAnalogVoltage.ino">ReadAnalogVoltage</a></li>
                 </ul>
+                <li class="ExampleCategory">Digital</li>
+                <ul>
+                    <li class="ExampleItem"><a href="examples/02.Digital/BlinkWithoutDelay/BlinkWithoutDelay.ino">BlinkWithoutDelay</a></li>
+                    <li class="ExampleItem"><a href="examples/02.Digital/Button/Button.ino">Button</a></li>
+                    <li class="ExampleItem"><a href="examples/02.Digital/Debounce/Debounce.ino">Debounce</a></li>
+                    <li class="ExampleItem"><a href="examples/02.Digital/DigitalInputPullup/DigitalInputPullup.ino">DigitalInputPullup</a></li>
+                    <li class="ExampleItem"><a href="examples/02.Digital/ResistiveTouch/ResistiveTouch.ino">ResistiveTouch</a></li>
+                    <li class="ExampleItem"><a href="examples/02.Digital/StateChangeDetection/StateChangeDetection.ino">StateChangeDetection</a></li>
+                    <li class="ExampleItem"><a href="examples/02.Digital/toneMelody/toneMelody.ino">toneMelody</a></li>
+                    <li class="ExampleItem"><a href="examples/02.Digital/toneMultiple/toneMultiple.ino">toneMultiple</a></li>
+                    <li class="ExampleItem"><a href="examples/02.Digital/tonePitchFollower/tonePitchFollower.ino">tonePitchFollower</a></li>
+                </ul>
+                <li class="ExampleCategory">Analog</li>
+                <ul>
+                    <li class="ExampleItem"><a href="examples/03.Analog/AnalogInOutSerial/AnalogInOutSerial.ino">AnalogInOutSerial</a></li>
+                    <li class="ExampleItem"><a href="examples/03.Analog/AnalogInput/AnalogInput.ino">AnalogInput</a></li>
+                    <li class="ExampleItem"><a href="examples/03.Analog/Calibration/Calibration.ino">Calibration</a></li>
+                    <li class="ExampleItem"><a href="examples/03.Analog/Fading/Fading.ino">Fading</a></li>
+                    <li class="ExampleItem"><a href="examples/03.Analog/Smoothing/Smoothing.ino">Smoothing</a></li>
+                </ul>
+                <li class="ExampleCategory">Communication</li>
+                <ul>
+                    <li class="ExampleItem"><a href="examples/04.Communication/ASCIITable/ASCIITable.ino">ASCIITable</a></li>
+                    <li class="ExampleItem"><a href="examples/04.Communication/Dimmer/Dimmer.ino">Dimmer</a></li>
+                    <li class="ExampleItem"><a href="examples/04.Communication/Graph/Graph.ino">Graph</a></li>
+                    <li class="ExampleItem"><a href="examples/04.Communication/PhysicalPixel/PhysicalPixel.ino">PhysicalPixel</a></li>
+                    <li class="ExampleItem"><a href="examples/04.Communication/SerialEvent/SerialEvent.ino">SerialEvent</a></li>
+                    <li class="ExampleItem"><a href="examples/04.Communication/VirtualColorMixer/VirtualColorMixer.ino">VirtualColorMixer</a></li>
+                </ul>
+                <li class="ExampleCategory">Control</li>
+                <ul>
+                    <li class="ExampleItem"><a href="examples/05.Control/Arrays/Arrays.ino">Arrays</a></li>
+                    <li class="ExampleItem"><a href="examples/05.Control/ForLoopIteration/ForLoopIteration.ino">ForLoopIteration</a></li>
+                    <li class="ExampleItem"><a href="examples/05.Control/IfStatementConditional/IfStatementConditional.ino">IfStatementConditional</a></li>
+                    <li class="ExampleItem"><a href="examples/05.Control/switchCase2/switchCase2.ino">switchCase2</a></li>
+                    <li class="ExampleItem"><a href="examples/05.Control/switchCase/switchCase.ino">switchCase</a></li>
+                    <li class="ExampleItem"><a href="examples/05.Control/WhileStatementConditional/WhileStatementConditional.ino">WhileStatementConditional</a></li>
+                </ul>
+                <li class="ExampleCategory">Strings</li>
+                <ul>
+                    <li class="ExampleItem"><a href="examples/08.Strings/CharacterAnalysis/CharacterAnalysis.ino">CharacterAnalysis</a></li>
+                    <li class="ExampleItem"><a href="examples/08.Strings/StringAdditionOperator/StringAdditionOperator.ino">StringAdditionOperator</a></li>
+                    <li class="ExampleItem"><a href="examples/08.Strings/StringAppendOperator/StringAppendOperator.ino">StringAppendOperator</a></li>
+                    <li class="ExampleItem"><a href="examples/08.Strings/StringCaseChanges/StringCaseChanges.ino">StringCaseChanges</a></li>
+                    <li class="ExampleItem"><a href="examples/08.Strings/StringCharacters/StringCharacters.ino">StringCharacters</a></li>
+                    <li class="ExampleItem"><a href="examples/08.Strings/StringComparisonOperators/StringComparisonOperators.ino">StringComparisonOperators</a></li>
+                    <li class="ExampleItem"><a href="examples/08.Strings/StringConstructors/StringConstructors.ino">StringConstructors</a></li>
+                    <li class="ExampleItem"><a href="examples/08.Strings/StringIndexOf/StringIndexOf.ino">StringIndexOf</a></li>
+                    <li class="ExampleItem"><a href="examples/08.Strings/StringLength/StringLength.ino">StringLength</a></li>
+                    <li class="ExampleItem"><a href="examples/08.Strings/StringLengthTrim/StringLengthTrim.ino">StringLengthTrim</a></li>
+                    <li class="ExampleItem"><a href="examples/08.Strings/StringReplace/StringReplace.ino">StringReplace</a></li>
+                    <li class="ExampleItem"><a href="examples/08.Strings/StringStartsWithEndsWith/StringStartsWithEndsWith.ino">StringStartsWithEndsWith</a></li>
+                    <li class="ExampleItem"><a href="examples/08.Strings/StringSubstring/StringSubstring.ino">StringSubstring</a></li>
+                    <li class="ExampleItem"><a href="examples/08.Strings/StringToIntRGB/StringToIntRGB.ino">StringToIntRGB</a></li>
+                    <li class="ExampleItem"><a href="examples/08.Strings/StringToInt/StringToInt.ino">StringToInt</a></li>
+                </ul>
+                <li class="ExampleCategory">USB</li>
+                <ul>
+                    <li class="ExampleItem"><a href="examples/09.USB/KeyboardAndMouseControl/KeyboardAndMouseControl.ino">KeyboardAndMouseControl</a></li>
+                    <li class="ExampleItem"><a href="examples/09.USB/Keyboard/KeyboardLogout/KeyboardLogout.ino">KeyboardLogout</a></li>
+                    <li class="ExampleItem"><a href="examples/09.USB/Keyboard/KeyboardMessage/KeyboardMessage.ino">KeyboardMessage</a></li>
+                    <li class="ExampleItem"><a href="examples/09.USB/Keyboard/KeyboardReprogram/KeyboardReprogram.ino">KeyboardReprogram</a></li>
+                    <li class="ExampleItem"><a href="examples/09.USB/Keyboard/KeyboardSerial/KeyboardSerial.ino">KeyboardSerial</a></li>
+                    <li class="ExampleItem"><a href="examples/09.USB/Mouse/ButtonMouseControl/ButtonMouseControl.ino">ButtonMouseControl</a></li>
+                    <li class="ExampleItem"><a href="examples/09.USB/Mouse/JoystickMouseControl/JoystickMouseControl.ino">JoystickMouseControl</a></li>
+                </ul>
+                <li class="ExampleCategory">chibitronics</li>
+                <ul>
+                    <li class="ExampleItem"><a href="examples/chibitronics/neopixel/neopixel.ino">neopixel</a></li>
+                    <li class="ExampleItem"><a href="examples/chibitronics/PhysicalProgramming/physical-programming.ino">physical-programming</a></li>
+                    <li class="ExampleItem"><a href="examples/chibitronics/threading/threading.ino">threading</a></li>
+                </ul>
+                </ol>
             </div>
             <div id="code_editor">
 
@@ -198,16 +276,16 @@ void loop() {
         }
 
         function clickExamples() {
-            var editor = document.getElementById("code_editor");
-            var examples = document.getElementById("examples_list");
+            var editorBox = document.getElementById("code_editor");
+            var examplesBox = document.getElementById("examples_list");
 
-            if (editor.style.display === 'none') {
-                examples.style.display = 'none';
-                editor.style.display = 'block';
+            if (editorBox.style.display === 'none') {
+                examplesBox.style.display = 'none';
+                editorBox.style.display = 'block';
             }
             else {
-                examples.style.display = 'block';
-                editor.style.display = 'none';
+                examplesBox.style.display = 'block';
+                editorBox.style.display = 'none';
             }
 
             return false;
@@ -266,7 +344,7 @@ void loop() {
                 $("#saveAsDialog").dialog("open");
             });
 
-            $("#showhideexamples_button").click(function() {
+            $("#examples_button").click(function() {
                 var examples_window = $("#sidebar");
                 if (examples_window.is(":visible")) {
                     examples_window.hide({
@@ -397,7 +475,7 @@ void loop() {
             window.onresize = resizeHeader;
 
             document.getElementById("upload_button").onclick = clickUpload;
-            document.getElementById("showhideexamples_button").onclick = clickExamples;
+            document.getElementById("examples_button").onclick = clickExamples;
 /*
         $(window).on('resize', function() {
             var header = document.getElementById("Site-header");
@@ -423,8 +501,60 @@ void loop() {
         });
         */
 
+        function hideShowExampleCategory(e) {
+            var elem = e.target;
+            if (elem.nextElementSibling.style.display === '')
+                elem.nextElementSibling.style.display = 'none';
+            else
+                elem.nextElementSibling.style.display = '';
+            return false;
+        }
+
+        function loadExampleFromLink(e) {
+
+            var request = new window.XMLHttpRequest();
+            request.onreadystatechange = function() {
+                if (request.readyState === 4) {
+
+                    var editorBox = document.getElementById("code_editor");
+                    var examplesBox = document.getElementById("examples_list");
+
+                    examplesBox.style.display = 'none';
+                    editorBox.style.display = 'block';
+
+                    if (request.status == 200)
+                        editor.setValue(request.response);
+                }
+            }
+            request.open('GET', e.target.href, true);
+            request.send();
+
+            return false;
+        }
+
+        function fixupExamples() {
+            var exampleCategories = document.getElementsByClassName("ExampleCategory");
+            for (var i = 0; i < exampleCategories.length; i++) {
+                var e = exampleCategories[i];
+
+                // Mark all child categories as hidden
+                e.nextElementSibling.style.display = 'none';
+
+                // Set it up so we can click to expand
+                e.onclick = hideShowExampleCategory;
+            }
+
+            var exampleItems = document.getElementsByClassName("ExampleItem");
+            for (var i = 0; i < exampleItems.length; i++) {
+                var e = exampleItems[i];
+
+                e.firstChild.onclick = loadExampleFromLink;
+            }
+        }
+
         initializeEditor();
         resizeHeader();
+        fixupExamples();
     </script>
 
 </body>
