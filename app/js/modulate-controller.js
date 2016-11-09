@@ -108,33 +108,31 @@
 
             var pcmPacket;
 
-            for (var repeatCount = 0; repeatCount < 1; repeatCount++) {
-                pcmPacket = this.modulator.modulatePcm(this.makeCtlPacket(array.subarray(0, fileLen)));
+            pcmPacket = this.modulator.modulatePcm(this.makeCtlPacket(array.subarray(0, fileLen)));
+            for (var i = 0; i < pcmPacket.length; i++)
+                rawPcmData.push(pcmPacket[i]);
+
+            // Make silence here
+            this.makeSilence(rawPcmData, 100);
+
+            pcmPacket = this.modulator.modulatePcm(this.makeCtlPacket(array.subarray(0, fileLen)));
+            for (var i = 0; i < pcmPacket.length; i++)
+                rawPcmData.push(pcmPacket[i]);
+
+            // More silence
+            this.makeSilence(rawPcmData, 500);
+
+            for (var block = 0; block < blocks; block++) {
+                var start = block * 256;
+                var end = start + 256;
+                if (end > fileLen)
+                end = fileLen;
+                pcmPacket = this.modulator.modulatePcm(this.makeDataPacket(array.subarray(start, end), block));
                 for (var i = 0; i < pcmPacket.length; i++)
                     rawPcmData.push(pcmPacket[i]);
 
-                // Make silence here
-                this.makeSilence(rawPcmData, 100);
-
-                pcmPacket = this.modulator.modulatePcm(this.makeCtlPacket(array.subarray(0, fileLen)));
-                for (var i = 0; i < pcmPacket.length; i++)
-                    rawPcmData.push(pcmPacket[i]);
-
-                // More silence
-                this.makeSilence(rawPcmData, 500);
-
-                for (var block = 0; block < blocks; block++) {
-                    var start = block * 256;
-                    var end = start + 256;
-                    if (end > fileLen)
-                    end = fileLen;
-                    pcmPacket = this.modulator.modulatePcm(this.makeDataPacket(array.subarray(start, end), block));
-                    for (var i = 0; i < pcmPacket.length; i++)
-                        rawPcmData.push(pcmPacket[i]);
-
-                    // Inter-packet silence
-                    this.makeSilence(rawPcmData, 80);
-                }
+                // Inter-packet silence
+                this.makeSilence(rawPcmData, 80);
             }
 
             var a = document.getElementById("a");
