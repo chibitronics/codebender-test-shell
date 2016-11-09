@@ -11,23 +11,15 @@
     <meta name="robots" content="index,follow" />
 
     <script>
-        window.$q = [];
-        window.$ = window.jQuery = function(a) {
-            window.$q.push(a);
-        };
-    </script>
-    <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="/feed.xml" />
-    <script>
         WR = "/";
     </script>
-    <meta property="og:title" content="jstree" />
     <meta property="og:type" content="website" />
 </head>
 
 <body class="Site">
     <header class="Site-header" id="Site-header">
         <img src="//chibitronics.com/ltc/chibitronics_demo-header.png" hspace="10" width="200" height="46">
-        <div class="red_button" id="upload_button">Upload</div>
+        <div class="red_button" id="upload_button" onclick="javascript:clickUpload()">Upload</div>
         <div class="red_button" id="showhideexamples_button">Show Examples</div>
         <div class="red_button" id="saveas_button">Save As...</div>
         <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
@@ -61,7 +53,13 @@
         </div>
 
         <form method="post" id="show-result" target="result" action="/build">
-            <textarea id="editorthing"></textarea>
+            <textarea id="editorthing">void setup() {
+  ;
+}
+
+void loop() {
+  ;
+}</textarea>
         </form>
     </div>
     <footer class="Site-footer" id="Site-footer">
@@ -79,11 +77,7 @@
     <link rel="stylesheet" href="lib/codemirror.css" />
     <link rel="stylesheet" href="css/lint.css" />
 
-    <link rel="stylesheet" href="css/jquery-ui.css" />
-    <link rel="stylesheet" href="css/style.css" />
-
     <link rel="stylesheet" href="css/main.css" />
-    <link rel="stylesheet" href="css/jstree.css" />
     <!-- endbuild -->
 
     <!--
@@ -97,10 +91,6 @@
 -->
 
     <!-- build:js main.min.js -->
-    <script src="js/jquery-2.2.0.min.js"></script>
-    <script src="js/jquery-ui.js"></script>
-    <script src="js/jstree.js"></script>
-
     <script src="lib/codemirror.js"></script>
     <script src="lib/lint.js"></script>
     <script src="mode/clike/clike.js"></script>
@@ -130,13 +120,14 @@
             return m ? parseFloat(m[1]) : this.valueOf();
         };
 
-        function buildResult(results, textStatus, jqXHR) {
-            if (textStatus != "success") {
+        function buildResult(results, textStatus, status, jqXHR) {
+            if (status !== 200) {
                 console.log("Don't know what to do.  Backend failure?");
                 return;
             }
+            results = JSON.parse(results);
             if (results.success) {
-                $("#buildoutput").html("Build complete");
+                document.getElementById("buildoutput").innerHTML = "Build complete";
 
                 totalSize = results.size;
                 var data = atob(results.output);
@@ -145,20 +136,53 @@
                 mod_controller = new ModulationController({
                     canvas: document.getElementById("wavStrip"),
                     endCallback: function() {
-                        $("#Site-footer").hide();
+                        document.getElementById("#Site-footer").style.display = 'none';
                     }
                 });
                 mod_controller.transcodePcm(data);
 
-                $("#Site-footer").show();
+                document.getElementById("Site-footer").style.display = '';
             } else {
                 editor.chibi_error_string = results.message;
                 editor.performLint();
             }
         }
 
-        var saveAsFilename = $("#saveas_filename");
-        var allSaveAsFields = $([]).add(saveAsFilename);
+            function clickUpload() {
+                document.getElementById("buildoutput").innerHTML = "Building code...";
+                document.getElementById("a").play();
+                if (mod_controller)
+                    mod_controller.stop();
+                codeobj = {
+                    "files": [{
+                        "filename": "project.ino",
+                        "content": editor.getValue()
+                    }],
+                    "format": "binary",
+                    "version": "167",
+                    "libraries": [],
+                    "fqbn": "chibitronics:esplanade:code"
+                }
+
+                // Clear out the old error message.
+                editor.chibi_error_string = "";
+                editor.performLint();
+
+                console.log("Going to post: " + JSON.stringify(codeobj));
+
+                var request = new window.XMLHttpRequest();
+                request.onreadystatechange = function() {
+                    if (request.readyState === 4) {
+                        buildResult(request.response, request.statusText, request.status, request);
+                    }
+                }
+                request.open('POST', "/compile", true);
+                //$.post("/compile", JSON.stringify(codeobj), buildResult, "json");
+                request.send(JSON.stringify(codeobj));
+            }
+
+        //var saveAsFilename = $("#saveas_filename");
+        //var allSaveAsFields = $([]).add(saveAsFilename);
 
         function saveFileAs() {
             allSaveAsFields.removeClass("ui-state-error");
@@ -175,7 +199,7 @@
             saveAsDialog.dialog("close");
         }
 
-        $(document).ready(function() {
+/*
             $("#internal_error_dialog").dialog({
                 autoOpen: false,
                 height: 300,
@@ -229,28 +253,7 @@
                     this.innerHTML = "Hide Examples";
                 }
             });
-            $("#upload_button").click(function() {
-                $("#buildoutput").html("Building code...");
-                if (mod_controller)
-                    mod_controller.stop();
-                fqbn_array = $("#fqbn").val().split(":");
-                codeobj = {
-                    "files": [{
-                        "filename": "project.ino",
-                        "content": editor.getValue()
-                    }],
-                    "format": "binary",
-                    "version": "167",
-                    "libraries": [],
-                    "fqbn": $("#fqbn").val()
-                }
-
-                // Clear out the old error message.
-                editor.chibi_error_string = "";
-                editor.performLint();
-
-                $.post("/compile", JSON.stringify(codeobj), buildResult, "json");
-            });
+            */
 
             editorNode = document.getElementById("editorthing");
             editor = CodeMirror.fromTextArea(editorNode, {
@@ -266,6 +269,7 @@
             var mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault;
             CodeMirror.keyMap.default[(mac ? "Cmd" : "Ctrl") + "-Space"] = "autocomplete";
 
+/*
             $('#treething').jstree({
                     "core": {
                         "animation": 0,
@@ -349,14 +353,18 @@
                         }
                     }
                 });
-
+*/
             /* Resize the header */
             var header = document.getElementById("Site-header");
             var height = header.offsetHeight;
             document.getElementById("main").style.marginTop = height + 'px';
             header.style.top = 0;
-        });
 
+
+
+
+
+/*
         $(window).on('resize', function() {
             var header = document.getElementById("Site-header");
             var height = header.offsetHeight;
@@ -379,6 +387,7 @@
             source.start(0);
             had_touch = true;
         });
+        */
     </script>
 
 </body>
