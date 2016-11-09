@@ -6,7 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>Esplanade</title>
     <meta name="viewport" content="width=device-width" />
-    <!--[if lt IE 9]><script src="//static.jstree.com/3.2.1/assets/html5.js"></script><![endif]-->
 
     <meta name="robots" content="index,follow" />
 
@@ -157,8 +156,6 @@ void loop() {
     <!--
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/codemirror.min.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/addon/lint/lint.min.css" />
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" />
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.1/themes/default/style.min.css" />
 -->
 
     <!-- build:css main.min.css -->
@@ -169,10 +166,6 @@ void loop() {
     <!-- endbuild -->
 
     <!--
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.1/jstree.min.js" type="text/javascript" charset="utf-8"></script>
-
     <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/codemirror.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/addon/lint/lint.js" type="text/javascript" charset="utf-8"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/mode/clike/clike.min.js" type="text/javascript" charset="utf-8"></script>
@@ -197,13 +190,6 @@ void loop() {
         var editor;
         var codeobj = new Object();
         var mod_controller;
-        var totalSize;
-
-        Number.prototype.toFixedDown = function(digits) {
-            var re = new RegExp("(\\d+\\.\\d{" + digits + "})(\\d)"),
-                m = this.toString().match(re);
-            return m ? parseFloat(m[1]) : this.valueOf();
-        };
 
         function buildResult(results, textStatus, status, jqXHR) {
             if (status !== 200) {
@@ -214,7 +200,6 @@ void loop() {
             if (results.success) {
                 document.getElementById("buildoutput").innerHTML = "Build complete";
 
-                totalSize = results.size;
                 var data = atob(results.output);
                 if (mod_controller)
                     mod_controller.stop();
@@ -380,126 +365,18 @@ void loop() {
             CodeMirror.keyMap.default[(mac ? "Cmd" : "Ctrl") + "-Space"] = "autocomplete";
         }
 
-/*
-            $('#treething').jstree({
-                    "core": {
-                        "animation": 0,
-                        "check_callback": true,
-                        "themes": {
-                            "stripes": true
-                        },
-                        'data': function(node, callback) {
-                            if (node.id === "#") {
-                                $.get("items.json", "", callback);
-                            } else if (node.id === "examples") {
-                                $.get("examples.json", "", callback);
-                            } else if (node.id === "local") {
-                                var localSketches = localStorage.getItem('sketches');
-                                if (localSketches)
-                                    localSketches = JSON.parse(localSketches);
-                                else
-                                    localSketches = {};
-
-                                var items = new Array();
-                                for (var file in localSketches) {
-                                    if (!localSketches.hasOwnProperty(file))
-                                        continue;
-                                    items.push({
-                                        "id": file,
-                                        "text": file,
-                                        "children": false,
-                                        "type": "root"
-                                    });
-                                }
-
-                                if (items.length)
-                                    callback(items);
-                                else
-                                    callback(["(None)"]);
-                            } else {
-                                callback([]);
-                            }
-                        }
-                    },
-                    "types": {
-                        "#": {
-                            "max_children": 1,
-                            "max_depth": 4,
-                            "valid_children": ["root"]
-                        },
-                        "root": {
-                            "icon": "images/tree-icon.png",
-                            "valid_children": ["default"]
-                        },
-                        "default": {
-                            "valid_children": ["default", "file"]
-                        },
-                        "file": {
-                            "icon": "glyphicon glyphicon-file",
-                            "valid_children": []
-                        }
-                    },
-                    "plugins": [
-                        "state", "types", "wholerow"
-                    ]
-                })
-                .on('changed.jstree', function(e, data) {
-                    if (data && data.selected && data.selected.length) {
-                        console.log("Selected " + data.selected);
-
-                        if (data.node.parent === "local") {
-                            var localSketches = localStorage.getItem('sketches');
-                            if (localSketches)
-                                localSketches = JSON.parse(localSketches);
-                            else
-                                localSketches = {};
-                            editor.setValue(localSketches[data.node.id]);
-                        } else if (data.node.data) {
-                            $.get(data.node.data, function(d) {
-                                editor.setValue(d);
-                            });
-                        } else {
-                            var ref = $('#treething').jstree(true);
-                            ref.open_node(data.node);
-                        }
-                    }
-                });
-*/
-            /* Resize the header */
-            function resizeHeader() {
-                var header = document.getElementById("Site-header");
-                var height = header.offsetHeight;
-                document.getElementById("main").style.marginTop = height + 'px';
-                header.style.top = 0;
-            }
-            window.onresize = resizeHeader;
-
-            document.getElementById("upload_button").onclick = clickUpload;
-            document.getElementById("examples_button").onclick = clickExamples;
-/*
-        $(window).on('resize', function() {
+        function resizeHeader() {
             var header = document.getElementById("Site-header");
             var height = header.offsetHeight;
             document.getElementById("main").style.marginTop = height + 'px';
             header.style.top = 0;
-        });
+        }
 
-        // This will unblock audio on iOS devices.  Otherwise, they will have silence.
-        if (!("audioContext" in window))
-            window.audioContext = new(window.AudioContext || window.webkitAudioContext)();
-        var had_touch = false;
-        document.addEventListener("touchend", function() {
-            if (had_touch)
-                return;
-            // play empty buffer to unmute audio
-            var buffer = window.audioContext.createBuffer(2, 4096, window.audioContext.sampleRate);
-            var source = window.audioContext.createBufferSource();
-            source.buffer = buffer;
-            source.connect(window.audioContext.destination);
-            source.start(0);
-            had_touch = true;
-        });
-        */
+        function installHooks() {
+            window.onresize = resizeHeader;
+            document.getElementById("upload_button").onclick = clickUpload;
+            document.getElementById("examples_button").onclick = clickExamples;
+        }
 
         function hideShowExampleCategory(e) {
             var elem = e.target;
@@ -559,6 +436,7 @@ void loop() {
             }
         }
 
+        installHooks();
         initializeEditor();
         resizeHeader();
         fixupExamples();
