@@ -110,14 +110,15 @@ html {
 .ExampleItem > a {
     font-size: 25px;
 	font-family: Helvetica, Arial, Sans-Serif;
-    border-top: 1px solid #f79797;
-    margin-top: 10px;
-    vertical-align: middle;
     text-decoration: none;
 }
 
 .ExampleItem {
+    border-top: 1px solid #f79797;
+    margin-top: 10px;
+    vertical-align: middle;
     display: block;
+    cursor: pointer;
 }
 
 .ExampleCategory {
@@ -126,6 +127,7 @@ html {
     border-top: 1px solid #f79797;
     margin-top: 10px;
     vertical-align: middle;
+    cursor: pointer;
 }
 
 /* ExampleItem groups */
