@@ -30,7 +30,7 @@ do
 		if echo "${i}" | grep -q '\.ino$'
 		then
 			id=$(echo $i | cut -d/ -f3 | tr '[A-Z]' '[a-z]')
-			name=$(echo $i | rev | cut -d. -f2 | cut -d/ -f1 | rev)
+			name=$(echo $i | rev | cut -d. -f2 | cut -d/ -f1 | rev | sed 's/\([a-z]\)\([A-Z]\)/\1 \2/g')
 			current_category=$((${current_category} + 1))
 			echo '    <li class="ExampleItem"><a href="'${i}'">'${name}'</a></li>'
 		fi
