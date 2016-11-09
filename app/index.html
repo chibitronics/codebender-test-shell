@@ -554,7 +554,8 @@ void loop() {
             for (var i = 0; i < exampleItems.length; i++) {
                 var e = exampleItems[i];
 
-                e.firstChild.onclick = loadExampleFromLink;
+                e.firstChild.onclick = function() { return false; }
+                e.onclick = loadExampleFromLink;
             }
         }
 
