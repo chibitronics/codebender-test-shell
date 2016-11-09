@@ -140,8 +140,8 @@
             var a = document.getElementById("a");
             a.onended = function() {
                 // Play again if we haven't hit the limit'
+                this.playCount++;
                 if (this.playCount < this.maxPlays) {
-                    this.playCount++;
                     document.getElementById("a").play();
                 }
             }.bind(this);
