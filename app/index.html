@@ -19,7 +19,7 @@
 <body class="Site">
     <header class="Site-header" id="Site-header">
         <img src="//chibitronics.com/ltc/chibitronics_demo-header.png" hspace="10" width="200" height="46">
-        <div class="red_button" id="upload_button" onclick="javascript:clickUpload()">Upload</div>
+        <div class="red_button" id="upload_button">Upload</div>
         <div class="red_button" id="showhideexamples_button">Show Examples</div>
         <div class="red_button" id="saveas_button">Save As...</div>
         <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
@@ -53,13 +53,23 @@
         </div>
 
         <form method="post" id="show-result" target="result" action="/build">
-            <textarea id="editorthing">void setup() {
+            <div id="examples_list" class="ExamplesList">
+                <ul>
+                    <li>Example 1</li>
+                    <li>Example 2</li>
+                    <li>Example 3</li>
+                </ul>
+            </div>
+            <div id="code_editor">
+
+                <textarea id="code_editor_textarea">void setup() {
   ;
 }
 
 void loop() {
   ;
 }</textarea>
+            </div>
         </form>
     </div>
     <footer class="Site-footer" id="Site-footer">
@@ -95,9 +105,6 @@ void loop() {
     <script src="lib/lint.js"></script>
     <script src="mode/clike/clike.js"></script>
     <script src="lib/chibi-lint.js"></script>
-
-    <script src="js/base64-binary.js" type="text/javascript" charset="utf-8"></script>
-    <script src="js/WAAPISim-master/waapisim.js" type="text/javascript" charset="utf-8"></script>
 
     <script src="js/afsk-encoder.js"></script>
     <script src="js/modulate-controller.js"></script>
@@ -136,7 +143,7 @@ void loop() {
                 mod_controller = new ModulationController({
                     canvas: document.getElementById("wavStrip"),
                     endCallback: function() {
-                        document.getElementById("#Site-footer").style.display = 'none';
+                        document.getElementById("Site-footer").style.display = 'none';
                     }
                 });
                 mod_controller.transcodePcm(data);
@@ -148,39 +155,63 @@ void loop() {
             }
         }
 
-            function clickUpload() {
-                document.getElementById("buildoutput").innerHTML = "Building code...";
-                document.getElementById("a").play();
-                if (mod_controller)
-                    mod_controller.stop();
-                codeobj = {
-                    "files": [{
-                        "filename": "project.ino",
-                        "content": editor.getValue()
-                    }],
-                    "format": "binary",
-                    "version": "167",
-                    "libraries": [],
-                    "fqbn": "chibitronics:esplanade:code"
-                }
+        function clickUpload() {
+            document.getElementById("buildoutput").innerHTML = "Building code...";
 
-                // Clear out the old error message.
-                editor.chibi_error_string = "";
-                editor.performLint();
+            // Play empty data onclick to enable audio playback.
+            var audioTag = document.getElementById("a");
+            var pcmObj = new pcm({
+                channels: 1,
+                rate: 44100,
+                depth: 8
+            }).toWav([0, 0, 0, 0]);
+            audioTag.src = pcmObj.encode();
+            audioTag.play();
 
-                console.log("Going to post: " + JSON.stringify(codeobj));
-
-                var request = new window.XMLHttpRequest();
-                request.onreadystatechange = function() {
-                    if (request.readyState === 4) {
-                        buildResult(request.response, request.statusText, request.status, request);
-                    }
-                }
-                request.open('POST', "/compile", true);
-                //$.post("/compile", JSON.stringify(codeobj), buildResult, "json");
-                request.send(JSON.stringify(codeobj));
+            if (mod_controller)
+                mod_controller.stop();
+            codeobj = {
+                "files": [{
+                    "filename": "project.ino",
+                    "content": editor.getValue()
+                }],
+                "format": "binary",
+                "version": "167",
+                "libraries": [],
+                "fqbn": "chibitronics:esplanade:code"
             }
 
+            // Clear out the old error message.
+            editor.chibi_error_string = "";
+            editor.performLint();
+
+            var request = new window.XMLHttpRequest();
+            request.onreadystatechange = function() {
+                if (request.readyState === 4) {
+                    buildResult(request.response, request.statusText, request.status, request);
+                }
+            }
+            request.open('POST', "/compile", true);
+            request.send(JSON.stringify(codeobj));
+
+            return false;
+        }
+
+        function clickExamples() {
+            var editor = document.getElementById("code_editor");
+            var examples = document.getElementById("examples_list");
+
+            if (editor.style.display === 'none') {
+                examples.style.display = 'none';
+                editor.style.display = 'block';
+            }
+            else {
+                examples.style.display = 'block';
+                editor.style.display = 'none';
+            }
+
+            return false;
+        }
         //var saveAsFilename = $("#saveas_filename");
         //var allSaveAsFields = $([]).add(saveAsFilename);
 
@@ -255,7 +286,8 @@ void loop() {
             });
             */
 
-            editorNode = document.getElementById("editorthing");
+        function initializeEditor() {
+            editorNode = document.getElementById("code_editor_textarea");
             editor = CodeMirror.fromTextArea(editorNode, {
                 value: editorNode.value,
                 lineNumbers: true,
@@ -268,6 +300,7 @@ void loop() {
             });
             var mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault;
             CodeMirror.keyMap.default[(mac ? "Cmd" : "Ctrl") + "-Space"] = "autocomplete";
+        }
 
 /*
             $('#treething').jstree({
@@ -355,15 +388,16 @@ void loop() {
                 });
 */
             /* Resize the header */
-            var header = document.getElementById("Site-header");
-            var height = header.offsetHeight;
-            document.getElementById("main").style.marginTop = height + 'px';
-            header.style.top = 0;
+            function resizeHeader() {
+                var header = document.getElementById("Site-header");
+                var height = header.offsetHeight;
+                document.getElementById("main").style.marginTop = height + 'px';
+                header.style.top = 0;
+            }
+            window.onresize = resizeHeader;
 
-
-
-
-
+            document.getElementById("upload_button").onclick = clickUpload;
+            document.getElementById("showhideexamples_button").onclick = clickExamples;
 /*
         $(window).on('resize', function() {
             var header = document.getElementById("Site-header");
@@ -388,6 +422,9 @@ void loop() {
             had_touch = true;
         });
         */
+
+        initializeEditor();
+        resizeHeader();
     </script>
 
 </body>
