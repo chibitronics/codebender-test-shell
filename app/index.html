@@ -513,6 +513,12 @@ void loop() {
         function loadExampleFromLink(e) {
 
             var request = new window.XMLHttpRequest();
+            var target = e.target;
+
+            // If we clicked on the <LI> outside of the link, manually select the <A> tag inside.
+            if (e.target.tagName === "LI")
+                target = target.firstChild;
+
             request.onreadystatechange = function() {
                 if (request.readyState === 4) {
 
@@ -526,7 +532,7 @@ void loop() {
                         editor.setValue(request.response);
                 }
             }
-            request.open('GET', e.target.href, true);
+            request.open('GET', target.href, true);
             request.send();
 
             return false;
