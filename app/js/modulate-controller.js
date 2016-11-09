@@ -108,6 +108,9 @@
 
             var pcmPacket;
 
+            // Additional padding to work around anti-pop hardware/software
+            this.makeSilence(rawPcmData, 250);
+
             pcmPacket = this.modulator.modulatePcm(this.makeCtlPacket(array.subarray(0, fileLen)));
             for (var i = 0; i < pcmPacket.length; i++)
                 rawPcmData.push(pcmPacket[i]);
@@ -134,6 +137,9 @@
                 // Inter-packet silence
                 this.makeSilence(rawPcmData, 80);
             }
+
+            // Additional padding to work around anti-pop hardware/software
+            this.makeSilence(rawPcmData, 250);
 
             var a = document.getElementById("a");
             a.onended = function() {
