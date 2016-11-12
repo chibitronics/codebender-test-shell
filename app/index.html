@@ -188,6 +188,7 @@ void loop() {
         var editor;
         var codeobj = new Object();
         var mod_controller;
+        var autosaveGeneration = null;
 
         function buildResult(results, textStatus, status, jqXHR) {
             if (status !== 200) {
@@ -278,22 +279,36 @@ void loop() {
 
             return false;
         }
-        //var saveAsFilename = $("#saveas_filename");
-        //var allSaveAsFields = $([]).add(saveAsFilename);
+
+        function saveCurrentEditor() {
+            // If this is the first run, autosaveGeneration will be null.
+            // If it's not the first run, then we can see whether the
+            // document has changed since the last generation.'
+            if (autosaveGeneration === null) {
+                autosaveGeneration = 0;//editor.codeGeneration();
+            }
+            else if (!editor.isClean(autosaveGeneration)) {
+                localStorage.setItem('currentSketch', editor.getValue());
+                //autosaveGeneration = editor.codeGeneration();
+            }
+
+            // Run autosave again in five seconds.
+            window.setTimeout(saveCurrentEditor, 5000);
+        }
+
+        function loadSavedEditor() {
+            editor.setValue(localStorage.getItem('currentSketch'));
+        }
 
         function saveFileAs() {
-            allSaveAsFields.removeClass("ui-state-error");
-
             var localSketches = localStorage.getItem('sketches');
-            if (localSketches) {
-                console.log("localSketches: " + localSketches);
+            if (localSketches)
                 localSketches = JSON.parse(localSketches);
-            } else
+            else
                 localSketches = {};
 
             localSketches[saveAsFilename.val()] = editor.getValue();
             localStorage.setItem('sketches', JSON.stringify(localSketches));
-            saveAsDialog.dialog("close");
         }
 
 /*
@@ -354,6 +369,11 @@ void loop() {
 
         function initializeEditor() {
             editorNode = document.getElementById("code_editor_textarea");
+
+            var savedSketch = localStorage.getItem('currentSketch');
+            if (savedSketch)
+                editorNode.innerHTML = savedSketch;
+
             editor = CodeMirror.fromTextArea(editorNode, {
                 value: editorNode.value,
                 lineNumbers: true,
@@ -366,6 +386,8 @@ void loop() {
             });
             var mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault;
             CodeMirror.keyMap.default[(mac ? "Cmd" : "Ctrl") + "-Space"] = "autocomplete";
+
+            saveCurrentEditor();
         }
 
         function resizeHeader() {
