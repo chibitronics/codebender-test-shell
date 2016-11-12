@@ -28,14 +28,10 @@
             <option value="arduino:sam:arduino_due_x_dbg">Arduino Due (Programming Port)</option>
             <option value="arduino:sam:arduino_due_x">Arduino Due (Native Port)</option>
         </select>
-        <audio id="a" controls></audio>
+        <audio id="audio_output" controls></audio>
         <div id="buildoutput" style="display: none"></div>
     </header>
     <div id="main" class="Site-content">
-        <div id="sidebar">
-            <div id="treething"></div>
-        </div>
-
         <div id="saveAsDialog" style="display:none" title="Save As...">
             <form>
                 <fieldset>
@@ -51,7 +47,7 @@
             <pre id="internal_error_text"></pre>
         </div>
 
-        <form method="post" id="show-result" target="result" action="/build">
+        <form method="post" id="show-result" target="result">
             <div id="examples_list" class="ExamplesList">
                 <ol>
                     <li class="ExampleCategory">Basics</li>
@@ -184,6 +180,8 @@ void loop() {
     <script src="js/spark-md5.js"></script>
 
     <script src="lib/pcm.js"></script>
+
+    <script src="lib/lamejs/lame.all.js"></script>
     <!-- endbuild -->
 
     <script type="text/javascript">
@@ -196,7 +194,12 @@ void loop() {
                 console.log("Don't know what to do.  Backend failure?");
                 return;
             }
-            results = JSON.parse(results);
+            try {
+                results = JSON.parse(results);
+            }
+            catch(e) {
+                debugger;
+            }
             if (results.success) {
                 document.getElementById("buildoutput").innerHTML = "Build complete";
 
@@ -209,7 +212,7 @@ void loop() {
                         document.getElementById("Site-footer").style.display = 'none';
                     }
                 });
-                mod_controller.transcodePcm(data);
+                mod_controller.transcodeToAudioTag(data, document.getElementById("audio_output"), 'wav');
 
                 document.getElementById("Site-footer").style.display = '';
             } else {
@@ -222,11 +225,11 @@ void loop() {
             document.getElementById("buildoutput").innerHTML = "Building code...";
 
             // Play empty data onclick to enable audio playback.
-            var audioTag = document.getElementById("a");
+            var audioTag = document.getElementById("audio_output");
             var pcmObj = new pcm({
                 channels: 1,
                 rate: 44100,
-                depth: 8
+                depth: 16
             }).toWav([0, 0, 0, 0]);
             audioTag.src = pcmObj.encode();
             audioTag.play();

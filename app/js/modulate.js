@@ -160,7 +160,7 @@
             }
         },
 
-        modulatePcm: function(data) {
+        modulatePcm: function(data, type) {
 
             var bufLen = Math.ceil(data.length * 8 * this.encoder.samplesPerBit());
             var modulatedData = new Float32Array(bufLen);
@@ -172,19 +172,31 @@
             console.log("Rendered " + data.length + " data bytes in " +
                 timeElapsed.toFixed(2) + "ms");
 
-            var pcmData = new Uint8Array(new ArrayBuffer(modulatedData.length * 2));
+//            if (type === 16) {
+            var pcmData = new Int16Array(modulatedData.length);
             for (var i = 0; i < modulatedData.length; i++) {
                 // Map -1 .. 1 to -32767 .. 32768
-                var sample = Math.round((modulatedData[i]) * 32767);
-
-                // Javascript doesn't really do two's compliment
-                if (sample < 0)
-                    sample = (0xffff - ~sample);
-
-                pcmData[(i * 2) + 0] = Math.round(sample & 0xff);
-                pcmData[(i * 2) + 1] = Math.round((sample >> 8) & 0xff);
+                pcmData[i] = Math.round((modulatedData[i]) * 32767);
             }
             return pcmData;
+
+//            }
+//            else {
+                var pcmData = new Uint8Array(new ArrayBuffer(modulatedData.length * 2));
+                for (var i = 0; i < modulatedData.length; i++) {
+                    // Map -1 .. 1 to -32767 .. 32768
+                    var sample = Math.round((modulatedData[i]) * 32767);
+
+                    // Javascript doesn't really do two's compliment
+                    if (sample < 0)
+                        sample = (0xffff - ~sample);
+
+                    pcmData[(i * 2) + 0] = Math.round(sample) & 0xff;
+                    pcmData[(i * 2) + 1] = Math.round(sample >> 8) & 0xff;
+                }
+                return pcmData;
+//            }
+            
         },
 
 

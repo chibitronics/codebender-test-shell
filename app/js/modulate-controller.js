@@ -97,8 +97,11 @@
             this.modulator.drawWaveform(this.canvas);
         },
 
-        transcodePcm: function(data) {
-            var array = new Uint8Array(new ArrayBuffer(data.length));
+        transcodeToAudioTag: function(data, tag, type) {
+            var isMP3 = (type.toLowerCase() === 'mp3');
+            var isWav = (type.toLowerCase() == "wav");
+
+            var array = new Uint8Array(data.length);
             for (i = 0; i < data.length; i++)
                 array[i] = data.charCodeAt(i);
 
@@ -141,26 +144,101 @@
             // Additional padding to work around anti-pop hardware/software
             this.makeSilence(rawPcmData, 250);
 
-            var a = document.getElementById("a");
-            a.onended = function() {
+            tag.pause();
+            tag.onended = function() {
                 // Play again if we haven't hit the limit'
                 this.playCount++;
                 if (this.playCount < this.maxPlays) {
-                    document.getElementById("a").play();
+                    tag.play();
                 }
             }.bind(this);
             this.playCount = 0;
+            
+            if (isMP3)
+                this.transcodeMp3(rawPcmData, tag);
+            else if (isWav)
+                this.transcodeWav(rawPcmData, tag);
+            tag.setAttribute('controls', '');
+            tag.play();
+        },
+
+        transcodeWav: function(samples, tag) {
+
+            var pcmData = [];//new Uint8Array(new ArrayBuffer(samples.length * 2));
+            for (var i = 0; i < samples.length; i++) {
+                
+                // Convert from 16-bit PCM to two's compliment 8-bit buffers'
+                var sample = samples[i];
+
+                // Javascript doesn't really do two's compliment
+                if (sample < 0)
+                    sample = (0xffff - ~sample);
+
+                pcmData.push(Math.round(sample) & 0xff);
+                pcmData.push(Math.round(sample >> 8) & 0xff);
+            }
+
             var pcmObj = new pcm({
                 channels: 1,
                 rate: this.rate,
                 depth: 16
-            }).toWav(rawPcmData);
-            a.src = pcmObj.encode();
-            a.play();
+            }).toWav(pcmData);
+            tag.src = pcmObj.encode();
         },
 
+        transcodeMp3: function(samples, tag) {
+            var buffer = [];
+            var input_buffer = new Int16Array(samples.length);
+            var mp3enc = new lamejs.Mp3Encoder(1 /* channels */, this.rate, 128);
+            var remaining = samples.length;
+            var maxSamples = 1152;
+            for (var i = 0; i < samples.length; i++)
+                input_buffer[i] = samples[i];
+
+            for (var i = 0; remaining >= maxSamples; i += maxSamples) {
+                var mono = input_buffer.subarray(i, i + maxSamples);
+                var mp3buf = mp3enc.encodeBuffer(mono);
+                if (mp3buf.length > 0) {
+                    buffer.push(new Int8Array(mp3buf));
+                }
+                remaining -= maxSamples;
+            }
+            var d = mp3enc.flush();
+            if(d.length > 0){
+                buffer.push(new Int8Array(d));
+            }
+
+            console.log('done encoding, size=', buffer.length);
+
+            var tagsrc = "data:audio/mp3;base64,";
+            var dataBin = "";
+            for (var i = 0; i < buffer.length; i++) {
+                for (var j = 0; j < buffer[i].length; j++) {
+                    var c = buffer[i][j] + 128;
+                    if (c < 0)
+                        c = 0xff - ~c;
+                    /*
+                    if (c < 0)
+                        debugger;
+                    if (c > 255)
+                        debugger;
+                    */
+                    dataBin += String.fromCharCode(c);
+                }
+            }
+            tagsrc += btoa(dataBin);
+            tag.src = tagsrc;
+
+            /*
+            var blob = new Blob(buffer, {type: 'audio/mp3'});
+            var bUrl = window.URL.createObjectURL(blob);
+            console.log('Blob created, URL:', bUrl);
+            tag.src = bUrl;
+            */
+        },
+        
         makeSilence: function(buffer, msecs) {
-            var silenceLen = 2 * Math.ceil(this.rate / (1000.0 / msecs));
+            var silenceLen = Math.ceil(this.rate / (1000.0 / msecs));
             for (var i = 0; i < silenceLen; i++)
                 buffer.push(0);
         },

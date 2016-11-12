@@ -80,8 +80,8 @@ CodeMirror.registerHelper("lint", "text/x-c++src", function(text, passOptions, c
   }
 
   if ((internal_error_str !== "") && (internal_error_str !== cm.last_internal_error_str)) {
-    $("#internal_error_text").text(internal_error_str);
-    $("#internal_error_dialog").dialog("open");
+    document.getElementById("internal_error_text").innerHTML = internal_error_str;
+    //document.getElementById("internal_error_dialog").dialog("open");
     cm.last_internal_error_str = internal_error_str;
   }
   return found;
