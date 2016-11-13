@@ -18,9 +18,9 @@
 <body class="Site">
     <header class="Site-header" id="Site-header">
         <img src="//chibitronics.com/ltc/chibitronics_demo-header.png" hspace="10" width="200" height="46">
-        <div class="red_button" id="upload_button">Upload</div>
-        <div class="red_button" id="examples_button">Examples</div>
-        <div class="red_button" id="saveas_button">Save As...</div>
+        <div class="red_button" id="upload_button" target="code_editor">Upload</div>
+        <div class="red_button" id="examples_button" target="examples_list">Examples</div>
+        <div class="red_button" id="saveas_button" target="file_list">Save As...</div>
         <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
         <select name="fqbn" id="fqbn">
             <option value="chibitronics:esplanade:code" selected>Chibitronics Code</option>
@@ -32,23 +32,13 @@
         <div id="buildoutput" style="display: none"></div>
     </header>
     <div id="main" class="Site-content">
-        <div id="saveAsDialog" style="display:none" title="Save As...">
-            <form>
-                <fieldset>
-                    <label for="saveas_filename">Filename</label>
-                    <input type="text" name="saveas_filename" id="saveas_filename" class="text ui-widget-content ui-corner-all">
-                    <input type="submit" tabindex="-1" style="position: absolute; top: -1000px">
-                </fieldset>
-            </form>
-        </div>
-
         <div id="internal_error_dialog" style="display:none" title="Internal Error">
             <p>An internal compiler error occurred:</p>
             <pre id="internal_error_text"></pre>
         </div>
 
         <form method="post" id="show-result" target="result">
-            <div id="examples_list" class="ExamplesList">
+            <div id="examples_list" class="ExamplesList maintab">
                 <ol>
                     <li class="ExampleCategory">Basics</li>
                     <ul>
@@ -133,8 +123,7 @@
                     </ul>
                 </ol>
             </div>
-            <div id="code_editor">
-
+            <div id="code_editor" class="maintab">
                 <textarea id="code_editor_textarea">void setup() {
   ;
 }
@@ -143,6 +132,7 @@ void loop() {
   ;
 }</textarea>
             </div>
+            <div id="file_list" class="maintab"></div>
         </form>
     </div>
     <footer class="Site-footer" id="Site-footer">
@@ -222,7 +212,8 @@ void loop() {
             }
         }
 
-        function clickUpload() {
+        function clickUpload(e) {
+            selectTab(e);
             document.getElementById("buildoutput").innerHTML = "Building code...";
 
             // Play empty data onclick to enable audio playback.
@@ -231,7 +222,7 @@ void loop() {
                 channels: 1,
                 rate: 44100,
                 depth: 16
-            }).toWav([0, 0, 0, 0]);
+            }).toWav([0, 0]);
             audioTag.src = pcmObj.encode();
             audioTag.play();
 
@@ -264,32 +255,16 @@ void loop() {
             return false;
         }
 
-        function clickExamples() {
-            var editorBox = document.getElementById("code_editor");
-            var examplesBox = document.getElementById("examples_list");
-
-            if (editorBox.style.display === 'none') {
-                examplesBox.style.display = 'none';
-                editorBox.style.display = 'block';
-            }
-            else {
-                examplesBox.style.display = 'block';
-                editorBox.style.display = 'none';
-            }
-
-            return false;
-        }
-
         function saveCurrentEditor() {
             // If this is the first run, autosaveGeneration will be null.
             // If it's not the first run, then we can see whether the
             // document has changed since the last generation.'
             if (autosaveGeneration === null) {
-                autosaveGeneration = 0;//editor.codeGeneration();
+                autosaveGeneration = editor.changeGeneration();
             }
             else if (!editor.isClean(autosaveGeneration)) {
                 localStorage.setItem('currentSketch', editor.getValue());
-                //autosaveGeneration = editor.codeGeneration();
+                autosaveGeneration = editor.changeGeneration();
             }
 
             // Run autosave again in five seconds.
@@ -400,7 +375,8 @@ void loop() {
         function installHooks() {
             window.onresize = resizeHeader;
             document.getElementById("upload_button").onclick = clickUpload;
-            document.getElementById("examples_button").onclick = clickExamples;
+            document.getElementById("examples_button").onclick = selectTab;
+            document.getElementById("saveas_button").onclick = selectTab;
         }
 
         function hideShowExampleCategory(e) {
@@ -410,6 +386,21 @@ void loop() {
             else
                 elem.nextElementSibling.style.display = '';
             return false;
+        }
+
+        function selectTab(e) {
+            var elements = document.getElementsByClassName("maintab");
+            var target = e.target.attributes["target"].value;
+            for (var i = 0; i < elements.length; i++) {
+                var element = elements[i];
+
+                if (element.id == target) {
+                    element.style.display = 'block';
+                }
+                else {
+                    element.style.display = 'none';
+                }
+            }
         }
 
         function loadExampleFromLink(e) {
@@ -461,10 +452,59 @@ void loop() {
             }
         }
 
+        function populateFileList() {
+            var localSketches = localStorage.getItem('sketches');
+            if (localSketches)
+                localSketches = JSON.parse(localSketches);
+            else
+                localSketches = {};
+
+            //localSketches[saveAsFilename.val()] = editor.getValue();
+            //localStorage.setItem('sketches', JSON.stringify(localSketches));
+
+            var file_list = document.getElementById("file_list");
+
+            var ul = document.createElement("ul");
+            file_list.appendChild(ul);
+
+            for (var i = 0; i < localSketches.length; i++) {
+                var li = document.createElement("li");
+                li.className = "FileItem";
+                li.textContent = localSketches[i].name;
+                ul.appendChild(li);
+            }
+
+            {
+                var lab = document.createElement("label");
+                lab.setAttribute("for", "saveNew");
+                lab.innerHTML = "Save As:";
+
+                var tb = document.createElement("input");
+                tb.name = "saveNew";
+                tb.id = "saveNew";
+                tb.type = "text";
+
+                var sub = document.createElement("input");
+                sub.type = "submit";
+
+                var li = document.createElement("li");
+                li.appendChild(lab);
+                li.appendChild(tb);
+                li.appendChild(sub);
+                
+                ul.appendChild(li);
+            }
+//             <ol>
+//                    <li class="ExampleCategory">Basics</li>
+//                    <ul>
+//                        <li class="ExampleItem"><a href="examples/01.Basics/AnalogReadSerial/AnalogReadSerial.ino">Analog Read Serial</a></li>
+        }
+
         installHooks();
         initializeEditor();
         resizeHeader();
         fixupExamples();
+        populateFileList();
     </script>
 
 </body>

@@ -100,11 +100,15 @@ html {
     height: 100%;
 }
 
-.ExamplesList {
+.maintab {
     width: 100%;
     height: 100%;
     overflow: auto;
     display: none;
+}
+
+#code_editor {
+	display: block;
 }
 
 .ExampleItem > a {
