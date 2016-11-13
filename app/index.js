@@ -110,24 +110,24 @@ function loadSavedEditor() {
     editor.setValue(localStorage.getItem('currentSketch'));
 }
 
-function saveFileAs(e) {
+function saveLocalSketchAs(e) {
     var localSketches = getLocalSketches();
 
-    // Get the new file name
-    var fileName = document.getElementById("saveNewFileName").value;
+    // Get the new sketch name
+    var sketchName = document.getElementById("saveNewSketchName").value;
 
     // Store the document in the document list
-    localSketches[fileName] = {
-        "name": fileName,
+    localSketches[sketchName] = {
+        "name": sketchName,
         "document": editor.getValue()
     };
 
     // Stash the document list back in local storage
     saveLocalSketches(localSketches);
 
-    // Re-populate the file list
-    // TODO: Simply add the new file instead of redoing everything
-    populateFileList();
+    // Re-populate the sketch list
+    // TODO: Simply add the new sketch instead of redoing everything
+    populateSketchList();
 
     // Don't let the form submit.'
     return false;
@@ -180,17 +180,37 @@ function hideShowExampleCategory(e) {
 }
 
 function selectTab(e) {
+
+    var target;
     var elements = document.getElementsByClassName("maintab");
-    var target = e.target.attributes["target"].value;
+
+    // If we're called with a string as a parameter, just set that tab
+    if ((typeof e) === "string") {
+        target = e;
+    }
+    // Otherwise, treat it as an element, and select that tab.
+    else {
+        target = e.target.attributes["target"].value;
+    }
+
+    var found = false;
     for (var i = 0; i < elements.length; i++) {
         var element = elements[i];
 
         if (element.id == target) {
             element.style.display = 'block';
+            found = true;
         }
         else {
             element.style.display = 'none';
         }
+    }
+
+    // If no item was found, make the code editor visible by default
+    if (!found) {
+        console.log("Warning: Unrecognized element " + target
+                    + ", selecting code_editor by default");
+        document.getElementById("code_editor").style.display = 'block';
     }
 }
 
@@ -243,27 +263,30 @@ function fixupExamples() {
     }
 }
 
-function undoDeleteFile(a) {
+function undoDeleteLocalSketch(a) {
     var localSketches = getLocalSketches();
     var deletedSketch = localStorage.getItem('deletedSketch');
 
-    if (deletedSketch === null) {
+    // In theory, we can only get here if deletedSketch exists.  If it doesn't,
+    // then that's really weird.
+    if (deletedSketch === undefined) {
         console.log("No deleted sketch found");
         return false;
     }
     deletedSketch = JSON.parse(deletedSketch);
 
+    // Load the sketch back into the local sketch list, and remove it from "undo"
     localSketches[deletedSketch.name] = deletedSketch;
     localStorage.removeItem('deletedSketch');
 
     saveLocalSketches(localSketches);
 
-    populateFileList();
+    populateSketchList();
 
     return false;
 }
 
-function deleteFile(a) {
+function deleteLocalSketch(a) {
     var localSketches = getLocalSketches();
     var sketchName = a.target.sketchName;
 
@@ -275,44 +298,65 @@ function deleteFile(a) {
     delete localSketches[sketchName];
     localStorage.setItem('sketches', JSON.stringify(localSketches));
 
-    // Redraw the list of files, now that one is deleted
-    populateFileList();
+    // Redraw the list of sketches, now that one is deleted
+    populateSketchList();
 
     // Add in an "Undo Delete" link
     var li = document.createElement("li");
-    li.className = "FileItem";
+    li.className = "SketchItem";
     li.innerHTML = "Undo Delete";
-    li.onclick = undoDeleteFile;
-    document.getElementById("file_list").firstChild.appendChild(li);
+    li.onclick = undoDeleteLocalSketch;
+    document.getElementById("sketch_list").firstChild.appendChild(li);
 
     return false;
 }
 
-function populateFileList() {
+function loadLocalSketch(e) {
+
+    var localSketches = getLocalSketches();
+    var sketchName = e.target.sketchName;
+
+    var sketch = localSketches[sketchName];
+    if (sketch === undefined) {
+        console.log("Couldn't find local sketch " + sketchName);
+        return false;
+    }
+
+    editor.setValue(sketch.document);
+    selectTab("code_editor");
+
+    return false;
+}
+
+function populateSketchList() {
     var localSketches = getLocalSketches();
 
-    var file_list = document.getElementById("file_list");
+    var sketchList = document.getElementById("sketch_list");
 
     // Remove all previous child nodes, in case we're re-populating the list.
-    var child_nodes = file_list.childNodes;
+    var child_nodes = sketchList.childNodes;
     for (var i = 0; i < child_nodes.length; i++)
-        file_list.removeChild(child_nodes[i]);
+        sketchList.removeChild(child_nodes[i]);
 
-    // Create an unordered list to store the file list
+    // Create an unordered list to store the sketch list
     var ul = document.createElement("ul");
+    ul.className = "SketchList";
 
-    // Add files stored in localStorage
+    // Add sketches stored in localStorage
     for (name in localSketches) {
         if (!localSketches.hasOwnProperty(name))
             continue;
         var li = document.createElement("li");
-        li.className = "FileItem";
+        li.className = "SketchItem";
+        li.sketchName = name;
+        li.onclick = loadLocalSketch;
         li.innerHTML = name;
 
         var a = document.createElement("a");
-        a.setAttribute("href", "#deleteFile");
+        a.setAttribute("href", "#deleteLocalSketch");
+        a.className = "SketchItemDelete";
         a.sketchName = name;
-        a.onclick = deleteFile;
+        a.onclick = deleteLocalSketch;
         a.innerHTML = "[X]";
 
         li.appendChild(a);
@@ -322,17 +366,17 @@ function populateFileList() {
     // Add a "Save As" box
     {
         var lab = document.createElement("label");
-        lab.setAttribute("for", "saveNewFileName");
+        lab.setAttribute("for", "saveNewSketchName");
         lab.innerHTML = "Save As:";
 
         var tb = document.createElement("input");
-        tb.name = "saveNewFileName";
-        tb.id = "saveNewFileName";
+        tb.name = "saveNewSketchName";
+        tb.id = "saveNewSketchName";
         tb.type = "text";
 
         var sub = document.createElement("input");
         sub.type = "submit";
-        sub.onclick = saveFileAs;
+        sub.onclick = saveLocalSketchAs;
 
         var li = document.createElement("li");
         li.appendChild(lab);
@@ -344,7 +388,7 @@ function populateFileList() {
     }
 
     // Add the entire list to the document
-    file_list.appendChild(ul);
+    sketchList.appendChild(ul);
 
 //             <ol>
 //                    <li class="ExampleCategory">Basics</li>
@@ -356,4 +400,4 @@ installHooks();
 initializeEditor();
 resizeHeader();
 fixupExamples();
-populateFileList();
+populateSketchList();

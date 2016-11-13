@@ -138,3 +138,19 @@ html {
 .ExamplesList > ol > ul {
     padding: 3px;
 }
+
+.SketchList {
+    border-top: 1px solid #f79797;
+    margin-top: 10px;
+    vertical-align: middle;
+    display: block;
+    cursor: pointer;
+
+	font-size: 25px;
+	font-family: Helvetica, Arial, Sans-Serif;
+    text-decoration: none;
+}
+
+.SketchList > li {
+	display: block;
+}

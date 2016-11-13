@@ -20,7 +20,7 @@
         <img src="//chibitronics.com/ltc/chibitronics_demo-header.png" hspace="10" width="200" height="46">
         <div class="red_button" id="upload_button" target="code_editor">Upload</div>
         <div class="red_button" id="examples_button" target="examples_list">Examples</div>
-        <div class="red_button" id="saveas_button" target="file_list">Save As...</div>
+        <div class="red_button" id="saveas_button" target="sketch_list">Save As...</div>
         <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
         <select name="fqbn" id="fqbn">
             <option value="chibitronics:esplanade:code" selected>Chibitronics Code</option>
@@ -28,7 +28,7 @@
             <option value="arduino:sam:arduino_due_x_dbg">Arduino Due (Programming Port)</option>
             <option value="arduino:sam:arduino_due_x">Arduino Due (Native Port)</option>
         </select>
-        <audio id="audio_output" controls></audio>
+        <audio id="audio_output"></audio>
         <div id="buildoutput" style="display: none"></div>
     </header>
     <div id="main" class="Site-content">
@@ -132,7 +132,7 @@ void loop() {
   ;
 }</textarea>
             </div>
-            <div id="file_list" class="maintab"></div>
+            <div id="sketch_list" class="maintab"></div>
         </form>
     </div>
     <footer class="Site-footer" id="Site-footer">
