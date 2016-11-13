@@ -158,7 +158,7 @@
                 this.transcodeMp3(rawPcmData, tag);
             else if (isWav)
                 this.transcodeWav(rawPcmData, tag);
-            tag.setAttribute('controls', '');
+            //tag.setAttribute('controls', '');
             tag.play();
         },
 
