@@ -90,6 +90,10 @@ function saveLocalSketches(localSketches) {
     localStorage.setItem('sketches', JSON.stringify(localSketches));
 }
 
+function getGithubToken() {
+    return localStorage.getItem("gitHubToken");
+}
+
 function saveCurrentEditor() {
     // If this is the first run, autosaveGeneration will be null.
     // If it's not the first run, then we can see whether the
@@ -342,15 +346,33 @@ function populateSketchList() {
     var ul = document.createElement("ul");
     ul.className = "SketchList";
 
+    // Add an entry for GitHub, or add a signup link if one doesn't exists
+    if (getGithubToken() == null) {
+        var li = document.createElement("li");
+
+        var a = document.createElement("a");
+        a.innerHTML = "Connect to GitHub";
+        a.setAttribute("href", "/connectToGitHub");
+        a.setAttribute("target", "__new");
+
+        li.appendChild(a);
+        ul.appendChild(li);
+    }
+    else {
+        ;
+    }
+
     // Add sketches stored in localStorage
     for (name in localSketches) {
         if (!localSketches.hasOwnProperty(name))
             continue;
         var li = document.createElement("li");
         li.className = "SketchItem";
-        li.sketchName = name;
-        li.onclick = loadLocalSketch;
-        li.innerHTML = name;
+
+        var s = document.createElement("span");
+        s.sketchName = name;
+        s.onclick = loadLocalSketch;
+        s.innerHTML = name;
 
         var a = document.createElement("a");
         a.setAttribute("href", "#deleteLocalSketch");
@@ -359,6 +381,7 @@ function populateSketchList() {
         a.onclick = deleteLocalSketch;
         a.innerHTML = "[X]";
 
+        li.appendChild(s);
         li.appendChild(a);
         ul.appendChild(li);
     }
