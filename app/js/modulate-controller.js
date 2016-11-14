@@ -192,6 +192,7 @@
             var mp3enc = new lamejs.Mp3Encoder(1 /* channels */, this.rate, 128);
             var remaining = samples.length;
             var maxSamples = 1152;
+
             for (var i = 0; i < samples.length; i++)
                 input_buffer[i] = samples[i];
 
@@ -204,37 +205,32 @@
                 remaining -= maxSamples;
             }
             var d = mp3enc.flush();
-            if(d.length > 0){
+            if(d.length > 0) {
                 buffer.push(new Int8Array(d));
             }
 
-            console.log('done encoding, size=', buffer.length);
-
-            var tagsrc = "data:audio/mp3;base64,";
-            var dataBin = "";
-            for (var i = 0; i < buffer.length; i++) {
-                for (var j = 0; j < buffer[i].length; j++) {
-                    var c = buffer[i][j] + 128;
-                    if (c < 0)
-                        c = 0xff - ~c;
-                    /*
-                    if (c < 0)
-                        debugger;
-                    if (c > 255)
-                        debugger;
-                    */
-                    dataBin += String.fromCharCode(c);
-                }
-            }
-            tagsrc += btoa(dataBin);
-            tag.src = tagsrc;
-
             /*
-            var blob = new Blob(buffer, {type: 'audio/mp3'});
+            var entireFile = new Int8Array(totalLength);
+            var srcBufferOffset = 0;
+            var srcBufferNum = 0;
+            for (var i = 0; i < totalLength; i++) {
+                if (srcBufferOffset >= buffer[srcBufferNum].length) {
+                    srcBufferNum++;
+                    srcBufferOffset = 0;
+                }
+                entireFile[i] = buffer[srcBufferNum][srcBufferOffset];
+            }
+            */
+
+            //var dataURI = 'data:audio/mpeg;base64,';
+            //dataURI += btoa(buffer);
+
+            //tag.src = 'data:audio/mp3;base64,'+ btoa(String.fromCharCode.apply(String, buffer));
+
+            var blob = new Blob(buffer, {type: 'audio/mpeg'});
             var bUrl = window.URL.createObjectURL(blob);
             console.log('Blob created, URL:', bUrl);
             tag.src = bUrl;
-            */
         },
         
         makeSilence: function(buffer, msecs) {
