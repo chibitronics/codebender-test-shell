@@ -16,8 +16,8 @@ gulp.task('hello', function() {
 gulp.task('useref', function() {
     return gulp.src('app/*.html') /* Load all HTML files */
         .pipe(useref()) /* Combine files into one */
-        //.pipe(gulpIf('*.js', uglify())) /* minify javascript files */
-        //.pipe(gulpIf('*.css', cssnano())) /* minify css files */
+        .pipe(gulpIf('*.js', uglify())) /* minify javascript files */
+        .pipe(gulpIf('*.css', cssnano())) /* minify css files */
         .pipe(gulpIf('*.html', htmlmin({ collapseWhitespace: false, minifyJS: false, minifyCSS: false }))) /* also minify html */
         .pipe(gulp.dest('html')) /* Write out to 'html' output directory */
 });
