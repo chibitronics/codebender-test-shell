@@ -202,8 +202,18 @@ function selectTab(e) {
         var element = elements[i];
 
         if (element.id == target) {
-            element.style.display = 'block';
-            found = true;
+            // If the item is already highlighted, we want to switch
+            // back to the default view.
+            // So as a hack, make this item invisible, and don't mark
+            // the "true" flag.  Instead, fall through below, and allow
+            // the default view to be shown.
+            if (element.style.display == 'block') {
+                element.style.display = 'none';
+            }
+            else {
+                element.style.display = 'block';
+                found = true;
+            }
         }
         else {
             element.style.display = 'none';
