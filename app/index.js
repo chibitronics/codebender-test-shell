@@ -26,7 +26,7 @@ function buildResult(results, textStatus, status, jqXHR) {
                 document.getElementById("Site-footer").style.display = 'none';
             }
         });
-        mod_controller.transcodeToAudioTag(data, document.getElementById("audio_output"), 'mp3');
+        mod_controller.transcodeToAudioTag(data, document.getElementById("audio_output"), 'wav');
 
         document.getElementById("Site-footer").style.display = '';
     } else {
