@@ -154,8 +154,8 @@ function initializeEditor() {
         gutters: ["CodeMirror-lint-markers"],
         useCPP: true
     });
-    var mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault;
-    CodeMirror.keyMap.default[(mac ? "Cmd" : "Ctrl") + "-Space"] = "autocomplete";
+    var mac = (CodeMirror.keyMap["default"] == CodeMirror.keyMap.macDefault)
+    CodeMirror.keyMap["default"][(mac ? "Cmd" : "Ctrl") + "-Space"] = "autocomplete";
 
     saveCurrentEditor();
 }
