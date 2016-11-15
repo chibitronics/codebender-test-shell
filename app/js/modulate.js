@@ -164,24 +164,29 @@
 
             var bufLen = Math.ceil(data.length * 8 * this.encoder.samplesPerBit());
             var modulatedData = new Float32Array(bufLen);
+            if (type === undefined)
+                type = 16;
 
-            var timeStart = performance.now();
+            var timeStart = 0;
+            var timeEnd = 0;
+            if ((typeof performance) === "object")
+                timeStart = performance.now();
             this.encoder.modulate(data, modulatedData); // writes outputFloatArray in-place
-            var timeEnd = performance.now();
+            if ((typeof performance) === "object")
+                timeEnd = performance.now();
             var timeElapsed = timeEnd - timeStart;
             console.log("Rendered " + data.length + " data bytes in " +
                 timeElapsed.toFixed(2) + "ms");
 
-//            if (type === 16) {
-            var pcmData = new Int16Array(modulatedData.length);
-            for (var i = 0; i < modulatedData.length; i++) {
-                // Map -1 .. 1 to -32767 .. 32768
-                pcmData[i] = Math.round((modulatedData[i]) * 32767);
+            if (type === 16) {
+                var pcmData = new Int16Array(modulatedData.length);
+                for (var i = 0; i < modulatedData.length; i++) {
+                    // Map -1 .. 1 to -32767 .. 32768
+                    pcmData[i] = Math.round((modulatedData[i]) * 32767);
+                }
+                return pcmData;
             }
-            return pcmData;
-
-//            }
-//            else {
+            else {
                 var pcmData = new Uint8Array(new ArrayBuffer(modulatedData.length * 2));
                 for (var i = 0; i < modulatedData.length; i++) {
                     // Map -1 .. 1 to -32767 .. 32768
@@ -195,8 +200,7 @@
                     pcmData[(i * 2) + 1] = Math.round(sample >> 8) & 0xff;
                 }
                 return pcmData;
-//            }
-            
+            }
         },
 
 
