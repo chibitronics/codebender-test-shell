@@ -69,7 +69,7 @@ function clickUpload(e) {
     var request = new window.XMLHttpRequest();
     request.onreadystatechange = function() {
         if (request.readyState === 4) {
-            buildResult(request.response, request.statusText, request.status, request);
+            buildResult(request.responseText, request.statusText, request.status, request);
         }
     }
     request.open('POST', "/compile", true);
@@ -247,7 +247,7 @@ function loadExampleFromLink(e) {
             editorBox.style.display = 'block';
 
             if (request.status == 200)
-                editor.setValue(request.response);
+                editor.setValue(request.responseText);
         }
     }
     request.open('GET', target.href, true);
