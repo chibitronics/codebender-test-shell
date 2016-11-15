@@ -5,39 +5,19 @@
         if (!params)
             params = new Object();
 
-        // this odd construct is for safari compatibility
-        if (!("audioContext" in window))
-            window.audioContext = new(window.AudioContext || window.webkitAudioContext)();
-
         if ("rate" in params)
             this.rate = params.rate;
-        else
-            this.rate = window.audioContext.sampleRate;
 
         this.encoder = new FskEncoder(this.rate);
 
         // Create a "script node" that will actually generate audio samples.
         this.script_node = Modulator.prototype.script_node;
 
-        if (!this.script_node) {
-            Modulator.prototype.script_node = window.audioContext.createScriptProcessor(4096, 2, 2);
-
-            // If the script node has an invalid buffer size, force one with a nonzero buffer.
-            if (!Modulator.prototype.script_node.bufferSize) {
-
-                // IE with a polyfill exhibits this problem, and crashes when you try to stop.
-                Modulator.prototype.script_node = window.audioContext.createScriptProcessor(4096, 2, 2);
-                this.prototype.can_stop = false;
-            }
-            this.script_node = Modulator.prototype.script_node;
-        }
-
         // Start out in a not-playing state
         this.playing = false;
     }
 
     Modulator.prototype = {
-        audioCtx: null, // AudioContext object
         encoder: null, // FskEncoder object
         outputAudioBuffer: null, // AudioBuffer object
         uiCallback: null, // UI object for callback
@@ -48,7 +28,28 @@
         // This function allocates an audio buffer based on the length of the data and the sample rate
         // It then calls the fsk modulator, and shoves the returned floating point array
         // into the audio context for later playback
-        modulate: function(data) {
+        modulateStream: function(data) {
+
+            // this odd construct is for safari compatibility
+            if (!("audioContext" in window))
+                window.audioContext = new(window.AudioContext || window.webkitAudioContext)();
+
+            if (!"rate" in this)
+                this.rate = window.audioContext.sampleRate;
+
+            if (!this.script_node) {
+                Modulator.prototype.script_node = window.audioContext.createScriptProcessor(4096, 2, 2);
+
+                // If the script node has an invalid buffer size, force one with a nonzero buffer.
+                if (!Modulator.prototype.script_node.bufferSize) {
+
+                    // IE with a polyfill exhibits this problem, and crashes when you try to stop.
+                    Modulator.prototype.script_node = window.audioContext.createScriptProcessor(4096, 2, 2);
+                    this.prototype.can_stop = false;
+                }
+                this.script_node = Modulator.prototype.script_node;
+            }
+
             var bufLen = Math.ceil(data.length * 8 * this.encoder.samplesPerBit());
             this.outputAudioBuffer = window.audioContext.createBuffer(1, bufLen, this.rate);
 
