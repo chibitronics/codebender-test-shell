@@ -186,53 +186,6 @@
             tag.src = pcmObj.encode();
         },
 
-        transcodeMp3: function(samples, tag) {
-            var buffer = [];
-            var input_buffer = new Int16Array(samples.length);
-            var mp3enc = new lamejs.Mp3Encoder(1 /* channels */, this.rate, 128);
-            var remaining = samples.length;
-            var maxSamples = 1152;
-
-            for (var i = 0; i < samples.length; i++)
-                input_buffer[i] = samples[i];
-
-            for (var i = 0; remaining >= maxSamples; i += maxSamples) {
-                var mono = input_buffer.subarray(i, i + maxSamples);
-                var mp3buf = mp3enc.encodeBuffer(mono);
-                if (mp3buf.length > 0) {
-                    buffer.push(new Int8Array(mp3buf));
-                }
-                remaining -= maxSamples;
-            }
-            var d = mp3enc.flush();
-            if(d.length > 0) {
-                buffer.push(new Int8Array(d));
-            }
-
-            /*
-            var entireFile = new Int8Array(totalLength);
-            var srcBufferOffset = 0;
-            var srcBufferNum = 0;
-            for (var i = 0; i < totalLength; i++) {
-                if (srcBufferOffset >= buffer[srcBufferNum].length) {
-                    srcBufferNum++;
-                    srcBufferOffset = 0;
-                }
-                entireFile[i] = buffer[srcBufferNum][srcBufferOffset];
-            }
-            */
-
-            //var dataURI = 'data:audio/mpeg;base64,';
-            //dataURI += btoa(buffer);
-
-            //tag.src = 'data:audio/mp3;base64,'+ btoa(String.fromCharCode.apply(String, buffer));
-
-            var blob = new Blob(buffer, {type: 'audio/mpeg'});
-            var bUrl = window.URL.createObjectURL(blob);
-            console.log('Blob created, URL:', bUrl);
-            tag.src = bUrl;
-        },
-        
         makeSilence: function(buffer, msecs) {
             var silenceLen = Math.ceil(this.rate / (1000.0 / msecs));
             for (var i = 0; i < silenceLen; i++)
