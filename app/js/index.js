@@ -3,6 +3,18 @@ var codeobj = new Object();
 var mod_controller;
 var autosaveGeneration = null;
 
+function getAudioElement() {
+    return document.getElementById("audio_output");
+}
+
+function getCanvas() {
+    return document.getElementById("wavStrip");
+}
+
+function getWaveFooter() {
+    return document.getElementById("Site-footer");
+}
+
 function buildResult(results, textStatus, status, jqXHR) {
     if (status !== 200) {
         console.log("Don't know what to do.  Backend failure?");
@@ -21,14 +33,14 @@ function buildResult(results, textStatus, status, jqXHR) {
         if (mod_controller)
             mod_controller.stop();
         mod_controller = new ModulationController({
-            canvas: document.getElementById("wavStrip"),
+            canvas: getCanvas(),
             endCallback: function() {
-                document.getElementById("Site-footer").style.display = 'none';
+                getWaveFooter().style.display = 'none';
             }
         });
-        mod_controller.transcodeToAudioTag(data, document.getElementById("audio_output"), 'wav');
+        mod_controller.transcodeToAudioTag(data, getAudioElement(), 'wav');
 
-        document.getElementById("Site-footer").style.display = '';
+        getWaveFooter().style.display = 'block';
     } else {
         editor.chibi_error_string = results.message;
         editor.performLint();
@@ -40,7 +52,7 @@ function clickUpload(e) {
     document.getElementById("buildoutput").innerHTML = "Building code...";
 
     // Play empty data onclick to enable audio playback.
-    var audioTag = document.getElementById("audio_output");
+    var audioTag = getAudioElement();
     var pcmObj = new pcm({
         channels: 1,
         rate: 44100,
@@ -429,8 +441,86 @@ function populateSketchList() {
 //                        <li class="ExampleItem"><a href="examples/01.Basics/AnalogReadSerial/AnalogReadSerial.ino">Analog Read Serial</a></li>
 }
 
+function renderWave(e) {
+    var aud = e.target;
+    var current =  aud.currentTime;
+    var end = aud.duration;
+    var canvas = getCanvas();
+
+    if (!canvas || !canvas.getContext || !mod_controller || !end)
+        return;
+
+    var strip = canvas.getContext('2d');
+
+    // Resize the canvas to be the window size.
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    var h = strip.canvas.height;
+    var w = strip.canvas.width;
+    strip.clearRect(0, 0, w, h);
+
+    var y;
+    // Draw scale lines at 10% interval
+    strip.lineWidth = 1.0;
+    strip.strokeStyle = "#55a";
+    strip.beginPath();
+    y = 1 * (h / 10);
+    strip.moveTo(0, y);
+    strip.lineTo(w, y);
+    y = 2 * (h / 10);
+    strip.moveTo(0, y);
+    strip.lineTo(w, y);
+    y = 3 * (h / 10);
+    strip.moveTo(0, y);
+    strip.lineTo(w, y);
+    y = 4 * (h / 10);
+    strip.moveTo(0, y);
+    strip.lineTo(w, y);
+    y = 5 * (h / 10);
+    strip.moveTo(0, y);
+    strip.lineTo(w, y);
+    y = 6 * (h / 10);
+    strip.moveTo(0, y);
+    strip.lineTo(w, y);
+    y = 7 * (h / 10);
+    strip.moveTo(0, y);
+    strip.lineTo(w, y);
+    y = 8 * (h / 10);
+    strip.moveTo(0, y);
+    strip.lineTo(w, y);
+    y = 9 * (h / 10);
+    strip.moveTo(0, y);
+    strip.lineTo(w, y);
+    strip.stroke();
+
+    strip.strokeStyle = "#fff";
+    strip.lineWidth = 1.0;
+
+    var buffer = mod_controller.getPcmData();
+    var b = Math.floor(buffer.length * ((current * 1.0) / end));
+    var lastSample = (buffer[b++] + 32768) / 65536.0; // map -32768..32768 to 0..1
+
+    for (var x = 1; x < canvas.width; x++) {
+        var sample = (buffer[b++] + 32768) / 65536.0;
+        if (b > buffer.length)
+            break;
+        strip.beginPath();
+        strip.moveTo(x - 1, h - lastSample * h);
+        strip.lineTo(x, h - sample * h);
+        strip.stroke();
+        lastSample = sample;
+    }
+}
+
+function installWaveRenderer() {
+    var aud = getAudioElement();
+    aud.ontimeupdate = renderWave;
+}
+
 installHooks();
 initializeEditor();
 resizeHeader();
 fixupExamples();
 populateSketchList();
+installWaveRenderer();
