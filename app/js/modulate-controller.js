@@ -20,6 +20,7 @@
         this.maxPlays = 3;
         this.byteArray = null;
         this.rate = 44100;
+        this.pcmData = null;
 
         this.PROT_VERSION = 0x01;   // Protocol v1.0
 
@@ -45,6 +46,10 @@
 
         makeDataHeader: function(blockNum) {
             return [this.PROT_VERSION, this.DATA_PACKET, blockNum & 0xff, (blockNum >> 8) & 0xff];
+        },
+
+        getPcmData: function() {
+            return this.pcmData;
         },
 
         sendData: function(data) {
@@ -110,6 +115,7 @@
             var rawPcmData = [];
 
             var pcmPacket;
+            this.tag = tag;
 
             // Additional padding to work around anti-pop hardware/software
             this.makeSilence(rawPcmData, 250);
@@ -144,6 +150,7 @@
             // Additional padding to work around anti-pop hardware/software
             this.makeSilence(rawPcmData, 250);
 
+            this.playCount = 0;
             tag.pause();
             tag.onended = function() {
                 // Play again if we haven't hit the limit'
@@ -151,14 +158,18 @@
                 if (this.playCount < this.maxPlays) {
                     tag.play();
                 }
+                else {
+                    this.tag.onended = undefined;
+                    if (this.endCallback)
+                        this.endCallback();
+                }
             }.bind(this);
-            this.playCount = 0;
             
             if (isMP3)
                 this.transcodeMp3(rawPcmData, tag);
             else if (isWav)
                 this.transcodeWav(rawPcmData, tag);
-            //tag.setAttribute('controls', '');
+            this.pcmData = rawPcmData;
             tag.play();
         },
 
@@ -341,8 +352,6 @@
         // once all audio is done playing, call this to reset UI elements to idle state
         audioEndCB: function() {
             this.isSending = false;
-            if (this.endCallback)
-                this.endCallback();
         },
 
         stop: function() {
