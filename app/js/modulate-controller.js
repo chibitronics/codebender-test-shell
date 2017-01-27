@@ -307,7 +307,7 @@
             var header = this.makeControlHeader();
             var program_length = this.makeUint32(data.length);
             var program_hash = this.makeHash(data, 0x32d0babe);  // 0x32d0babe by convention
-            var program_guid_str = SparkMD5.hash(String.fromCharCode.apply(null,data), false);
+            var program_guid_str = SparkMD5.hashBinary(String.fromCharCode.apply(null,data), false);
             var program_guid = [];
             var i;
             for (i = 0; i < program_guid_str.length-1; i += 2)
