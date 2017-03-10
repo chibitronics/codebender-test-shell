@@ -2,6 +2,7 @@ var editor;
 var codeobj = new Object();
 var mod_controller;
 var autosaveGeneration = null;
+var lbr_enable = true;
 
 function getAudioElement() {
     return document.getElementById("audio_output");
@@ -34,11 +35,12 @@ function buildResult(results, textStatus, status, jqXHR) {
             mod_controller.stop();
         mod_controller = new ModulationController({
             canvas: getCanvas(),
+	    lbr: lbr_enable,
             endCallback: function() {
                 getWaveFooter().style.display = 'none';
             }
         });
-        mod_controller.transcodeToAudioTag(data, getAudioElement(), 'wav');
+        mod_controller.transcodeToAudioTag(data, getAudioElement(), 'wav', lbr_enable);
 
         getWaveFooter().style.display = 'block';
     } else {
@@ -50,6 +52,11 @@ function buildResult(results, textStatus, status, jqXHR) {
 function clickUpload(e) {
     selectTab(e);
     document.getElementById("buildoutput").innerHTML = "Building code...";
+
+    if( document.getElementById("lbr_button").checked == true )
+	lbr_enable = true;
+    else
+	lbr_enable = false;
 
     // Play empty data onclick to enable audio playback.
     var audioTag = getAudioElement();
@@ -84,7 +91,7 @@ function clickUpload(e) {
             buildResult(request.responseText, request.statusText, request.status, request);
         }
     }
-    request.open('POST', "/compile", true);
+    request.open('POST', "https://ltc.xobs.io/compile", true);
     request.send(JSON.stringify(codeobj));
 
     return false;

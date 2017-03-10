@@ -8,7 +8,12 @@
         if ("rate" in params)
             this.rate = params.rate;
 
-        this.encoder = new FskEncoder(this.rate);
+	if ("lbr" in params)
+	    this.lbr = params.lbr;
+	else
+	    this.lbr = false;
+
+        this.encoder = new FskEncoder(this.rate, this.lbr);
 
         // Create a "script node" that will actually generate audio samples.
         this.script_node = Modulator.prototype.script_node;
@@ -23,49 +28,6 @@
         uiCallback: null, // UI object for callback
         scriptNode: null, // Re-used script node object for audio generation
         can_stop: true, // Whether we can stop (usually we can)
-
-        // modulate a single packet. The data to modulate should be Uint8 format
-        // This function allocates an audio buffer based on the length of the data and the sample rate
-        // It then calls the fsk modulator, and shoves the returned floating point array
-        // into the audio context for later playback
-        modulateStream: function(data) {
-
-            // this odd construct is for safari compatibility
-            if (!("audioContext" in window))
-                window.audioContext = new(window.AudioContext || window.webkitAudioContext)();
-
-            if (!"rate" in this)
-                this.rate = window.audioContext.sampleRate;
-
-            if (!this.script_node) {
-                Modulator.prototype.script_node = window.audioContext.createScriptProcessor(4096, 2, 2);
-
-                // If the script node has an invalid buffer size, force one with a nonzero buffer.
-                if (!Modulator.prototype.script_node.bufferSize) {
-
-                    // IE with a polyfill exhibits this problem, and crashes when you try to stop.
-                    Modulator.prototype.script_node = window.audioContext.createScriptProcessor(4096, 2, 2);
-                    this.prototype.can_stop = false;
-                }
-                this.script_node = Modulator.prototype.script_node;
-            }
-
-            var bufLen = Math.ceil(data.length * 8 * this.encoder.samplesPerBit());
-            this.outputAudioBuffer = window.audioContext.createBuffer(1, bufLen, this.rate);
-
-            var timeStart = performance.now();
-
-            var outputFloatArray = this.outputAudioBuffer.getChannelData(0);
-            this.encoder.modulate(data, outputFloatArray); // writes outputFloatArray in-place
-
-            // How far into the outputAudioBuffer we are.
-            this.script_node_offset = 0;
-
-            var timeEnd = performance.now();
-            var timeElapsed = timeEnd - timeStart;
-            console.log("Rendered " + data.length + " data bytes in " +
-                timeElapsed.toFixed(2) + "ms");
-        },
 
         silence: function(msecs) {
             var bufLen = Math.ceil(window.audioContext.sampleRate / (1000.0 / msecs));

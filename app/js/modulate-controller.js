@@ -9,6 +9,8 @@
         this.canvas = params.canvas || undefined;
         this.endCallback = params.endCallback || undefined;
 
+	this.lbr = params.lbr || undefined;
+
         /* Are these needed? */
         this.saveState = false;
 
@@ -28,7 +30,8 @@
         this.DATA_PACKET = 0x02;
 
         this.modulator = new Modulator({
-            rate: this.rate
+            rate: this.rate,
+	    lbr: this.lbr
         }); // the modulator object contains our window's audio context
 
         /* Preamble sent before every audio packet */
@@ -102,7 +105,7 @@
             this.modulator.drawWaveform(this.canvas);
         },
 
-        transcodeToAudioTag: function(data, tag, type) {
+        transcodeToAudioTag: function(data, tag, type, lbr) {
             var isMP3 = (type.toLowerCase() === 'mp3');
             var isWav = (type.toLowerCase() == "wav");
 
@@ -120,8 +123,14 @@
             // Additional padding to work around anti-pop hardware/software
             this.makeSilence(rawPcmData, 250);
 
-            pcmPacket = this.modulator.modulatePcm(this.makeCtlPacket(array.subarray(0, fileLen)));
-            for (var i = 0; i < pcmPacket.length; i++)
+	    if( lbr ) {
+		// lbr pilot tone
+		this.makeLowtone(rawPcmData, 500);
+		this.makeSilence(rawPcmData, 100); // brief gap to actual data
+	    }
+
+	    pcmPacket = this.modulator.modulatePcm(this.makeCtlPacket(array.subarray(0, fileLen)));
+	    for (var i = 0; i < pcmPacket.length; i++)
                 rawPcmData.push(pcmPacket[i]);
 
             // Make silence here
@@ -203,6 +212,16 @@
                 buffer.push(0);
         },
 
+        makeLowtone: function(buffer, msecs) {
+            var bufLen = Math.ceil(this.rate / (1000.0 / msecs));
+	    var omega_lo = (2 * Math.PI * 8666) / this.rate;
+	    var phase = 0;
+            for (var i = 0; i < bufLen; i++) {
+                buffer.push(Math.round(Math.cos(phase) * 32767));
+		phase += omega_lo;
+	    }
+        },
+	
         finishPacketPlayback: function(index) {
 
             if (!this.isSending)
@@ -339,11 +358,22 @@
 
             // now stripe the buffer to ensure transitions for baud sync
             // don't stripe the premable or the hash
-            for (i = 0; i < data.length; i++) {
-                if ((i % 16) == 3)
-                    data[i] ^= 0x55;
-                else if ((i % 16) == 11)
-                    data[i] ^= 0xaa;
+            for (i = 2; i < data.length + 4; i++) {
+		if( i < 4 ) {  // to include striping on the block number
+                    if ((i % 3) == 0)
+			header[i] ^= 0x35;
+                    else if ((i % 3) == 1)
+			header[i] ^= 0xac;
+		    else if ((i % 3) == 2)
+			header[i] ^= 0x95;
+		} else {  // and striping on the data packet, but offset origin from block number
+                    if ((i % 3) == 0)
+			data[i - 4] ^= 0x35;
+                    else if ((i % 3) == 1)
+			data[i - 4] ^= 0xac;
+		    else if ((i % 3) == 2)
+			data[i - 4] ^= 0x95;
+		}
             }
 
             return this.makePacket(preamble, header, data, footer, stop);

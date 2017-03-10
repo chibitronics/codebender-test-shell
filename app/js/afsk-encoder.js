@@ -1,4 +1,14 @@
-function FskEncoder(sampleRate) {
+function FskEncoder(sampleRate, lbr) {
+    if( lbr == true ) {
+	this.f_lo = 8666 / 4;
+	this.f_hi = 12500 / 4;
+	this.baud_rate = 8000 / 4;
+    } else {
+	this.f_lo = 8666;
+	this.f_hi = 12500;
+	this.baud_rate = 8000;
+    }
+     
     this.sample_rate = sampleRate;
 
     this.state.omega_lo = (2 * Math.PI * this.f_lo) / this.sample_rate;
@@ -10,9 +20,9 @@ function FskEncoder(sampleRate) {
 }
 
 FskEncoder.prototype = {
-    f_lo: 8666,
-    f_hi: 12500,
-    baud_rate: 8000,
+    f_lo: 0,  // now set in fskEncoder call
+    f_hi: 0,
+    baud_rate: 0,
     sample_rate: 0, // comes from calling function based on browser/computer config
     samplesPerBit: 0.0,
 

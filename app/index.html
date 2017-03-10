@@ -17,11 +17,12 @@
 
 <body class="Site">
     <header class="Site-header" id="Site-header">
+        <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
         <img src="//chibitronics.com/ltc/chibitronics_demo-header.png" hspace="10" width="200" height="46">
         <div class="red_button" id="upload_button" target="code_editor">Upload</div>
         <div class="red_button" id="examples_button" target="examples_list">Examples</div>
         <div class="red_button" id="saveas_button" target="sketch_list">Save As...</div>
-        <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
+
         <select name="fqbn" id="fqbn">
             <option value="chibitronics:esplanade:code" selected>Chibitronics Code</option>
             <option value="arduino:avr:uno">Arduino Uno</option>
@@ -30,6 +31,15 @@
         </select>
         <audio id="audio_output" controls></audio>
         <div id="buildoutput" style="display: none"></div>
+
+	<!-- Rounded switch -->
+	<div class="switch_text">LBR mode</div>
+	<label class="switch">
+	  <input type="checkbox" id="lbr_button">
+	  <div class="slider round"></div>
+	</label>
+	
+	
     </header>
     <div id="main" class="Site-content">
         <div id="internal_error_dialog" style="display:none" title="Internal Error">
