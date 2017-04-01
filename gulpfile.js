@@ -15,7 +15,7 @@ var uglify = require('gulp-uglify');
 // Development Dependencies
 var jshint = require('gulp-jshint');
 
-gulp.task('useref', function () {
+gulp.task('build-html', function () {
     return gulp.src('src/*.html') /* Load all HTML files */
         .pipe(useref()) /* Combine files into one */
         //.pipe(gulpIf('*.js', uglify())) /* minify javascript files */
@@ -30,22 +30,21 @@ gulp.task('lint-src', function () {
         .pipe(jshint.reporter('default'));
 });
 
-gulp.task('scripts', function () {
-    // Single entry point to browserify 
+gulp.task('build-scripts', function () {
+    // Single entry point to browserify
     gulp.src('src/js/index.js')
         .pipe(browserify({
-            insertGlobals: true,
-            debug: !gulp.env.production
+            insertGlobals: true
         }))
         .pipe(gulp.dest('./build/js'))
 });
 
-gulp.task('cpexamples', function () {
-    return gulp.src('src/examples/**/*')
+gulp.task('copy-examples', function () {
+    return gulp.src('examples/**/*')
         .pipe(gulp.dest('build/examples'))
 });
 
-gulp.task('cpimages', function () {
+gulp.task('copy-images', function () {
     return gulp.src('src/images/**/*.{png,gif,jpg,svg}')
         .pipe(imagemin())
         .pipe(gulp.dest('build/images'))
@@ -68,12 +67,15 @@ gulp.task('browserSync', function () {
 });
 
 gulp.task('build', function (callback) {
-    runSequence('clean:build', ['lint-src', 'useref', 'scripts', 'cpimages', 'cpexamples'],
+    runSequence('clean:build', ['build-html',
+        'lint-src', 'build-scripts',
+        'copy-images',
+        'copy-examples'],
         callback
     );
 });
 
 gulp.task('watch', ['browserSync'], function () {
-    gulp.watch('src/*.html', ['build', browserSync.reload]);
-    gulp.watch('src/js/**/*.js', ['build', browserSync.reload]);
+    gulp.watch('src/*.html', ['build-html', browserSync.reload]);
+    gulp.watch('src/js/**/*.js', ['build-scripts', browserSync.reload]);
 });
