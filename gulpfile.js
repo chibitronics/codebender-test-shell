@@ -36,7 +36,9 @@ gulp.task('build-scripts', function () {
         .pipe(browserify({
             insertGlobals: true
         }))
-        .pipe(gulp.dest('./build/js'))
+        .pipe(gulp.dest('./build/js'));
+    return gulp.src('node_modules/lamejs/lame.min.js')
+        .pipe(gulp.dest('build/js/'));
 });
 
 gulp.task('copy-examples', function () {
