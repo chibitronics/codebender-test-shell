@@ -18,14 +18,16 @@
     "globals": {
         "after": false,
         "afterEach": false,
+        "atob": true,
         "before": false,
         "beforeEach": false,
+        "CodeMirror": true,
         "context": false,
+        "define": true,
         "describe": false,
-        "it": false,
-        "window": false,
-        "localStorage": true,
         "document": true,
-        "atob": true
+        "it": false,
+        "localStorage": true,
+        "window": false
     }
 }
