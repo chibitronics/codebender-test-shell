@@ -1,6 +1,5 @@
 var gulp = require('gulp');
 var useref = require('gulp-useref');
-var uglify = require('gulp-uglify');
 var gulpIf = require('gulp-if');
 var cssnano = require('gulp-cssnano');
 var imagemin = require('gulp-imagemin');
@@ -9,58 +8,72 @@ var runSequence = require('run-sequence');
 var browserSync = require('browser-sync').create();
 var htmlmin = require('gulp-htmlmin');
 
-gulp.task('hello', function() {
-    console.log("Hello, world!");
-});
+// Build Dependencies
+var browserify = require('gulp-browserify');
+var uglify = require('gulp-uglify');
 
-gulp.task('useref', function() {
-    return gulp.src('app/*.html') /* Load all HTML files */
+// Development Dependencies
+var jshint = require('gulp-jshint');
+
+gulp.task('useref', function () {
+    return gulp.src('src/*.html') /* Load all HTML files */
         .pipe(useref()) /* Combine files into one */
-        .pipe(gulpIf('*.js', uglify())) /* minify javascript files */
+        //.pipe(gulpIf('*.js', uglify())) /* minify javascript files */
         .pipe(gulpIf('*.css', cssnano())) /* minify css files */
         .pipe(gulpIf('*.html', htmlmin({ collapseWhitespace: false, minifyJS: false, minifyCSS: false }))) /* also minify html */
-        .pipe(gulp.dest('html')) /* Write out to 'html' output directory */
+        .pipe(gulp.dest('build')) /* Write out to 'html' output directory */
 });
 
-gulp.task('cpjson', function() {
-    return gulp.src('app/*.json')
-        .pipe(gulp.dest('html'))
+gulp.task('lint-src', function () {
+    return gulp.src('./src/**/*.js')
+        .pipe(jshint())
+        .pipe(jshint.reporter('default'));
 });
 
-gulp.task('cpexamples', function() {
-    return gulp.src('app/examples/**/*')
-        .pipe(gulp.dest('html/examples'))
+gulp.task('scripts', function () {
+    // Single entry point to browserify 
+    gulp.src('src/js/index.js')
+        .pipe(browserify({
+            insertGlobals: true,
+            debug: !gulp.env.production
+        }))
+        .pipe(gulp.dest('./build/js'))
 });
 
-gulp.task('cpimages', function() {
-    return gulp.src('app/images/**/*.{png,gif,jpg,svg}')
+gulp.task('cpexamples', function () {
+    return gulp.src('src/examples/**/*')
+        .pipe(gulp.dest('build/examples'))
+});
+
+gulp.task('cpimages', function () {
+    return gulp.src('src/images/**/*.{png,gif,jpg,svg}')
         .pipe(imagemin())
-        .pipe(gulp.dest('html/images'))
+        .pipe(gulp.dest('build/images'))
 });
 
-gulp.task('clean:html', function() {
-    return del.sync('html');
+gulp.task('clean:build', function () {
+    return del.sync('build');
 });
 
-gulp.task('cache:clear', function(callback) {
+gulp.task('cache:clear', function (callback) {
     return cache.clearAll(callback);
 });
 
-gulp.task('browserSync', function() {
+gulp.task('browserSync', function () {
     browserSync.init({
         server: {
-            baseDir: 'app'
+            baseDir: 'build'
         }
     })
 });
 
-gulp.task('watch', ['browserSync'], function() {
-    gulp.watch('app/*.html', browserSync.reload);
-    gulp.watch('app/js/**/*.js', browserSync.reload);
-});
-
-gulp.task('build', function(callback) {
-    runSequence('clean:html', ['useref', 'cpimages', 'cpjson', 'cpexamples'],
+gulp.task('build', function (callback) {
+    runSequence('clean:build', ['lint-src', 'useref', 'scripts', 'cpimages', 'cpexamples'],
         callback
     );
+});
+
+gulp.task('watch', ['browserSync'], function () {
+    gulp.watch('src/*.html', ['build', browserSync.reload]);
+    gulp.watch('src/js/**/*.js', ['build', browserSync.reload]);
 });

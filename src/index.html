@@ -32,14 +32,14 @@
         <audio id="audio_output" controls></audio>
         <div id="buildoutput" style="display: none"></div>
 
-	<!-- Rounded switch -->
-	<div class="switch_text">LBR mode</div>
-	<label class="switch">
+        <!-- Rounded switch -->
+        <div class="switch_text">LBR mode</div>
+        <label class="switch">
 	  <input type="checkbox" id="lbr_button">
 	  <div class="slider round"></div>
 	</label>
-	
-	
+
+
     </header>
     <div id="main" class="Site-content">
         <div id="internal_error_dialog" style="display:none" title="Internal Error">
@@ -155,8 +155,8 @@ void loop() {
 -->
 
     <!-- build:css main.min.css -->
-    <link rel="stylesheet" href="lib/codemirror.css" />
-    <link rel="stylesheet" href="css/lint.css" />
+    <link rel="stylesheet" href="../node_modules/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="../node_modules/codemirror/addon/lint/lint.css" />
 
     <link rel="stylesheet" href="css/main.css" />
     <!-- endbuild -->
@@ -167,22 +167,7 @@ void loop() {
     <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/mode/clike/clike.min.js" type="text/javascript" charset="utf-8"></script>
 -->
 
-    <!-- build:js main.min.js -->
-    <script src="lib/codemirror.js"></script>
-    <script src="lib/lint.js"></script>
-    <script src="mode/clike/clike.js"></script>
-    <script src="js/chibi-lint.js"></script>
-
-    <script src="js/afsk-encoder.js"></script>
-    <script src="js/modulate-controller.js"></script>
-    <script src="js/modulate.js"></script>
-    <script src="lib/murmurhash3_gc.js"></script>
-    <script src="lib/spark-md5.js"></script>
-
-    <script src="lib/pcm.js"></script>
-
     <script src="js/index.js" type="text/javascript"></script>
-    <!-- endbuild -->
 
 </body>
 

@@ -1,3 +1,10 @@
+ModulationController = require("chibitronics-ltc-modulate");
+CodeMirror = require("codemirror");
+pcmjs = require("pcmjs");
+require('codemirror/mode/clike/clike');
+require('codemirror/addon/lint/lint');
+require("./chibi-lint.js");
+
 var editor;
 var codeobj = new Object();
 var mod_controller;
@@ -24,23 +31,27 @@ function buildResult(results, textStatus, status, jqXHR) {
     try {
         results = JSON.parse(results);
     }
-    catch(e) {
+    catch (e) {
         debugger;
     }
     if (results.success) {
         document.getElementById("buildoutput").innerHTML = "Build complete";
 
         var data = atob(results.output);
+        var data_u8 = new Uint8Array(data.length);
+        for (i = 0; i < data.length; i++)
+            data_u8[i] = data[i];
+
         if (mod_controller)
             mod_controller.stop();
         mod_controller = new ModulationController({
             canvas: getCanvas(),
-	    lbr: lbr_enable,
-            endCallback: function() {
+            lbr: lbr_enable,
+            endCallback: function () {
                 getWaveFooter().style.display = 'none';
             }
         });
-        mod_controller.transcodeToAudioTag(data, getAudioElement(), 'wav', lbr_enable);
+        mod_controller.transcodeToAudioTag(data_u8, getAudioElement(), 'wav', lbr_enable, 2);
 
         getWaveFooter().style.display = 'block';
     } else {
@@ -53,14 +64,14 @@ function clickUpload(e) {
     selectTab(e);
     document.getElementById("buildoutput").innerHTML = "Building code...";
 
-    if( document.getElementById("lbr_button").checked == true )
-	lbr_enable = true;
+    if (document.getElementById("lbr_button").checked == true)
+        lbr_enable = true;
     else
-	lbr_enable = false;
+        lbr_enable = false;
 
     // Play empty data onclick to enable audio playback.
     var audioTag = getAudioElement();
-    var pcmObj = new pcm({
+    var pcmObj = new pcmjs({
         channels: 1,
         rate: 44100,
         depth: 16
@@ -86,7 +97,7 @@ function clickUpload(e) {
     editor.performLint();
 
     var request = new window.XMLHttpRequest();
-    request.onreadystatechange = function() {
+    request.onreadystatechange = function () {
         if (request.readyState === 4) {
             buildResult(request.responseText, request.statusText, request.status, request);
         }
@@ -98,7 +109,7 @@ function clickUpload(e) {
 }
 
 function getLocalSketches() {
-        // Get the previous array of sketches
+    // Get the previous array of sketches
     var localSketches = localStorage.getItem('sketches');
     if (localSketches)
         return JSON.parse(localSketches);
@@ -242,7 +253,7 @@ function selectTab(e) {
     // If no item was found, make the code editor visible by default
     if (!found) {
         console.log("Warning: Unrecognized element " + target
-                    + ", selecting code_editor by default");
+            + ", selecting code_editor by default");
         document.getElementById("code_editor").style.display = 'block';
     }
 }
@@ -256,7 +267,7 @@ function loadExampleFromLink(e) {
     if (e.target.tagName === "LI")
         target = target.firstChild;
 
-    request.onreadystatechange = function() {
+    request.onreadystatechange = function () {
         if (request.readyState === 4) {
 
             var editorBox = document.getElementById("code_editor");
@@ -291,7 +302,7 @@ function fixupExamples() {
     for (var i = 0; i < exampleItems.length; i++) {
         var e = exampleItems[i];
 
-        e.firstChild.onclick = function() { return false; }
+        e.firstChild.onclick = function () { return false; }
         e.onclick = loadExampleFromLink;
     }
 }
@@ -442,15 +453,15 @@ function populateSketchList() {
     // Add the entire list to the document
     sketchList.appendChild(ul);
 
-//             <ol>
-//                    <li class="ExampleCategory">Basics</li>
-//                    <ul>
-//                        <li class="ExampleItem"><a href="examples/01.Basics/AnalogReadSerial/AnalogReadSerial.ino">Analog Read Serial</a></li>
+    //             <ol>
+    //                    <li class="ExampleCategory">Basics</li>
+    //                    <ul>
+    //                        <li class="ExampleItem"><a href="examples/01.Basics/AnalogReadSerial/AnalogReadSerial.ino">Analog Read Serial</a></li>
 }
 
 function renderWave(e) {
     var aud = e.target;
-    var current =  aud.currentTime;
+    var current = aud.currentTime;
     var end = aud.duration;
     var canvas = getCanvas();
 
