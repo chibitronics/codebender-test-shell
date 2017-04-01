@@ -23,6 +23,9 @@
         "context": false,
         "describe": false,
         "it": false,
-        "window": false
+        "window": false,
+        "localStorage": true,
+        "document": true,
+        "atob": true
     }
 }
