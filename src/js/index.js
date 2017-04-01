@@ -1,73 +1,71 @@
-ModulationController = require("chibitronics-ltc-modulate");
-CodeMirror = require("codemirror");
-pcmjs = require("pcmjs");
+var ModulationController = require('chibitronics-ltc-modulate');
+var CodeMirror = require('codemirror');
+var pcmjs = require('pcmjs');
 require('codemirror/mode/clike/clike');
 require('codemirror/addon/lint/lint');
-require("./chibi-lint.js");
+require('./chibi-lint.js');
 
 var editor;
-var codeobj = new Object();
-var mod_controller;
+var codeobj = {};
+var modController;
 var autosaveGeneration = null;
-var lbr_enable = true;
+var lbrEnable = true;
 
 function getAudioElement() {
-    return document.getElementById("audio_output");
+    return document.getElementById('audio_output');
 }
 
 function getCanvas() {
-    return document.getElementById("wavStrip");
+    return document.getElementById('wavStrip');
 }
 
 function getWaveFooter() {
-    return document.getElementById("Site-footer");
+    return document.getElementById('Site-footer');
 }
 
 function buildResult(results, textStatus, status, jqXHR) {
     if (status !== 200) {
-        console.log("Don't know what to do.  Backend failure?");
+        console.log('Don\'t know what to do.  Backend failure?');
         return;
     }
-    try {
-        results = JSON.parse(results);
-    }
-    catch (e) {
-        debugger;
-    }
+
+    results = JSON.parse(results);
+
     if (results.success) {
-        document.getElementById("buildoutput").innerHTML = "Build complete";
+        document.getElementById('buildoutput').innerHTML = 'Build complete';
 
         var data = atob(results.output);
-        var data_u8 = new Uint8Array(data.length);
-        for (i = 0; i < data.length; i++)
-            data_u8[i] = data[i];
+        var dataU8 = new Uint8Array(data.length);
+        for (var i = 0; i < data.length; i++) {
+            dataU8[i] = data[i];
+        }
 
-        if (mod_controller)
-            mod_controller.stop();
-        mod_controller = new ModulationController({
+        if (modController) {
+            modController.stop();
+        }
+
+        modController = new ModulationController({
             canvas: getCanvas(),
-            lbr: lbr_enable,
+            lbr: lbrEnable,
             endCallback: function () {
                 getWaveFooter().style.display = 'none';
             }
         });
-        mod_controller.transcodeToAudioTag(data_u8, getAudioElement(), 'wav', lbr_enable, 2);
+
+        modController.transcodeToAudioTag(dataU8, getAudioElement(), 'wav', lbrEnable, 2);
 
         getWaveFooter().style.display = 'block';
     } else {
-        editor.chibi_error_string = results.message;
+        editor.chibiErrorString = results.message;
         editor.performLint();
     }
 }
 
 function clickUpload(e) {
     selectTab(e);
-    document.getElementById("buildoutput").innerHTML = "Building code...";
+    document.getElementById('buildoutput').innerHTML = 'Building code...';
 
-    if (document.getElementById("lbr_button").checked == true)
-        lbr_enable = true;
-    else
-        lbr_enable = false;
+    lbrEnable = document.getElementById('lbr_button').checked;
 
     // Play empty data onclick to enable audio playback.
     var audioTag = getAudioElement();
@@ -79,21 +77,23 @@ function clickUpload(e) {
     audioTag.src = pcmObj.encode();
     audioTag.play();
 
-    if (mod_controller)
-        mod_controller.stop();
-    codeobj = {
-        "files": [{
-            "filename": "project.ino",
-            "content": editor.getValue()
-        }],
-        "format": "binary",
-        "version": "167",
-        "libraries": [],
-        "fqbn": "chibitronics:esplanade:code"
+    if (modController) {
+        modController.stop();
     }
 
+    codeobj = {
+        'files': [{
+            'filename': 'project.ino',
+            'content': editor.getValue()
+        }],
+        'format': 'binary',
+        'version': '167',
+        'libraries': [],
+        'fqbn': 'chibitronics:esplanade:code'
+    };
+
     // Clear out the old error message.
-    editor.chibi_error_string = "";
+    editor.chibiErrorString = '';
     editor.performLint();
 
     var request = new window.XMLHttpRequest();
@@ -101,8 +101,8 @@ function clickUpload(e) {
         if (request.readyState === 4) {
             buildResult(request.responseText, request.statusText, request.status, request);
         }
-    }
-    request.open('POST', "https://ltc.xobs.io/compile", true);
+    };
+    request.open('POST', 'https://ltc.xobs.io/compile', true);
     request.send(JSON.stringify(codeobj));
 
     return false;
@@ -111,8 +111,10 @@ function clickUpload(e) {
 function getLocalSketches() {
     // Get the previous array of sketches
     var localSketches = localStorage.getItem('sketches');
-    if (localSketches)
+    if (localSketches) {
         return JSON.parse(localSketches);
+    }
+
     return {};
 }
 
@@ -121,7 +123,7 @@ function saveLocalSketches(localSketches) {
 }
 
 function getGithubToken() {
-    return localStorage.getItem("gitHubToken");
+    return localStorage.getItem('gitHubToken');
 }
 
 function saveCurrentEditor() {
@@ -140,20 +142,22 @@ function saveCurrentEditor() {
     window.setTimeout(saveCurrentEditor, 5000);
 }
 
+/*
 function loadSavedEditor() {
     editor.setValue(localStorage.getItem('currentSketch'));
 }
+*/
 
 function saveLocalSketchAs(e) {
     var localSketches = getLocalSketches();
 
     // Get the new sketch name
-    var sketchName = document.getElementById("saveNewSketchName").value;
+    var sketchName = document.getElementById('saveNewSketchName').value;
 
     // Store the document in the document list
     localSketches[sketchName] = {
-        "name": sketchName,
-        "document": editor.getValue()
+        'name': sketchName,
+        'document': editor.getValue()
     };
 
     // Stash the document list back in local storage
@@ -168,76 +172,79 @@ function saveLocalSketchAs(e) {
 }
 
 function initializeEditor() {
-    editorNode = document.getElementById("code_editor_textarea");
+    var editorNode = document.getElementById('code_editor_textarea');
 
     var savedSketch = localStorage.getItem('currentSketch');
-    if (savedSketch)
+    if (savedSketch) {
         editorNode.innerHTML = savedSketch;
+    }
 
     editor = CodeMirror.fromTextArea(editorNode, {
         value: editorNode.value,
         lineNumbers: true,
         matchBrackets: true,
-        mode: "text/x-c++src",
-        scrollbarStyle: "null",
+        mode: 'text/x-c++src',
+        scrollbarStyle: 'null',
         lint: true,
-        gutters: ["CodeMirror-lint-markers"],
+        gutters: ['CodeMirror-lint-markers'],
         useCPP: true
     });
-    var mac = (CodeMirror.keyMap["default"] == CodeMirror.keyMap.macDefault)
-    CodeMirror.keyMap["default"][(mac ? "Cmd" : "Ctrl") + "-Space"] = "autocomplete";
+    var mac = (CodeMirror.keyMap['default'] === CodeMirror.keyMap.macDefault);
+    CodeMirror.keyMap['default'][(mac ? 'Cmd' : 'Ctrl') + '-Space'] = 'autocomplete';
 
     saveCurrentEditor();
 }
 
 function resizeHeader() {
-    var header = document.getElementById("Site-header");
+    var header = document.getElementById('Site-header');
     var height = header.offsetHeight;
-    document.getElementById("main").style.marginTop = height + 'px';
+    document.getElementById('main').style.marginTop = height + 'px';
     header.style.top = 0;
 }
 
 function installHooks() {
     window.onresize = resizeHeader;
-    document.getElementById("upload_button").onclick = clickUpload;
-    document.getElementById("examples_button").onclick = selectTab;
-    document.getElementById("saveas_button").onclick = selectTab;
+    document.getElementById('upload_button').onclick = clickUpload;
+    document.getElementById('examples_button').onclick = selectTab;
+    document.getElementById('saveas_button').onclick = selectTab;
 }
 
 function hideShowExampleCategory(e) {
     var elem = e.target;
-    if (elem.nextElementSibling.style.display === '')
+    if (elem.nextElementSibling.style.display === '') {
         elem.nextElementSibling.style.display = 'none';
-    else
+    }
+    else {
         elem.nextElementSibling.style.display = '';
+    }
     return false;
 }
 
 function selectTab(e) {
 
     var target;
-    var elements = document.getElementsByClassName("maintab");
+    var elements = document.getElementsByClassName('maintab');
 
     // If we're called with a string as a parameter, just set that tab
-    if ((typeof e) === "string") {
+    if ((typeof e) === 'string') {
         target = e;
     }
     // Otherwise, treat it as an element, and select that tab.
     else {
-        target = e.target.attributes["target"].value;
+        target = e.target.attributes.target.value;
     }
 
     var found = false;
     for (var i = 0; i < elements.length; i++) {
         var element = elements[i];
 
-        if (element.id == target) {
+        if (element.id === target) {
             // If the item is already highlighted, we want to switch
             // back to the default view.
             // So as a hack, make this item invisible, and don't mark
-            // the "true" flag.  Instead, fall through below, and allow
+            // the 'true' flag.  Instead, fall through below, and allow
             // the default view to be shown.
-            if (element.style.display == 'block') {
+            if (element.style.display === 'block') {
                 element.style.display = 'none';
             }
             else {
@@ -252,9 +259,9 @@ function selectTab(e) {
 
     // If no item was found, make the code editor visible by default
     if (!found) {
-        console.log("Warning: Unrecognized element " + target
-            + ", selecting code_editor by default");
-        document.getElementById("code_editor").style.display = 'block';
+        console.log('Warning: Unrecognized element ' + target +
+            ', selecting code_editor by default');
+        document.getElementById('code_editor').style.display = 'block';
     }
 }
 
@@ -264,22 +271,24 @@ function loadExampleFromLink(e) {
     var target = e.target;
 
     // If we clicked on the <LI> outside of the link, manually select the <A> tag inside.
-    if (e.target.tagName === "LI")
+    if (e.target.tagName === 'LI') {
         target = target.firstChild;
+    }
 
     request.onreadystatechange = function () {
         if (request.readyState === 4) {
 
-            var editorBox = document.getElementById("code_editor");
-            var examplesBox = document.getElementById("examples_list");
+            var editorBox = document.getElementById('code_editor');
+            var examplesBox = document.getElementById('examples_list');
 
             examplesBox.style.display = 'none';
             editorBox.style.display = 'block';
 
-            if (request.status == 200)
+            if (request.status === 200) {
                 editor.setValue(request.responseText);
+            }
         }
-    }
+    };
     request.open('GET', target.href, true);
     request.send();
 
@@ -287,9 +296,11 @@ function loadExampleFromLink(e) {
 }
 
 function fixupExamples() {
-    var exampleCategories = document.getElementsByClassName("ExampleCategory");
-    for (var i = 0; i < exampleCategories.length; i++) {
-        var e = exampleCategories[i];
+    var i;
+    var e;
+    var exampleCategories = document.getElementsByClassName('ExampleCategory');
+    for (i = 0; i < exampleCategories.length; i++) {
+        e = exampleCategories[i];
 
         // Mark all child categories as hidden
         e.nextElementSibling.style.display = 'none';
@@ -298,11 +309,11 @@ function fixupExamples() {
         e.onclick = hideShowExampleCategory;
     }
 
-    var exampleItems = document.getElementsByClassName("ExampleItem");
-    for (var i = 0; i < exampleItems.length; i++) {
-        var e = exampleItems[i];
+    var exampleItems = document.getElementsByClassName('ExampleItem');
+    for (i = 0; i < exampleItems.length; i++) {
+        e = exampleItems[i];
 
-        e.firstChild.onclick = function () { return false; }
+        e.firstChild.onclick = function () { return false; };
         e.onclick = loadExampleFromLink;
     }
 }
@@ -314,12 +325,12 @@ function undoDeleteLocalSketch(a) {
     // In theory, we can only get here if deletedSketch exists.  If it doesn't,
     // then that's really weird.
     if (deletedSketch === undefined) {
-        console.log("No deleted sketch found");
+        console.log('No deleted sketch found');
         return false;
     }
     deletedSketch = JSON.parse(deletedSketch);
 
-    // Load the sketch back into the local sketch list, and remove it from "undo"
+    // Load the sketch back into the local sketch list, and remove it from 'undo'
     localSketches[deletedSketch.name] = deletedSketch;
     localStorage.removeItem('deletedSketch');
 
@@ -345,12 +356,12 @@ function deleteLocalSketch(a) {
     // Redraw the list of sketches, now that one is deleted
     populateSketchList();
 
-    // Add in an "Undo Delete" link
-    var li = document.createElement("li");
-    li.className = "SketchItem";
-    li.innerHTML = "Undo Delete";
+    // Add in an 'Undo Delete' link
+    var li = document.createElement('li');
+    li.className = 'SketchItem';
+    li.innerHTML = 'Undo Delete';
     li.onclick = undoDeleteLocalSketch;
-    document.getElementById("sketch_list").firstChild.appendChild(li);
+    document.getElementById('sketch_list').firstChild.appendChild(li);
 
     return false;
 }
@@ -362,86 +373,87 @@ function loadLocalSketch(e) {
 
     var sketch = localSketches[sketchName];
     if (sketch === undefined) {
-        console.log("Couldn't find local sketch " + sketchName);
+        console.log('Couldn\'t find local sketch ' + sketchName);
         return false;
     }
 
     editor.setValue(sketch.document);
-    selectTab("code_editor");
+    selectTab('code_editor');
 
     return false;
 }
 
 function populateSketchList() {
     var localSketches = getLocalSketches();
+    var li;
+    var a;
 
-    var sketchList = document.getElementById("sketch_list");
+    var sketchList = document.getElementById('sketch_list');
 
     // Remove all previous child nodes, in case we're re-populating the list.
-    var child_nodes = sketchList.childNodes;
-    for (var i = 0; i < child_nodes.length; i++)
-        sketchList.removeChild(child_nodes[i]);
+    var childNodes = sketchList.childNodes;
+    for (var i = 0; i < childNodes.length; i++) {
+        sketchList.removeChild(childNodes[i]);
+    }
 
     // Create an unordered list to store the sketch list
-    var ul = document.createElement("ul");
-    ul.className = "SketchList";
+    var ul = document.createElement('ul');
+    ul.className = 'SketchList';
 
     // Add an entry for GitHub, or add a signup link if one doesn't exists
-    if (getGithubToken() == null) {
-        var li = document.createElement("li");
+    if (getGithubToken() === null) {
+        li = document.createElement('li');
 
-        var a = document.createElement("a");
-        a.innerHTML = "Connect to GitHub";
-        a.setAttribute("href", "/connectToGitHub");
-        a.setAttribute("target", "__new");
+        a = document.createElement('a');
+        a.innerHTML = 'Connect to GitHub';
+        a.setAttribute('href', '/connectToGitHub');
+        a.setAttribute('target', '__new');
 
         li.appendChild(a);
         ul.appendChild(li);
     }
-    else {
-        ;
-    }
 
     // Add sketches stored in localStorage
-    for (name in localSketches) {
-        if (!localSketches.hasOwnProperty(name))
+    for (var name in localSketches) {
+        if (!localSketches.hasOwnProperty(name)) {
             continue;
-        var li = document.createElement("li");
-        li.className = "SketchItem";
+        }
+        li = document.createElement('li');
+        li.className = 'SketchItem';
 
-        var s = document.createElement("span");
+        var s = document.createElement('span');
         s.sketchName = name;
         s.onclick = loadLocalSketch;
         s.innerHTML = name;
 
-        var a = document.createElement("a");
-        a.setAttribute("href", "#deleteLocalSketch");
-        a.className = "SketchItemDelete";
+        a = document.createElement('a');
+        a.setAttribute('href', '#deleteLocalSketch');
+        a.className = 'SketchItemDelete';
         a.sketchName = name;
         a.onclick = deleteLocalSketch;
-        a.innerHTML = "[X]";
+        a.innerHTML = '[X]';
 
         li.appendChild(s);
         li.appendChild(a);
         ul.appendChild(li);
     }
 
-    // Add a "Save As" box
+    // Add a 'Save As' box
     {
-        var lab = document.createElement("label");
-        lab.setAttribute("for", "saveNewSketchName");
-        lab.innerHTML = "Save As:";
+        var lab = document.createElement('label');
+        lab.setAttribute('for', 'saveNewSketchName');
+        lab.innerHTML = 'Save As:';
 
-        var tb = document.createElement("input");
-        tb.name = "saveNewSketchName";
-        tb.id = "saveNewSketchName";
-        tb.type = "text";
+        var tb = document.createElement('input');
+        tb.name = 'saveNewSketchName';
+        tb.id = 'saveNewSketchName';
+        tb.type = 'text';
 
-        var sub = document.createElement("input");
-        sub.type = "submit";
+        var sub = document.createElement('input');
+        sub.type = 'submit';
         sub.onclick = saveLocalSketchAs;
 
-        var li = document.createElement("li");
+        li = document.createElement('li');
         li.appendChild(lab);
         li.appendChild(tb);
         li.appendChild(sub);
@@ -454,9 +466,9 @@ function populateSketchList() {
     sketchList.appendChild(ul);
 
     //             <ol>
-    //                    <li class="ExampleCategory">Basics</li>
+    //                    <li class='ExampleCategory'>Basics</li>
     //                    <ul>
-    //                        <li class="ExampleItem"><a href="examples/01.Basics/AnalogReadSerial/AnalogReadSerial.ino">Analog Read Serial</a></li>
+    //                        <li class='ExampleItem'><a href='examples/01.Basics/AnalogReadSerial/AnalogReadSerial.ino'>Analog Read Serial</a></li>
 }
 
 function renderWave(e) {
@@ -465,8 +477,9 @@ function renderWave(e) {
     var end = aud.duration;
     var canvas = getCanvas();
 
-    if (!canvas || !canvas.getContext || !mod_controller || !end)
+    if (!canvas || !canvas.getContext || !modController || !end) {
         return;
+    }
 
     var strip = canvas.getContext('2d');
 
@@ -481,7 +494,7 @@ function renderWave(e) {
     var y;
     // Draw scale lines at 10% interval
     strip.lineWidth = 1.0;
-    strip.strokeStyle = "#55a";
+    strip.strokeStyle = '#55a';
     strip.beginPath();
     y = 1 * (h / 10);
     strip.moveTo(0, y);
@@ -512,17 +525,18 @@ function renderWave(e) {
     strip.lineTo(w, y);
     strip.stroke();
 
-    strip.strokeStyle = "#fff";
+    strip.strokeStyle = '#fff';
     strip.lineWidth = 1.0;
 
-    var buffer = mod_controller.getPcmData();
+    var buffer = modController.getPcmData();
     var b = Math.floor(buffer.length * ((current * 1.0) / end));
     var lastSample = (buffer[b++] + 32768) / 65536.0; // map -32768..32768 to 0..1
 
     for (var x = 1; x < canvas.width; x++) {
         var sample = (buffer[b++] + 32768) / 65536.0;
-        if (b > buffer.length)
+        if (b > buffer.length) {
             break;
+        }
         strip.beginPath();
         strip.moveTo(x - 1, h - lastSample * h);
         strip.lineTo(x, h - sample * h);
