@@ -10,6 +10,23 @@ var codeobj = {};
 var modController;
 var autosaveGeneration = null;
 var lbrEnable = true;
+var lamejs;
+
+var isIE11 = /Trident.*rv[ :]*11\./.test(navigator.userAgent);
+
+/* Internet Explorer doesn't support WAV, so render an MP3 */
+var audioFormat = 'wav';
+if (isIE11) {
+    /* LameJS is LGPL, so link it separately, and only if necessary */
+    document.write("<script language='javascript' type='text/javascript' src='js/lame.min.js'><\/script>");
+
+    /* IE doesn't support log10, so polyfill it */
+    Math.log10 = function (x) {
+        return Math.log(x) / Math.LN10;
+    };
+
+    audioFormat = 'mp3';
+}
 
 function getAudioElement() {
     return document.getElementById('audio_output');
@@ -52,7 +69,11 @@ function buildResult(results, textStatus, status, jqXHR) {
             }
         });
 
-        modController.transcodeToAudioTag(dataU8, getAudioElement(), 'wav', lbrEnable, 2);
+        modController.transcodeToAudioTag(dataU8,
+            getAudioElement(),
+            audioFormat,
+            lbrEnable,
+            2);
 
         getWaveFooter().style.display = 'block';
     } else {
@@ -69,12 +90,22 @@ function clickUpload(e) {
 
     // Play empty data onclick to enable audio playback.
     var audioTag = getAudioElement();
-    var pcmObj = new pcmjs({
-        channels: 1,
-        rate: 44100,
-        depth: 16
-    }).toWav([0, 0]);
-    audioTag.src = pcmObj.encode();
+    if (isIE11) {
+        audioTag.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAA' +
+            'ADTGF2ZjU2LjM2LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAA' +
+            'AAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIADAwMDAwMDAwM' +
+            'DAwMDAwMDAwMDAwMDAwMDV1dXV1dXV1dXV1dXV1dXV1dXV1d' +
+            'XV1dXV6urq6urq6urq6urq6urq6urq6urq6urq6v////////' +
+            '////////////////////////8AAAAATGF2YzU2LjQxAAAAAA' +
+            'AAAAAAAAAAJAAAAAAAAAAAASDs90hvAAAAAAAAAAAAAAAAAA' +
+            'AA//MUZAAAAAGkAAAAAAAAA0gAAAAATEFN//MUZAMAAAGkAA' +
+            'AAAAAAA0gAAAAARTMu//MUZAYAAAGkAAAAAAAAA0gAAAAAOT' +
+            'ku//MUZAkAAAGkAAAAAAAAA0gAAAAANVVV';
+    }
+    else {
+        audioTag.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAA' +
+            'ABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+    }
     audioTag.play();
 
     if (modController) {
