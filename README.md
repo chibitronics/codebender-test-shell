@@ -20,4 +20,5 @@ You may need to install the "gulp" program, in order to be able to build code:
 
 Then build and serve using gulp:
 
+    gulp build
     gulp watch
