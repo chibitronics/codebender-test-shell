@@ -16,18 +16,14 @@
     "unused": "vars",
     "trailing": true,
     "globals": {
-        "after": false,
-        "afterEach": false,
         "atob": true,
-        "before": false,
-        "beforeEach": false,
         "CodeMirror": true,
         "context": false,
         "define": true,
         "describe": false,
         "document": true,
-        "it": false,
         "localStorage": true,
+        "navigator": true,
         "window": false
     }
 }
