@@ -1,6 +1,5 @@
 var ModulationController = require('chibitronics-ltc-modulate');
 var CodeMirror = require('codemirror');
-var pcmjs = require('pcmjs');
 require('codemirror/mode/clike/clike');
 require('codemirror/addon/lint/lint');
 require('./chibi-lint.js');
@@ -9,7 +8,6 @@ var editor;
 var codeobj = {};
 var modController;
 var autosaveGeneration = null;
-var lamejs;
 
 var isIE11 = /Trident.*rv[ :]*11\./.test(navigator.userAgent);
 
@@ -17,7 +15,7 @@ var isIE11 = /Trident.*rv[ :]*11\./.test(navigator.userAgent);
 var audioFormat = 'wav';
 if (isIE11) {
     /* LameJS is LGPL, so link it separately, and only if necessary */
-    document.write("<script language='javascript' type='text/javascript' src='js/lame.min.js'></script>");
+    document.write('<script language="javascript" type="text/javascript" src="js/lame.min.js"></script>');
 
     /* IE doesn't support log10, so polyfill it */
     Math.log10 = function (x) {
@@ -60,7 +58,7 @@ function buildResult(results, textStatus, status, jqXHR) {
             modController.stop();
         }
 
-        lbrEnable = document.getElementById('lbr_button').checked;
+        var lbrEnable = document.getElementById('lbr_button').checked;
         var modulationVersion = 1;
         if (document.getElementById('mod_version').checked) {
             modulationVersion = 2;
