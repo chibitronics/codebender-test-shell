@@ -91,20 +91,26 @@ function clickUpload(e) {
     // Play empty data onclick to enable audio playback.
     var audioTag = getAudioElement();
     if (isIE11) {
-        audioTag.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAA' +
-            'ADTGF2ZjU2LjM2LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAA' +
-            'AAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIADAwMDAwMDAwM' +
-            'DAwMDAwMDAwMDAwMDAwMDV1dXV1dXV1dXV1dXV1dXV1dXV1d' +
-            'XV1dXV6urq6urq6urq6urq6urq6urq6urq6urq6v////////' +
-            '////////////////////////8AAAAATGF2YzU2LjQxAAAAAA' +
-            'AAAAAAAAAAJAAAAAAAAAAAASDs90hvAAAAAAAAAAAAAAAAAA' +
-            'AA//MUZAAAAAGkAAAAAAAAA0gAAAAATEFN//MUZAMAAAGkAA' +
-            'AAAAAAA0gAAAAARTMu//MUZAYAAAGkAAAAAAAAA0gAAAAAOT' +
-            'ku//MUZAkAAAGkAAAAAAAAA0gAAAAANVVV';
+        audioTag.src = 'data:audio/mp3;base64,' +
+            'SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2Z' +
+            'jU2LjM2LjEwMAAAAAAAAAAAAAAA//OEAA' +
+            'AAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8' +
+            'AAAAEAAABIADAwMDAwMDAwMDAwMDAwMDA' +
+            'wMDAwMDAwMDV1dXV1dXV1dXV1dXV1dXV1' +
+            'dXV1dXV1dXV6urq6urq6urq6urq6urq6u' +
+            'rq6urq6urq6v/////////////////////' +
+            '///////////8AAAAATGF2YzU2LjQxAAAA' +
+            'AAAAAAAAAAAAJAAAAAAAAAAAASDs90hvA' +
+            'AAAAAAAAAAAAAAAAAAA//MUZAAAAAGkAA' +
+            'AAAAAAA0gAAAAATEFN//MUZAMAAAGkAAA' +
+            'AAAAAA0gAAAAARTMu//MUZAYAAAGkAAAA' +
+            'AAAAA0gAAAAAOTku//MUZAkAAAGkAAAAA' +
+            'AAAA0gAAAAANVVV';
     }
     else {
-        audioTag.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAA' +
-            'ABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+        audioTag.src = 'data:audio/wav;base64,' +
+            'UklGRigAAABXQVZFZm10IBIAAAABAAEAR' +
+            'KwAAIhYAQACABAAAABkYXRhAgAAAAEA';
     }
     audioTag.play();
 
