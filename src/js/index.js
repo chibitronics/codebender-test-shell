@@ -54,7 +54,7 @@ function buildResult(results, textStatus, status, jqXHR) {
         var data = atob(results.output);
         var dataU8 = new Uint8Array(data.length);
         for (var i = 0; i < data.length; i++) {
-            dataU8[i] = data[i];
+            dataU8[i] = data.charCodeAt(i);
         }
 
         if (modController) {
