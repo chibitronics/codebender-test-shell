@@ -9,7 +9,6 @@ var editor;
 var codeobj = {};
 var modController;
 var autosaveGeneration = null;
-var lbrEnable = true;
 var lamejs;
 
 var isIE11 = /Trident.*rv[ :]*11\./.test(navigator.userAgent);
@@ -61,6 +60,12 @@ function buildResult(results, textStatus, status, jqXHR) {
             modController.stop();
         }
 
+        lbrEnable = document.getElementById('lbr_button').checked;
+        var modulationVersion = 1;
+        if (document.getElementById('mod_version').checked) {
+            modulationVersion = 2;
+        }
+
         modController = new ModulationController({
             canvas: getCanvas(),
             lbr: lbrEnable,
@@ -85,8 +90,6 @@ function buildResult(results, textStatus, status, jqXHR) {
 function clickUpload(e) {
     selectTab(e);
     document.getElementById('buildoutput').innerHTML = 'Building code...';
-
-    lbrEnable = document.getElementById('lbr_button').checked;
 
     // Play empty data onclick to enable audio playback.
     var audioTag = getAudioElement();
