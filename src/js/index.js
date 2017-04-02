@@ -78,7 +78,7 @@ function buildResult(results, textStatus, status, jqXHR) {
             getAudioElement(),
             audioFormat,
             lbrEnable,
-            2);
+            modulationVersion);
 
         getWaveFooter().style.display = 'block';
     } else {
