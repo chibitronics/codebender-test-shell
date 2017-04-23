@@ -15,6 +15,7 @@ var isIE11 = /Trident.*rv[ :]*11\./.test(navigator.userAgent);
 var audioFormat = 'wav';
 if (isIE11) {
     /* LameJS is LGPL, so link it separately, and only if necessary */
+    /*jslint evil: true */
     document.write('<script language="javascript" type="text/javascript" src="js/lame.min.js"></script>');
 
     /* IE doesn't support log10, so polyfill it */
