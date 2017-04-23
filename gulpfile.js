@@ -11,6 +11,7 @@ var htmlmin = require('gulp-htmlmin');
 var gzip = require('gulp-gzip');
 var brotli = require('gulp-brotli');
 var gzipStatic = require('connect-gzip-static');
+var argv = require('yargs').argv;
 
 // Build Dependencies
 var browserify = require('gulp-browserify');
@@ -19,18 +20,37 @@ var uglify = require('gulp-uglify');
 // Development Dependencies
 var jshint = require('gulp-jshint');
 
-gulp.task('serve', serve('build'));
+var compileUrl = argv.compileUrl || '//chibitronics.com/compile';
+
+var configHandler =         /* Add a live url, /config.json, that returns our current configuration. */
+    function (req, res, next) {
+        if (req.url !== '/config.json') {
+            return next();
+        }
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        res.end(JSON.stringify({
+            compileUrl: compileUrl
+        }));
+    };
+
+
+gulp.task('serve', serve({
+    root: 'build',
+    middlewares: [configHandler]
+}));
 gulp.task('serve-prod', serve({
     root: 'build',
     port: 80,
     hostname: "0.0.0.0",
-    middlewares: [gzipStatic(__dirname + '/build')]
+    middlewares: [
+        configHandler,
+        gzipStatic(__dirname + '/build')
+    ]
 }));
 
 gulp.task('build-html', function () {
     return gulp.src('src/*.html') /* Load all HTML files */
         .pipe(useref()) /* Combine files into one */
-        //.pipe(gulpIf('*.js', uglify())) /* minify javascript files */
         .pipe(gulpIf('*.css', cssnano())) /* minify css files */
         .pipe(gulpIf('*.html', htmlmin({ collapseWhitespace: false, minifyJS: false, minifyCSS: false }))) /* also minify html */
         .pipe(gulp.dest('build')) /* Write out to 'html' output directory */
@@ -121,7 +141,7 @@ gulp.task('build', function (callback) {
     );
 });
 
-gulp.task('release', function (callback) {
+gulp.task('default', function (callback) {
     runSequence('clean:build', 'build', ['compress-gz',
         'compress-br',
         'compress-gz-examples',

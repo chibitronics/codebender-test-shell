@@ -11,6 +11,11 @@ var autosaveGeneration = null;
 
 var isIE11 = /Trident.*rv[ :]*11\./.test(navigator.userAgent);
 
+// This gets replaced by reading /config.json at runtime.
+var config = {
+    compileUrl: '//ltc.xobs.io/compile'
+};
+
 /* Internet Explorer doesn't support WAV, so render an MP3 */
 var audioFormat = 'wav';
 if (isIE11) {
@@ -141,7 +146,7 @@ function clickUpload(e) {
             buildResult(request.responseText, request.statusText, request.status, request);
         }
     };
-    request.open('POST', 'https://ltc.xobs.io/compile', true);
+    request.open('POST', config.compileUrl, true);
     request.send(JSON.stringify(codeobj));
 
     return false;
@@ -589,6 +594,19 @@ function installWaveRenderer() {
     aud.ontimeupdate = renderWave;
 }
 
+// Fetch /config.json and update the global "config" variable.
+function fetchConfiguration() {
+    var request = new window.XMLHttpRequest();
+    request.onreadystatechange = function () {
+        if ((request.readyState === 4) && (request.status === 200)) {
+            config = JSON.parse(request.responseText);
+        }
+    };
+    request.open('GET', '/config.json', true);
+    request.send(JSON.stringify(codeobj));
+}
+
+fetchConfiguration();
 installHooks();
 initializeEditor();
 resizeHeader();
