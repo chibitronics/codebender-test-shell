@@ -10,6 +10,7 @@ var browserSync = require('browser-sync').create();
 var htmlmin = require('gulp-htmlmin');
 var gzip = require('gulp-gzip');
 var brotli = require('gulp-brotli');
+var gzipStatic = require('connect-gzip-static');
 
 // Build Dependencies
 var browserify = require('gulp-browserify');
@@ -22,7 +23,8 @@ gulp.task('serve', serve('build'));
 gulp.task('serve-prod', serve({
     root: 'build',
     port: 80,
-    hostname: "0.0.0.0"
+    hostname: "0.0.0.0",
+    middlewares: [gzipStatic(__dirname + '/build')]
 }));
 
 gulp.task('build-html', function () {
