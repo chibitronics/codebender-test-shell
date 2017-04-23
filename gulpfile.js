@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var useref = require('gulp-useref');
 var gulpIf = require('gulp-if');
+var serve = require('gulp-serve');
 var cssnano = require('gulp-cssnano');
 var imagemin = require('gulp-imagemin');
 var del = require('del');
@@ -14,6 +15,13 @@ var uglify = require('gulp-uglify');
 
 // Development Dependencies
 var jshint = require('gulp-jshint');
+
+gulp.task('serve', serve('build'));
+gulp.task('serve-prod', serve({
+    root: 'build',
+    port: 80,
+    hostname: "0.0.0.0"
+}));
 
 gulp.task('build-html', function () {
     return gulp.src('src/*.html') /* Load all HTML files */
