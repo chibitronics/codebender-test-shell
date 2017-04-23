@@ -98,11 +98,16 @@ gulp.task('build-scripts', function () {
         .pipe(browserify({
             insertGlobals: true
         }))
-        .pipe(uglify())
         .pipe(gulp.dest('./build/js'));
     return gulp.src('node_modules/lamejs/lame.min.js')
         .pipe(gulp.dest('build/js/'));
 });
+
+gulp.task('minify', function () {
+    gulp.src('build/js/index.js')
+        .pipe(uglify())
+        .pipe(gulp.dest('./build/js/'));
+})
 
 gulp.task('copy-examples', function () {
     return gulp.src('examples/**/*')
@@ -142,7 +147,7 @@ gulp.task('build', function (callback) {
 });
 
 gulp.task('default', function (callback) {
-    runSequence('clean:build', 'build', ['compress-gz',
+    runSequence('clean:build', 'build', 'minify', ['compress-gz',
         'compress-br',
         'compress-gz-examples',
         'compress-br-examples'
