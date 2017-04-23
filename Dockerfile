@@ -14,4 +14,4 @@ RUN npm install
 RUN gulp build
 
 EXPOSE 80
-CMD ["gulp", "serve-prod"]
+CMD ./entrypoint.sh
