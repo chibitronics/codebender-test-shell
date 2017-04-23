@@ -8,6 +8,8 @@ var del = require('del');
 var runSequence = require('run-sequence');
 var browserSync = require('browser-sync').create();
 var htmlmin = require('gulp-htmlmin');
+var gzip = require('gulp-gzip');
+var brotli = require('gulp-brotli');
 
 // Build Dependencies
 var browserify = require('gulp-browserify');
@@ -32,6 +34,36 @@ gulp.task('build-html', function () {
         .pipe(gulp.dest('build')) /* Write out to 'html' output directory */
 });
 
+gulp.task('compress-gz', function () {
+    return gulp.src(['build/**/*.html', 'build/**/*.css', 'build/**/*.js'])
+        .pipe(gzip())
+        .pipe(gulp.dest('build'))
+});
+
+gulp.task('compress-br', function () {
+    return gulp.src(['build/**/*.html', 'build/**/*.css', 'build/**/*.js'])
+        .pipe(brotli.compress({
+            quality: 11,
+            skipLarger: true
+        }))
+        .pipe(gulp.dest('build'))
+});
+
+gulp.task('compress-br-examples', function () {
+    return gulp.src('build/examples/**')
+        .pipe(brotli.compress({
+            quality: 11,
+            skipLarger: true
+        }))
+        .pipe(gulp.dest('build/examples'))
+})
+
+gulp.task('compress-gz-examples', function () {
+    return gulp.src('build/examples/**')
+        .pipe(gzip())
+        .pipe(gulp.dest('build/examples'))
+})
+
 gulp.task('lint-src', function () {
     return gulp.src('./src/**/*.js')
         .pipe(jshint())
@@ -44,6 +76,7 @@ gulp.task('build-scripts', function () {
         .pipe(browserify({
             insertGlobals: true
         }))
+        .pipe(uglify())
         .pipe(gulp.dest('./build/js'));
     return gulp.src('node_modules/lamejs/lame.min.js')
         .pipe(gulp.dest('build/js/'));
@@ -80,7 +113,18 @@ gulp.task('build', function (callback) {
     runSequence('clean:build', ['build-html',
         'lint-src', 'build-scripts',
         'copy-images',
-        'copy-examples'],
+        'copy-examples',
+    ],
+        callback
+    );
+});
+
+gulp.task('release', function (callback) {
+    runSequence('clean:build', 'build', ['compress-gz',
+        'compress-br',
+        'compress-gz-examples',
+        'compress-br-examples'
+    ],
         callback
     );
 });
