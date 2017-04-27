@@ -4,7 +4,7 @@ var gulpIf = require('gulp-if');
 var serve = require('gulp-serve');
 var cssnano = require('gulp-cssnano');
 var imagemin = require('gulp-imagemin');
-var del = require('del');
+var fs = require('fs-extra');
 var runSequence = require('run-sequence');
 var browserSync = require('browser-sync').create();
 var htmlmin = require('gulp-htmlmin');
@@ -121,7 +121,8 @@ gulp.task('copy-images', function () {
 });
 
 gulp.task('clean:build', function () {
-    return del.sync('build');
+    try { fs.removeSync('build'); } catch (e) { };
+    return fs.ensureDirSync('build');
 });
 
 gulp.task('cache:clear', function (callback) {
