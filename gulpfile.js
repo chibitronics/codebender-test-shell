@@ -33,20 +33,24 @@ var configHandler =         /* Add a live url, /config.json, that returns our cu
         }));
     };
 
+gulp.task('serve', function () {
+    serve({
+        root: 'build',
+        middlewares: [configHandler]
+    })
+});
 
-gulp.task('serve', serve({
-    root: 'build',
-    middlewares: [configHandler]
-}));
-gulp.task('serve-prod', serve({
-    root: 'build',
-    port: 80,
-    hostname: "0.0.0.0",
-    middlewares: [
-        configHandler,
-        gzipStatic(__dirname + '/build')
-    ]
-}));
+gulp.task('serve-prod', function () {
+    serve({
+        root: 'build',
+        port: 80,
+        hostname: "0.0.0.0",
+        middlewares: [
+            configHandler,
+            gzipStatic(__dirname + '/build')
+        ]
+    })
+});
 
 gulp.task('build-html', function () {
     return gulp.src('src/*.html') /* Load all HTML files */
@@ -78,36 +82,39 @@ gulp.task('compress-br-examples', function () {
             skipLarger: true
         }))
         .pipe(gulp.dest('build/examples'))
-})
+});
 
 gulp.task('compress-gz-examples', function () {
     return gulp.src('build/examples/**')
         .pipe(gzip())
         .pipe(gulp.dest('build/examples'))
-})
+});
 
 gulp.task('lint-src', function () {
     return gulp.src('./src/**/*.js')
         .pipe(jshint())
-        .pipe(jshint.reporter('default'));
+        .pipe(jshint.reporter('default'))
 });
 
 gulp.task('build-scripts', function () {
     // Single entry point to browserify
-    gulp.src('src/js/index.js')
+    return gulp.src('src/js/index.js')
         .pipe(browserify({
             insertGlobals: true
         }))
-        .pipe(gulp.dest('./build/js'));
+        .pipe(gulp.dest('./build/js'))
+});
+
+gulp.task('build-lame', function () {
     return gulp.src('node_modules/lamejs/lame.min.js')
-        .pipe(gulp.dest('build/js/'));
+        .pipe(gulp.dest('build/js/'))
 });
 
 gulp.task('minify', function () {
-    gulp.src('build/js/index.js')
+    return gulp.src('build/js/index.js')
         .pipe(uglify())
-        .pipe(gulp.dest('./build/js/'));
-})
+        .pipe(gulp.dest('./build/js/'))
+});
 
 gulp.task('copy-examples', function () {
     return gulp.src('examples/**/*')
@@ -121,7 +128,8 @@ gulp.task('copy-images', function () {
 });
 
 gulp.task('clean:build', function () {
-    try { fs.removeSync('build'); } catch (e) { };
+    fs.ensureDirSync('build');
+    fs.removeSync('build');
     return fs.ensureDirSync('build');
 });
 
@@ -139,7 +147,7 @@ gulp.task('browserSync', function () {
 
 gulp.task('build', function (callback) {
     runSequence('clean:build', ['build-html',
-        'lint-src', 'build-scripts',
+        'lint-src', 'build-scripts', 'build-lame',
         'copy-images',
         'copy-examples',
     ],
