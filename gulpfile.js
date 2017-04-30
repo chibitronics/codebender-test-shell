@@ -14,8 +14,13 @@ var gzipStatic = require('connect-gzip-static');
 var argv = require('yargs').argv;
 
 // Build Dependencies
-var browserify = require('gulp-browserify');
+var browserify = require('browserify');
+var babelify = require('babelify');
+var vinylBuffer = require('vinyl-buffer');
+var gutil = require('gulp-util');
+var vinylSourceStream = require('vinyl-source-stream');
 var uglify = require('gulp-uglify');
+var sourcemaps = require('gulp-sourcemaps');
 
 // Development Dependencies
 var jshint = require('gulp-jshint');
@@ -33,24 +38,23 @@ var configHandler =         /* Add a live url, /config.json, that returns our cu
         }));
     };
 
-gulp.task('serve', function () {
-    serve({
-        root: 'build',
-        middlewares: [configHandler]
-    })
-});
+// gulp-serve requires the root directory to exist already.
+// Put this here to make sure they can start up.
+fs.mkdirpSync('build');
+gulp.task('serve', serve({
+    root: 'build',
+    middlewares: [configHandler]
+}));
 
-gulp.task('serve-prod', function () {
-    serve({
-        root: 'build',
-        port: 80,
-        hostname: "0.0.0.0",
-        middlewares: [
-            configHandler,
-            gzipStatic(__dirname + '/build')
-        ]
-    })
-});
+gulp.task('serve-prod', serve({
+    root: 'build',
+    port: 80,
+    hostname: "0.0.0.0",
+    middlewares: [
+        configHandler,
+        gzipStatic(__dirname + '/build')
+    ]
+}));
 
 gulp.task('build-html', function () {
     return gulp.src('src/*.html') /* Load all HTML files */
@@ -98,22 +102,28 @@ gulp.task('lint-src', function () {
 
 gulp.task('build-scripts', function () {
     // Single entry point to browserify
-    return gulp.src('src/js/index.js')
-        .pipe(browserify({
-            insertGlobals: true
-        }))
+    var b = browserify({
+        debug: true,
+        insertGlobals: true,
+        entries: 'index.js',
+        basedir: 'src/js',
+        transform: [babelify]
+    });
+
+    return b.bundle()
+        .pipe(vinylSourceStream('index.js'))
+        .pipe(vinylBuffer())
+        .pipe(sourcemaps.init({ loadMaps: true }))
+        // Add gulp plugins to the pipeline here.
+        .pipe(uglify())
+        .on('error', gutil.log)
+        .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('./build/js'))
 });
 
 gulp.task('build-lame', function () {
     return gulp.src('node_modules/lamejs/lame.min.js')
         .pipe(gulp.dest('build/js/'))
-});
-
-gulp.task('minify', function () {
-    return gulp.src('build/js/index.js')
-        .pipe(uglify())
-        .pipe(gulp.dest('./build/js/'))
 });
 
 gulp.task('copy-examples', function () {
@@ -156,7 +166,7 @@ gulp.task('build', function (callback) {
 });
 
 gulp.task('default', function (callback) {
-    runSequence('clean:build', 'build', 'minify', ['compress-gz',
+    runSequence('clean:build', 'build', ['compress-gz',
         'compress-br',
         'compress-gz-examples',
         'compress-br-examples'
