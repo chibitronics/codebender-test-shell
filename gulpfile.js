@@ -21,6 +21,7 @@ var gutil = require('gulp-util');
 var vinylSourceStream = require('vinyl-source-stream');
 var uglify = require('gulp-uglify');
 var sourcemaps = require('gulp-sourcemaps');
+var pump = require('pump');
 
 // Development Dependencies
 var jshint = require('gulp-jshint');
@@ -40,21 +41,25 @@ var configHandler =         /* Add a live url, /config.json, that returns our cu
 
 // gulp-serve requires the root directory to exist already.
 // Put this here to make sure they can start up.
-fs.mkdirpSync('build');
 gulp.task('serve', serve({
     root: 'build',
     middlewares: [configHandler]
 }));
 
-gulp.task('serve-prod', serve({
-    root: 'build',
-    port: 80,
-    hostname: "0.0.0.0",
-    middlewares: [
-        configHandler,
-        gzipStatic(__dirname + '/build')
-    ]
-}));
+// This will fail if there is no "build" directory.
+// That's fine, because it's impossible to serve without
+// a build directory present.
+try {
+    gulp.task('serve-prod', serve({
+        root: 'build',
+        port: 80,
+        hostname: "0.0.0.0",
+        middlewares: [
+            configHandler,
+            gzipStatic(__dirname + '/build')
+        ]
+    }));
+} catch (e) { };
 
 gulp.task('build-html', function () {
     return gulp.src('src/*.html') /* Load all HTML files */
@@ -100,25 +105,54 @@ gulp.task('lint-src', function () {
         .pipe(jshint.reporter('default'))
 });
 
-gulp.task('build-scripts', function () {
+gulp.task('build-scripts', function (cb) {
     // Single entry point to browserify
     var b = browserify({
         debug: true,
         insertGlobals: true,
         entries: 'index.js',
-        basedir: 'src/js',
-        transform: [babelify]
+        basedir: 'src/js'
     });
 
-    return b.bundle()
-        .pipe(vinylSourceStream('index.js'))
-        .pipe(vinylBuffer())
-        .pipe(sourcemaps.init({ loadMaps: true }))
+    pump([
+        b.bundle(),
+        vinylSourceStream('index.js'),
+        vinylBuffer(),
+        gulp.dest('./build/js')
+    ],
+        cb
+    );
+
+});
+
+gulp.task('build-scripts-minimal', function (cb) {
+    // Single entry point to browserify
+    var b = browserify({
+        debug: false,
+        insertGlobals: true,
+        entries: 'index.js',
+        basedir: 'src/js'
+    });
+
+    b.transform(babelify, {
+        presets: ['es2015'],
+        compact: false,
+        global: true,
+        ignore: /\/node_modules\/(?!muffler\/)/
+    });
+
+    pump([
+        b.bundle(),
+        vinylSourceStream('index.js'),
+        vinylBuffer(),
+        sourcemaps.init({ loadMaps: true }),
         // Add gulp plugins to the pipeline here.
-        .pipe(uglify())
-        .on('error', gutil.log)
-        .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('./build/js'))
+        uglify(),
+        sourcemaps.write('./'),
+        gulp.dest('./build/js')
+    ],
+        cb
+    );
 });
 
 gulp.task('build-lame', function () {
@@ -166,11 +200,13 @@ gulp.task('build', function (callback) {
 });
 
 gulp.task('default', function (callback) {
-    runSequence('clean:build', 'build', ['compress-gz',
-        'compress-br',
-        'compress-gz-examples',
-        'compress-br-examples'
-    ],
+    runSequence('clean:build', 'build', 'build-scripts-minimal',
+        [
+            'compress-gz',
+            'compress-br',
+            'compress-gz-examples',
+            'compress-br-examples'
+        ],
         callback
     );
 });
