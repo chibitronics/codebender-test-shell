@@ -18,10 +18,12 @@
 <body class="Site">
     <header class="Site-header" id="Site-header">
         <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
-        <img src="/images/chibitronics_demo-header.png" hspace="10" width="200" height="46">
-        <div class="red_button" id="upload_button" target="code_editor">Upload</div>
-        <div class="red_button" id="examples_button" target="examples_list">Examples</div>
-        <div class="red_button" id="saveas_button" target="sketch_list">Save As...</div>
+        <img class="logo" src="/images/chibitronics_demo-header.png" width="200" height="46">
+        <div class="button_group">
+            <div class="button" id="upload_button" target="code_editor">Upload</div>
+            <div class="button" id="examples_button" target="examples_list">Examples</div>
+            <div class="button" id="saveas_button" target="sketch_list">Save As...</div>
+        </div>
 
         <select name="fqbn" id="fqbn">
             <option value="chibitronics:esplanade:code" selected>Chibitronics Code</option>
@@ -33,17 +35,23 @@
         <div id="buildoutput" style="display: none"></div>
 
         <!-- Rounded switch -->
-        <div class="switch_text">LBR mode</div>
-        <label class="switch" for="lbr_button">
-            <input type="checkbox" id="lbr_button">
-            <div class="slider round"></div>
-        </label>
+        <div class="switch_group">
+            <div class="switch_container">
+                <div class="switch_text">LBR mode</div>
+                <label class="switch" for="lbr_button">
+                    <input type="checkbox" id="lbr_button">
+                    <div class="slider round"></div>
+                </label>
+            </div>
 
-        <div class="switch_text">New striping</div>
-        <label class="switch" for="mod_version">
-            <input type="checkbox" id="mod_version">
-            <div class="slider round"></div>
-        </label>
+            <div class="switch_container">
+                <div class="switch_text">New striping</div>
+                <label class="switch" for="mod_version">
+                    <input type="checkbox" id="mod_version">
+                    <div class="slider round"></div>
+                </label>
+            </div>
+        </div>
     </header>
     <div id="main" class="Site-content">
         <div id="internal_error_dialog" style="display:none" title="Internal Error">
