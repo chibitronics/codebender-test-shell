@@ -14,7 +14,7 @@ html {
 	position: fixed;
 	z-index: 5000;
 	width: 100%;
-    background: Cornsilk;
+    background: #17C7D1;
     padding: 10px;
     margin: 0;
 }
@@ -80,12 +80,12 @@ html {
 }
 
 .button {
-	background: #ffc600;
+	background: #f9f9f7;
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	border-radius: 4px;
     padding: 14px 20px;
-	color: black;
+	color: #17C7D1;
 	font-size: 17px;
 	font-family: Helvetica, Arial, Sans-Serif;
 	text-decoration: none;
@@ -126,24 +126,28 @@ html {
 }
 
 .ExampleItem > a {
-    font-size: 25px;
+    color: #000;
+    font-size: 18px;
 	font-family: Helvetica, Arial, Sans-Serif;
     text-decoration: none;
 }
 
 .ExampleItem {
-    border-top: 1px solid #f79797;
+    border-top: 1px solid #000;
     margin-top: 10px;
+    padding-top: 10px;
     vertical-align: middle;
     display: block;
     cursor: pointer;
 }
 
 .ExampleCategory {
-    font-size: 25px;
-	font-family: Helvetica, Arial, Sans-Serif;
-    border-top: 1px solid #f79797;
+    color: #17C7D1;
+    font-size: 18px;
+    font-family: Helvetica, Arial, Sans-Serif;
+    border-top: 1px solid #000;
     margin-top: 10px;
+    padding-top: 10px;
     vertical-align: middle;
     cursor: pointer;
 }
@@ -230,7 +234,7 @@ input:checked + .slider:before {
     border-radius: 50%;
 }
 
-@media only screen and (max-width: 574px) {
+@media only screen and (max-width: 520px) {
     .button_group {
         display:inline-block;
         clear: both;
@@ -255,9 +259,10 @@ input:checked + .slider:before {
     }
 }
 
-@media only screen and (max-width: 879px) {
+@media only screen and (max-width: 845px) {
     #audio_output {
-        margin-top: 20px;
+        margin-top: 10px;
+        clear: both;
     }
     .switch_group {
         display: inline-block;
