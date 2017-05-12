@@ -225,6 +225,14 @@ input:checked + .slider:before {
     transform: translateX(26px);
 }
 
+/* code syntax colors */
+
+.cm-s-default .cm-def {color: #bb2325;}
+.cm-s-default .cm-property {color: #268e98;}
+.cm-s-default .cm-operator {color: #bc942e;}
+.cm-s-default .cm-variable {color: #268e98;}
+.cm-s-default .cm-comment {color: #bc942e;}
+
 /* Rounded sliders */
 .slider.round {
     border-radius: 34px;
