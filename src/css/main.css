@@ -94,9 +94,14 @@ html {
 	margin-right: 5px;
 	margin-left: 5px;
 }
-.red_button:hover {
-}
-.red_button:active {
+
+.teal_button {
+    background: #17C7D1;
+    color: #fff !important; 
+    border-radius: 4px;
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    display: inline-block;
 }
 
 .CodeMirror {
@@ -158,19 +163,24 @@ html {
 }
 
 .SketchList {
-    border-top: 1px solid #f79797;
-    margin-top: 10px;
+    margin-top: 30px;
     vertical-align: middle;
     display: block;
     cursor: pointer;
 
-	font-size: 25px;
+	font-size: 18px;
 	font-family: Helvetica, Arial, Sans-Serif;
     text-decoration: none;
 }
 
 .SketchList > li {
 	display: block;
+    margin-top: 10px;
+}
+
+.SketchList > li a {
+    color: #17C7D1;
+    text-decoration: none;
 }
 
 
