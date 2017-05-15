@@ -1,0 +1,19 @@
+sudo: required
+
+language: c
+
+services:
+  - docker
+
+before_install:
+  - docker build -t chibitronics/ltc-webview-amd64:local .
+  - docker run --name ltc-webview-node -d -p 127.0.0.1:80:80 chibitronics/ltc-compiler-amd64:local
+  - docker ps -a
+
+script:
+  - docker ps | grep ltc-webview-node
+  - if [ "$TRAVIS_BRANCH" = "master" ]; then
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" &&
+    docker tag chibitronics/ltc-webview-amd64:local chibitronics/ltc-webview-amd64:latest &&
+    docker push chibitronics/ltc-webview-amd64:latest;
+    fi
