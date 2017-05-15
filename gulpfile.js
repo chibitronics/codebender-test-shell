@@ -15,7 +15,6 @@ var argv = require('yargs').argv;
 
 // Build Dependencies
 var browserify = require('browserify');
-var babelify = require('babelify');
 var vinylBuffer = require('vinyl-buffer');
 var gutil = require('gulp-util');
 var vinylSourceStream = require('vinyl-source-stream');
@@ -132,13 +131,6 @@ gulp.task('build-scripts-minimal', function (cb) {
         insertGlobals: true,
         entries: 'index.js',
         basedir: 'src/js'
-    });
-
-    b.transform(babelify, {
-        presets: ['es2015'],
-        compact: false,
-        global: true,
-        ignore: /\/node_modules\/(?!muffler\/)/
     });
 
     pump([
