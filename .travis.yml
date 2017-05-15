@@ -7,7 +7,7 @@ services:
 
 before_install:
   - docker build -t chibitronics/ltc-webview-amd64:local .
-  - docker run --name ltc-webview-node -d -p 127.0.0.1:80:80 chibitronics/ltc-compiler-amd64:local
+  - docker run --name ltc-webview-node -d -p 127.0.0.1:80:80 chibitronics/ltc-webview-amd64:local
   - docker ps -a
 
 script:
