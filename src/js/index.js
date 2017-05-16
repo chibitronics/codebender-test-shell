@@ -452,6 +452,7 @@ function populateSketchList() {
         a.innerHTML = 'Connect to GitHub';
         a.setAttribute('href', '/connectToGitHub');
         a.setAttribute('target', '__new');
+        a.setAttribute('class', 'teal_button');
 
         li.appendChild(a);
         ul.appendChild(li);
