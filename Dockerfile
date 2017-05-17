@@ -4,8 +4,8 @@ FROM node:7.8.0
 COPY . /app
 WORKDIR /app
 
-RUN npm install --global gulp-cli
-RUN npm install
+RUN npm install --quiet --global gulp-cli
+RUN npm install --quiet
 
 RUN gulp
 
