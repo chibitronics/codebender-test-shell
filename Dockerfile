@@ -7,7 +7,7 @@ WORKDIR /app
 RUN npm install --global gulp-cli
 RUN npm install
 
-RUN gulp build
+RUN gulp
 
 EXPOSE 80
 CMD ./entrypoint.sh
