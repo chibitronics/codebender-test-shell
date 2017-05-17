@@ -14,8 +14,8 @@ html {
 	position: fixed;
 	z-index: 5000;
 	width: 100%;
-    background: Cornsilk;
-    padding: 5px;
+    background: #17C7D1;
+    padding: 10px;
     margin: 0;
 }
 
@@ -66,24 +66,26 @@ html {
 	font-size: 17px;
 	font-family: Helvetica, Arial, Sans-Serif;
 	color: gray;
+    float: left;
+    margin-top: 12px;
+    margin-left: 10px;
+    margin-right: 10px;
+
 }
 
-.red_button {
-	border-top: 1px solid #f79797;
-	background: #d66565;
-    background: -webkit-gradient(linear, left top, left bottom, from(#9c3e3e), to(#ee3124));
-	background: -webkit-linear-gradient(top, #9c3e3e, #ee3124);
-	background: -moz-linear-gradient(top, #9c3e3e, #ee3124);
-	background: -ms-linear-gradient(top, #9c3e3e, #ee3124);
-	background: -o-linear-gradient(top, #9c3e3e, #ee3124);padding: 8.5px 17px;
-	-webkit-border-radius: 34px;
-	-moz-border-radius: 34px;
-	border-radius: 34px;
-	-webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
-	-moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
-	box-shadow: rgba(0,0,0,1) 0 1px 0;
-	text-shadow: rgba(0,0,0,.4) 0 1px 0;
-	color: white;
+.logo {
+    float: left;
+    margin-left: 10px; 
+    margin-right: 10px;
+}
+
+.button {
+	background: #f9f9f7;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+    padding: 14px 20px;
+	color: #17C7D1;
 	font-size: 17px;
 	font-family: Helvetica, Arial, Sans-Serif;
 	text-decoration: none;
@@ -92,14 +94,14 @@ html {
 	margin-right: 5px;
 	margin-left: 5px;
 }
-.red_button:hover {
-   border-top-color: #782828;
-   background: #782828;
-   color: #ccc;
-}
-.red_button:active {
-   border-top-color: #5c1b1b;
-   background: #5c1b1b;
+
+.teal_button {
+    background: #17C7D1;
+    color: #fff !important; 
+    border-radius: 4px;
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    display: inline-block;
 }
 
 .CodeMirror {
@@ -113,29 +115,44 @@ html {
     display: none;
 }
 
+#audio_output {
+    float: left;
+    margin-top: 8px;
+    margin-left: 4px;
+}
+
+.switch_container {
+    float: left;
+    margin: 0px 5px;
+}
+
 #code_editor {
 	display: block;
 }
 
 .ExampleItem > a {
-    font-size: 25px;
+    color: #000;
+    font-size: 18px;
 	font-family: Helvetica, Arial, Sans-Serif;
     text-decoration: none;
 }
 
 .ExampleItem {
-    border-top: 1px solid #f79797;
+    border-top: 1px solid #000;
     margin-top: 10px;
+    padding-top: 10px;
     vertical-align: middle;
     display: block;
     cursor: pointer;
 }
 
 .ExampleCategory {
-    font-size: 25px;
-	font-family: Helvetica, Arial, Sans-Serif;
-    border-top: 1px solid #f79797;
+    color: #17C7D1;
+    font-size: 18px;
+    font-family: Helvetica, Arial, Sans-Serif;
+    border-top: 1px solid #000;
     margin-top: 10px;
+    padding-top: 10px;
     vertical-align: middle;
     cursor: pointer;
 }
@@ -146,19 +163,24 @@ html {
 }
 
 .SketchList {
-    border-top: 1px solid #f79797;
-    margin-top: 10px;
+    margin-top: 30px;
     vertical-align: middle;
     display: block;
     cursor: pointer;
 
-	font-size: 25px;
+	font-size: 18px;
 	font-family: Helvetica, Arial, Sans-Serif;
     text-decoration: none;
 }
 
 .SketchList > li {
 	display: block;
+    margin-top: 10px;
+}
+
+.SketchList > li a {
+    color: #17C7D1;
+    text-decoration: none;
 }
 
 
@@ -168,6 +190,7 @@ html {
     display: inline-block;
     width: 60px;
     height: 34px;
+    margin-top: 5px;
 }
 
 /* Hide default HTML checkbox */
@@ -212,6 +235,14 @@ input:checked + .slider:before {
     transform: translateX(26px);
 }
 
+/* code syntax colors */
+
+.cm-s-default .cm-def {color: #bb2325;}
+.cm-s-default .cm-property {color: #268e98;}
+.cm-s-default .cm-operator {color: #bc942e;}
+.cm-s-default .cm-variable {color: #268e98;}
+.cm-s-default .cm-comment {color: #bc942e;}
+
 /* Rounded sliders */
 .slider.round {
     border-radius: 34px;
@@ -219,4 +250,40 @@ input:checked + .slider:before {
 
 .slider.round:before {
     border-radius: 50%;
+}
+
+@media only screen and (max-width: 520px) {
+    .button_group {
+        display:inline-block;
+        clear: both;
+        margin-top: 20px;
+    }
+
+}
+
+@media only screen and (max-width: 320px) {
+    .button {
+        padding: 5px 10px;
+    }
+    .button_group {
+        margin-top: 10px;
+    }
+    #audio_output {
+        margin-top: 0px;
+    }
+    .switch_group {
+        display: inline-block;
+        margin-top: 5px;
+    }
+}
+
+@media only screen and (max-width: 845px) {
+    #audio_output {
+        margin-top: 10px;
+        clear: both;
+    }
+    .switch_group {
+        display: inline-block;
+        margin-top: 10px;
+    }
 }
