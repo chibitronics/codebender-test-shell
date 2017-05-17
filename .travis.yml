@@ -14,10 +14,10 @@ script:
   - docker ps | grep ltc-webview-node
   - if [ "$TRAVIS_BRANCH" = "master" ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    if [ -z "$TRAVIS_TAG" ]; then
-    tagname=latest; else
-    tagname=$TRAVIS_TAG;
+    if [ ! -z "$TRAVIS_TAG" ]; then
+    docker tag chibitronics/ltc-webview-amd64:local chibitronics/ltc-webview-amd64:${TRAVIS_TAG} &&
+    docker push chibitronics/ltc-webview-amd64:${TRAVIS_TAG};
     fi;
-    docker tag chibitronics/ltc-webview-amd64:local chibitronics/ltc-webview-amd64:${tagname} &&
-    docker push chibitronics/ltc-webview-amd64:${tagname};
+    docker tag chibitronics/ltc-webview-amd64:local chibitronics/ltc-webview-amd64:latest &&
+    docker push chibitronics/ltc-webview-amd64:latest;
     fi
