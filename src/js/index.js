@@ -275,7 +275,7 @@ function selectTab(e) {
     }
     // Otherwise, treat it as an element, and select that tab.
     else {
-        target = e.target.attributes.target.value;
+        target = e.target.attributes['data-target'].value;
     }
 
     var found = false;
