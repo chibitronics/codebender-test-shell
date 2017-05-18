@@ -9,6 +9,9 @@ var codeobj = {};
 var modController;
 var autosaveGeneration = null;
 
+// Default 'save' filename
+var fileName = "Untitled.ino";
+
 var isIE11 = /Trident.*rv[ :]*11\./.test(navigator.userAgent);
 
 // This gets replaced by reading /config.json at runtime.
@@ -211,7 +214,7 @@ function saveLocalSketchAs(e) {
     // TODO: Simply add the new sketch instead of redoing everything
     populateSketchList();
 
-    // Don't let the form submit.'
+    // Don't let the form submit.
     return false;
 }
 
@@ -427,6 +430,23 @@ function loadLocalSketch(e) {
     return false;
 }
 
+function downloadSketch(e) {
+    var blob = new Blob([editor.getValue()], { type: "application/octet-binary" });
+    e.target.href = window.URL.createObjectURL(blob);
+
+    var fileName = document.getElementById('download_name').value;
+    if (fileName === "") {
+        fileName = "Untitled.ino";
+    }
+    if (!fileName.endsWith(".ino")) {
+        fileName = fileName + ".ino";
+    }
+    e.target.download = fileName;
+
+    // Let the "click" continue.
+    return true;
+}
+
 function populateSketchList() {
     var localSketches = getLocalSketches();
     var li;
@@ -445,6 +465,7 @@ function populateSketchList() {
     ul.className = 'SketchList';
 
     // Add an entry for GitHub, or add a signup link if one doesn't exists
+    /*
     if (getGithubToken() === null) {
         li = document.createElement('li');
 
@@ -454,6 +475,29 @@ function populateSketchList() {
         a.setAttribute('target', '__new');
         a.setAttribute('class', 'teal_button');
 
+        li.appendChild(a);
+        ul.appendChild(li);
+    }
+    */
+
+    {
+        li = document.createElement('li');
+
+        i = document.createElement('input');
+        i.setAttribute('name', 'download_name');
+        i.setAttribute('id', 'download_name');
+        i.setAttribute('value', fileName);
+
+        a = document.createElement('a');
+        a.innerHTML = 'Download';
+        a.setAttribute('href', '#');
+        a.setAttribute('class', 'teal_button');
+        a.onclick = downloadSketch;
+        a.onchange = function (t) {
+            fileName = t.value;
+        };
+
+        li.appendChild(i);
         li.appendChild(a);
         ul.appendChild(li);
     }
@@ -494,14 +538,16 @@ function populateSketchList() {
         tb.id = 'saveNewSketchName';
         tb.type = 'text';
 
-        var sub = document.createElement('input');
-        sub.type = 'submit';
-        sub.onclick = saveLocalSketchAs;
+        var a = document.createElement('a');
+        a.setAttribute('class', 'teal_button');
+        a.setAttribute('href', '#');
+        a.innerHTML = 'Save in browser';
+        a.onclick = saveLocalSketchAs;
 
         li = document.createElement('li');
         li.appendChild(lab);
         li.appendChild(tb);
-        li.appendChild(sub);
+        li.appendChild(a);
 
         ul.appendChild(li);
 
