@@ -203,8 +203,9 @@ gulp.task('default', function (callback) {
     );
 });
 
-gulp.task('watch', ['browserSync'], function () {
+gulp.task('watch', ['browserSync'], function (callback) {
     gulp.watch('src/*.html', ['build-html', browserSync.reload]);
     gulp.watch('src/**/*.css', ['build-html', browserSync.reload]);
     gulp.watch('src/js/**/*.js', ['build-scripts', browserSync.reload]);
+    runSequence('clean:build', 'build', callback);
 });
