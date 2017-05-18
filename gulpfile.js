@@ -69,13 +69,13 @@ gulp.task('build-html', function () {
 });
 
 gulp.task('compress-gz', function () {
-    return gulp.src(['build/**/*.html', 'build/**/*.css', 'build/**/*.js'])
+    return gulp.src(['build/**/*.html', 'build/**/*.css', 'build/**/*.js', 'build/**/*.map'])
         .pipe(gzip())
         .pipe(gulp.dest('build'))
 });
 
 gulp.task('compress-br', function () {
-    return gulp.src(['build/**/*.html', 'build/**/*.css', 'build/**/*.js'])
+    return gulp.src(['build/**/*.html', 'build/**/*.css', 'build/**/*.js', 'build/**/*.map'])
         .pipe(brotli.compress({
             quality: 11,
             skipLarger: true
