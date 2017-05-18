@@ -429,6 +429,7 @@ function loadLocalSketch(e) {
 
     editor.setValue(sketch.document);
     selectTab('code_editor');
+    editor.refresh();
 
     return false;
 }
