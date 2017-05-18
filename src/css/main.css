@@ -158,9 +158,21 @@ html {
     cursor: pointer;
 }
 
+.ExampleOrderedList {
+    counter-reset: exampleCounter;
+    list-style-type: none;
+}
+
+.ExampleOrderedList > li:not(.ExampleCategoryContents) {
+    counter-increment: exampleCounter;
+}
+.ExampleOrderedList > li:not(.ExampleCategoryContents):before {
+    content: counter(exampleCounter) ". ";
+}
+
 /* ExampleItem groups */
-.ExamplesList > ol > ul {
-    padding: 3px;
+.ExamplesList > ol > li > ul {
+    padding-left: 16px;
 }
 
 .SketchList {
