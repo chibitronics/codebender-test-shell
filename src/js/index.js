@@ -282,6 +282,7 @@ function selectTab(e) {
     }
 
     var found = false;
+    var showWarning = true;
     for (var i = 0; i < elements.length; i++) {
         var element = elements[i];
 
@@ -293,6 +294,7 @@ function selectTab(e) {
             // the default view to be shown.
             if (element.style.display === 'block') {
                 element.style.display = 'none';
+                showWarning = false;
             }
             else {
                 element.style.display = 'block';
@@ -306,8 +308,9 @@ function selectTab(e) {
 
     // If no item was found, make the code editor visible by default
     if (!found) {
-        console.log('Warning: Unrecognized element ' + target +
-            ', selecting code_editor by default');
+        if (showWarning)
+            console.log('Warning: Unrecognized element ' + target +
+                ', selecting code_editor by default');
         document.getElementById('code_editor').style.display = 'block';
     }
 }
