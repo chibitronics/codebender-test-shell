@@ -451,6 +451,35 @@ function downloadSketch(e) {
     return true;
 }
 
+function uploadSketch(e) {
+    var files = e.target.files;
+    if (files.length < 1) {
+        console.log("No files were selected");
+        return false;
+    }
+
+    var file = files[0];
+
+    // Make sure the file is a sane size.
+    if (file.size > 1024 * 1024) {
+        console.log("File is way too big (1MB limit)");
+        return false;
+    }
+
+    var reader = new FileReader();
+    reader.onload = (function (contents) {
+        return function (e) {
+            editor.setValue(e.target.result);
+            selectTab('code_editor');
+            editor.refresh();
+        };
+    })(file);
+    reader.readAsText(file);
+
+    // Eat the "click" event.
+    return false;
+}
+
 function populateSketchList() {
     var localSketches = getLocalSketches();
     var li;
@@ -491,15 +520,40 @@ function populateSketchList() {
         i.setAttribute('name', 'download_name');
         i.setAttribute('id', 'download_name');
         i.setAttribute('value', fileName);
+        i.onchange = function (t) {
+            fileName = t.value;
+        };
 
         a = document.createElement('a');
         a.innerHTML = 'Download';
         a.setAttribute('href', '#');
         a.setAttribute('class', 'teal_button');
         a.onclick = downloadSketch;
-        a.onchange = function (t) {
-            fileName = t.value;
-        };
+
+        li.appendChild(i);
+        li.appendChild(a);
+        ul.appendChild(li);
+    }
+
+    {
+        li = document.createElement('li');
+
+        i = document.createElement('input');
+        i.type = 'file';
+        i.setAttribute('id', 'upload_files');
+        i.setAttribute('placeholder', 'Upload a sketch');
+        i.addEventListener('change', uploadSketch, false);
+        i.style.width = '0px';
+        i.style.height = '0px';
+        i.style.border = '0px';
+        i.style.margin = '0px';
+        i.style.overflow = 'hidden';
+
+        a = document.createElement('a');
+        a.innerHTML = 'Upload';
+        a.setAttribute('href', '#');
+        a.setAttribute('class', 'teal_button');
+        a.onclick = function (e) { i.click(); return false; };
 
         li.appendChild(i);
         li.appendChild(a);
