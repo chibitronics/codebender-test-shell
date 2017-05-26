@@ -10,7 +10,7 @@ var modController;
 var autosaveGeneration = null;
 
 // Default 'save' filename
-var fileName = "Untitled.ino";
+var fileName = "LTC-program.ino";
 
 var isIE11 = /Trident.*rv[ :]*11\./.test(navigator.userAgent);
 
@@ -214,6 +214,9 @@ function saveLocalSketchAs(e) {
     // TODO: Simply add the new sketch instead of redoing everything
     populateSketchList();
 
+    selectTab('code_editor');
+    editor.refresh();
+    
     // Don't let the form submit.
     return false;
 }
@@ -440,7 +443,7 @@ function downloadSketch(e) {
 
     var fileName = document.getElementById('download_name').value;
     if (fileName === "") {
-        fileName = "Untitled.ino";
+        fileName = "LTC-program.ino";
     }
     if (!fileName.endsWith(".ino")) {
         fileName = fileName + ".ino";
@@ -497,6 +500,94 @@ function populateSketchList() {
     var ul = document.createElement('ul');
     ul.className = 'SketchList';
 
+    // Add sketches stored in localStorage
+    for (var name in localSketches) {
+        if (!localSketches.hasOwnProperty(name)) {
+            continue;
+        }
+        li = document.createElement('li');
+        li.className = 'SketchItem';
+
+        var s = document.createElement('span');
+        s.sketchName = name;
+        s.innerHTML = name;
+
+	var b = document.createElement('a');
+	b.setAttribute('class', 'teal_button');
+	b.innerHTML = 'Load';
+	b.sketchName = name;
+        b.onclick = loadLocalSketch;
+	
+        var a = document.createElement('a');
+	a.setAttribute('class', 'teal_button');
+//        a.setAttribute('href', '#deleteLocalSketch');
+//        a.className = 'SketchItemDelete';
+        a.sketchName = name;
+        a.onclick = deleteLocalSketch;
+        a.innerHTML = 'Delete';
+
+	var c = document.createElement('a');
+	c.setAttribute('class', 'teal_button');
+	c.name = 'saveNewSketchName';
+	c.id = 'saveNewSketchName';
+	c.value = name;
+	c.sketchName = name;
+	c.innerHTML = 'Overwrite';
+	c.onclick = saveLocalSketchAs;
+
+	var s1 = document.createElement('space');
+	s1.innerHTML = ' ';
+	var s2 = document.createElement('space');
+	s2.innerHTML = ' ';
+	var s3 = document.createElement('space');
+	s3.innerHTML = ' ';
+	
+        li.appendChild(s);
+	li.appendChild(s1);
+	li.appendChild(c);
+	li.appendChild(s2);
+        li.appendChild(b);
+	li.appendChild(s3);
+        li.appendChild(a);
+        ul.appendChild(li);
+    }
+
+    // Add a 'Save As' box
+    {
+        var lab = document.createElement('label');
+        lab.setAttribute('for', 'saveNewSketchName');
+        lab.innerHTML = 'Save As: ';
+
+        var tb = document.createElement('input');
+        tb.name = 'saveNewSketchName';
+        tb.id = 'saveNewSketchName';
+        tb.type = 'text';
+
+	space = document.createElement('space');
+	space.innerHTML = ' ';
+	
+        var a = document.createElement('a');
+        a.setAttribute('class', 'teal_button');
+        a.setAttribute('href', '#');
+        a.innerHTML = 'Save in browser';
+        a.onclick = saveLocalSketchAs;
+
+        li = document.createElement('li');
+        li.appendChild(lab);
+	li.appendChild(space);
+        li.appendChild(tb);
+	li.appendChild(space);
+        li.appendChild(a);
+
+        ul.appendChild(li);
+
+    }
+
+    {
+	var hr = document.createElement("HR");
+	ul.appendChild(hr);
+    }
+
     // Add an entry for GitHub, or add a signup link if one doesn't exists
     /*
     if (getGithubToken() === null) {
@@ -516,6 +607,13 @@ function populateSketchList() {
     {
         li = document.createElement('li');
 
+	var note = document.createElement("P");
+	var t = document.createTextNode("Files saved in browser are temporary and will eventually be be lost when your browser clears its history.");
+	var t2 = document.createTextNode("Please click 'download' and save your program to your device when you're done, so you don't lose it!");
+	note.appendChild(t);
+	note.appendChild(document.createElement("BR"));
+	note.appendChild(t2);
+	
         i = document.createElement('input');
         i.setAttribute('name', 'download_name');
         i.setAttribute('id', 'download_name');
@@ -524,13 +622,18 @@ function populateSketchList() {
             fileName = t.value;
         };
 
+	space = document.createElement('space');
+	space.innerHTML = ' ';
+	
         a = document.createElement('a');
         a.innerHTML = 'Download';
         a.setAttribute('href', '#');
         a.setAttribute('class', 'teal_button');
         a.onclick = downloadSketch;
 
+	li.appendChild(note);
         li.appendChild(i);
+	li.appendChild(space);
         li.appendChild(a);
         ul.appendChild(li);
     }
@@ -538,6 +641,10 @@ function populateSketchList() {
     {
         li = document.createElement('li');
 
+	var note = document.createElement("P");
+	var t = document.createTextNode("Click upload to select files stored on your device and load them into the LTC editor!");
+	note.appendChild(t);
+	
         i = document.createElement('input');
         i.type = 'file';
         i.setAttribute('id', 'upload_files');
@@ -555,60 +662,10 @@ function populateSketchList() {
         a.setAttribute('class', 'teal_button');
         a.onclick = function (e) { i.click(); return false; };
 
+	li.appendChild(note);
         li.appendChild(i);
         li.appendChild(a);
         ul.appendChild(li);
-    }
-
-    // Add sketches stored in localStorage
-    for (var name in localSketches) {
-        if (!localSketches.hasOwnProperty(name)) {
-            continue;
-        }
-        li = document.createElement('li');
-        li.className = 'SketchItem';
-
-        var s = document.createElement('span');
-        s.sketchName = name;
-        s.onclick = loadLocalSketch;
-        s.innerHTML = name;
-
-        a = document.createElement('a');
-        a.setAttribute('href', '#deleteLocalSketch');
-        a.className = 'SketchItemDelete';
-        a.sketchName = name;
-        a.onclick = deleteLocalSketch;
-        a.innerHTML = '[X]';
-
-        li.appendChild(s);
-        li.appendChild(a);
-        ul.appendChild(li);
-    }
-
-    // Add a 'Save As' box
-    {
-        var lab = document.createElement('label');
-        lab.setAttribute('for', 'saveNewSketchName');
-        lab.innerHTML = 'Save As:';
-
-        var tb = document.createElement('input');
-        tb.name = 'saveNewSketchName';
-        tb.id = 'saveNewSketchName';
-        tb.type = 'text';
-
-        var a = document.createElement('a');
-        a.setAttribute('class', 'teal_button');
-        a.setAttribute('href', '#');
-        a.innerHTML = 'Save in browser';
-        a.onclick = saveLocalSketchAs;
-
-        li = document.createElement('li');
-        li.appendChild(lab);
-        li.appendChild(tb);
-        li.appendChild(a);
-
-        ul.appendChild(li);
-
     }
 
     // Add the entire list to the document
