@@ -221,6 +221,30 @@ function saveLocalSketchAs(e) {
     return false;
 }
 
+function overwriteSketch(e) {
+    var localSketches = getLocalSketches();
+    var sketchName = e.target.sketchName;
+
+    // Store the document in the document list
+    localSketches[sketchName] = {
+        'name': sketchName,
+        'document': editor.getValue()
+    };
+
+    // Stash the document list back in local storage
+    saveLocalSketches(localSketches);
+
+    // Re-populate the sketch list
+    // TODO: Simply add the new sketch instead of redoing everything
+    populateSketchList();
+
+    selectTab('code_editor');
+    editor.refresh();
+    
+    // Don't let the form submit.
+    return false;
+}
+
 function initializeEditor() {
     var editorNode = document.getElementById('code_editor_textarea');
 
@@ -528,12 +552,11 @@ function populateSketchList() {
 
 	var c = document.createElement('a');
 	c.setAttribute('class', 'teal_button');
-	c.name = 'saveNewSketchName';
-	c.id = 'saveNewSketchName';
+	c.id = 'overwriteSketchName';
 	c.value = name;
 	c.sketchName = name;
 	c.innerHTML = 'Overwrite';
-	c.onclick = saveLocalSketchAs;
+	c.onclick = overwriteSketch;
 
 	var s1 = document.createElement('space');
 	s1.innerHTML = ' ';
