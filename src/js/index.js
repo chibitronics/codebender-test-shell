@@ -1,4 +1,4 @@
-var ModulationController = require('chibitronics-ltc-modulate');
+var ModulationController = require('chibitronics-ltc-modulate'); 
 var CodeMirror = require('codemirror');
 require('codemirror/mode/clike/clike');
 require('codemirror/addon/lint/lint');
