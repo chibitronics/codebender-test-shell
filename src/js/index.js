@@ -544,8 +544,6 @@ function populateSketchList() {
 	
         var a = document.createElement('a');
 	a.setAttribute('class', 'teal_button');
-//        a.setAttribute('href', '#deleteLocalSketch');
-//        a.className = 'SketchItemDelete';
         a.sketchName = name;
         a.onclick = deleteLocalSketch;
         a.innerHTML = 'Delete';
