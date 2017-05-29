@@ -491,7 +491,8 @@ function loadLocalSketch(e) {
 
 function downloadSketch(e) {
     var blob = new Blob([editor.getValue()], { type: 'application/octet-binary' });
-    e.target.href = window.URL.createObjectURL(blob);
+    var url = window.URL.createObjectURL(blob);
+    e.target.href = url;
 
     var fileName = document.getElementById('download_name').value;
     if (fileName === '') {
@@ -501,6 +502,11 @@ function downloadSketch(e) {
         fileName = fileName + '.ino';
     }
     e.target.download = fileName;
+
+    // Remove the URL in 100 ms, enough time for the downloader to run.
+    setTimeout(function () {
+        window.URL.revokeObjectURL(url);
+    }, 100);
 
     // Let the "click" continue.
     return true;
