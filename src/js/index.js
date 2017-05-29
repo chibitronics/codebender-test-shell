@@ -221,16 +221,13 @@ function downloadSketch(contents, fileName) {
     }, 100);
 }
 
-function saveLocalSketchAs(e) {
+function storeSketchLocally(contents, sketchName) {
     var localSketches = getLocalSketches();
-
-    // Get the new sketch name
-    var sketchName = document.getElementById('saveNewSketchName').value;
 
     // Store the document in the document list
     localSketches[sketchName] = {
         'name': sketchName,
-        'document': editor.getValue()
+        'document': contents
     };
 
     // Stash the document list back in local storage
@@ -244,32 +241,19 @@ function saveLocalSketchAs(e) {
     editor.refresh();
 
     downloadSketch(editor.getValue(), sketchName);
+}
+
+function saveLocalSketchAs(e) {
+    var sketchName = document.getElementById('saveNewSketchName').value;
+    storeSketchLocally(editor.getValue(), sketchName);
 
     // Don't let the form submit.
     return false;
 }
 
 function overwriteSketch(e) {
-    var localSketches = getLocalSketches();
     var sketchName = e.target.sketchName;
-
-    // Store the document in the document list
-    localSketches[sketchName] = {
-        'name': sketchName,
-        'document': editor.getValue()
-    };
-
-    // Stash the document list back in local storage
-    saveLocalSketches(localSketches);
-
-    // Re-populate the sketch list
-    // TODO: Simply add the new sketch instead of redoing everything
-    populateSketchList();
-
-    selectTab('code_editor');
-    editor.refresh();
-
-    downloadSketch(editor.getValue(), sketchName);
+    storeSketchLocally(editor.getValue(), sketchName);
 
     // Don't let the form submit.
     return false;
