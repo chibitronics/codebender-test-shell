@@ -618,8 +618,10 @@ function populateSketchList() {
     }
 
     {
+        li = document.createElement('li');
         var hr = document.createElement('hr');
-        ul.appendChild(hr);
+        li.appendChild(hr);
+        ul.appendChild(li);
     }
 
     // Add an entry for GitHub, or add a signup link if one doesn't exists
