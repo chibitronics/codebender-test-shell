@@ -217,6 +217,25 @@ function saveLocalSketchAs(e) {
     selectTab('code_editor');
     editor.refresh();
 
+    // Automatically download the sketch.
+    // Note: this is a bit annoying, so we may disable it.
+    var blob = new Blob([editor.getValue()], { type: 'application/octet-binary' });
+    var a = document.createElement('a');
+    document.body.appendChild(a);
+    a.style = 'display: none';
+    a.href = window.URL.createObjectURL(blob);
+    var fileName = sketchName;
+    if (fileName === '') {
+        fileName = 'LTC-program.ino';
+    }
+    if (!fileName.endsWith('.ino')) {
+        fileName = fileName + '.ino';
+    }
+    a.download = fileName;
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(a.href);
+
     // Don't let the form submit.
     return false;
 }
