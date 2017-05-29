@@ -223,7 +223,8 @@ function saveLocalSketchAs(e) {
     var a = document.createElement('a');
     document.body.appendChild(a);
     a.style = 'display: none';
-    a.href = window.URL.createObjectURL(blob);
+    var url = window.URL.createObjectURL(blob);
+    a.href = url;
     var fileName = sketchName;
     if (fileName === '') {
         fileName = 'LTC-program.ino';
@@ -233,8 +234,12 @@ function saveLocalSketchAs(e) {
     }
     a.download = fileName;
     a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(a.href);
+
+    // Remove the URL in 100 ms, enough time for the downloader to run.
+    setTimeout(function () {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }, 100);
 
     // Don't let the form submit.
     return false;
