@@ -18,11 +18,13 @@
     "trailing": true,
     "globals": {
         "atob": true,
+        "Blob": true,
         "CodeMirror": true,
         "context": false,
         "define": true,
         "describe": false,
         "document": true,
+        "FileReader": true,
         "localStorage": true,
         "navigator": true,
         "window": false
