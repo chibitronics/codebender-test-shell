@@ -495,27 +495,10 @@ function loadLocalSketch(e) {
     return false;
 }
 
-function downloadSketch(e) {
-    var blob = new Blob([editor.getValue()], { type: 'application/octet-binary' });
-    var url = window.URL.createObjectURL(blob);
-    e.target.href = url;
-
-    var fileName = document.getElementById('download_name').value;
-    if (fileName === '') {
-        fileName = 'LTC-program.ino';
-    }
-    if (!fileName.endsWith('.ino')) {
-        fileName = fileName + '.ino';
-    }
-    e.target.download = fileName;
-
-    // Remove the URL in 100 ms, enough time for the downloader to run.
-    setTimeout(function () {
-        window.URL.revokeObjectURL(url);
-    }, 100);
-
-    // Let the "click" continue.
-    return true;
+function startDownloadSketch(e) {
+    downloadSketch(editor.getValue(), document.getElementById('download_name').value);
+    selectTab('code_editor');
+    return false;
 }
 
 function uploadSketch(e) {
@@ -701,7 +684,7 @@ function populateSketchList() {
         a.innerHTML = 'Download';
         a.setAttribute('href', '#');
         a.setAttribute('class', 'teal_button');
-        a.onclick = downloadSketch;
+        a.onclick = startDownloadSketch;
 
         li.appendChild(note);
         li.appendChild(i);
