@@ -436,9 +436,12 @@ function deleteLocalSketch(a) {
 
     // Add in an 'Undo Delete' link
     var li = document.createElement('li');
-    li.className = 'SketchItem';
-    li.innerHTML = 'Undo Delete';
-    li.onclick = undoDeleteLocalSketch;
+    var undo = document.createElement('span');
+    undo.className = 'SketchItem';
+    undo.innerHTML = 'Undo Delete';
+    undo.onclick = undoDeleteLocalSketch;
+    undo.setAttribute('class', 'teal_button');
+    li.appendChild(undo);
     document.getElementById('sketch_list').firstChild.appendChild(li);
 
     return false;
