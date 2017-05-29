@@ -1,4 +1,4 @@
-var ModulationController = require('chibitronics-ltc-modulate'); 
+var ModulationController = require('chibitronics-ltc-modulate');
 var CodeMirror = require('codemirror');
 require('codemirror/mode/clike/clike');
 require('codemirror/addon/lint/lint');
@@ -10,7 +10,7 @@ var modController;
 var autosaveGeneration = null;
 
 // Default 'save' filename
-var fileName = "LTC-program.ino";
+var fileName = 'LTC-program.ino';
 
 var isIE11 = /Trident.*rv[ :]*11\./.test(navigator.userAgent);
 
@@ -169,9 +169,9 @@ function saveLocalSketches(localSketches) {
     localStorage.setItem('sketches', JSON.stringify(localSketches));
 }
 
-function getGithubToken() {
-    return localStorage.getItem('gitHubToken');
-}
+//function getGithubToken() {
+//    return localStorage.getItem('gitHubToken');
+//}
 
 function saveCurrentEditor() {
     // If this is the first run, autosaveGeneration will be null.
@@ -216,7 +216,7 @@ function saveLocalSketchAs(e) {
 
     selectTab('code_editor');
     editor.refresh();
-    
+
     // Don't let the form submit.
     return false;
 }
@@ -240,7 +240,7 @@ function overwriteSketch(e) {
 
     selectTab('code_editor');
     editor.refresh();
-    
+
     // Don't let the form submit.
     return false;
 }
@@ -335,9 +335,10 @@ function selectTab(e) {
 
     // If no item was found, make the code editor visible by default
     if (!found) {
-        if (showWarning)
+        if (showWarning) {
             console.log('Warning: Unrecognized element ' + target +
                 ', selecting code_editor by default');
+        }
         document.getElementById('code_editor').style.display = 'block';
     }
 }
@@ -462,15 +463,15 @@ function loadLocalSketch(e) {
 }
 
 function downloadSketch(e) {
-    var blob = new Blob([editor.getValue()], { type: "application/octet-binary" });
+    var blob = new Blob([editor.getValue()], { type: 'application/octet-binary' });
     e.target.href = window.URL.createObjectURL(blob);
 
     var fileName = document.getElementById('download_name').value;
-    if (fileName === "") {
-        fileName = "LTC-program.ino";
+    if (fileName === '') {
+        fileName = 'LTC-program.ino';
     }
-    if (!fileName.endsWith(".ino")) {
-        fileName = fileName + ".ino";
+    if (!fileName.endsWith('.ino')) {
+        fileName = fileName + '.ino';
     }
     e.target.download = fileName;
 
@@ -481,7 +482,7 @@ function downloadSketch(e) {
 function uploadSketch(e) {
     var files = e.target.files;
     if (files.length < 1) {
-        console.log("No files were selected");
+        console.log('No files were selected');
         return false;
     }
 
@@ -489,7 +490,7 @@ function uploadSketch(e) {
 
     // Make sure the file is a sane size.
     if (file.size > 1024 * 1024) {
-        console.log("File is way too big (1MB limit)");
+        console.log('File is way too big (1MB limit)');
         return false;
     }
 
@@ -511,6 +512,9 @@ function populateSketchList() {
     var localSketches = getLocalSketches();
     var li;
     var a;
+    var t;
+    var padding;
+    var note;
 
     var sketchList = document.getElementById('sketch_list');
 
@@ -536,39 +540,39 @@ function populateSketchList() {
         s.sketchName = name;
         s.innerHTML = name;
 
-	var b = document.createElement('a');
-	b.setAttribute('class', 'teal_button');
-	b.innerHTML = 'Load';
-	b.sketchName = name;
+        var b = document.createElement('a');
+        b.setAttribute('class', 'teal_button');
+        b.innerHTML = 'Load';
+        b.sketchName = name;
         b.onclick = loadLocalSketch;
-	
-        var a = document.createElement('a');
-	a.setAttribute('class', 'teal_button');
+
+        a = document.createElement('a');
+        a.setAttribute('class', 'teal_button');
         a.sketchName = name;
         a.onclick = deleteLocalSketch;
         a.innerHTML = 'Delete';
 
-	var c = document.createElement('a');
-	c.setAttribute('class', 'teal_button');
-	c.id = 'overwriteSketchName';
-	c.value = name;
-	c.sketchName = name;
-	c.innerHTML = 'Overwrite';
-	c.onclick = overwriteSketch;
+        var c = document.createElement('a');
+        c.setAttribute('class', 'teal_button');
+        c.id = 'overwriteSketchName';
+        c.value = name;
+        c.sketchName = name;
+        c.innerHTML = 'Overwrite';
+        c.onclick = overwriteSketch;
 
-	var s1 = document.createElement('space');
-	s1.innerHTML = ' ';
-	var s2 = document.createElement('space');
-	s2.innerHTML = ' ';
-	var s3 = document.createElement('space');
-	s3.innerHTML = ' ';
-	
+        var s1 = document.createElement('span');
+        s1.innerHTML = ' ';
+        var s2 = document.createElement('span');
+        s2.innerHTML = ' ';
+        var s3 = document.createElement('span');
+        s3.innerHTML = ' ';
+
         li.appendChild(s);
-	li.appendChild(s1);
-	li.appendChild(c);
-	li.appendChild(s2);
+        li.appendChild(s1);
+        li.appendChild(c);
+        li.appendChild(s2);
         li.appendChild(b);
-	li.appendChild(s3);
+        li.appendChild(s3);
         li.appendChild(a);
         ul.appendChild(li);
     }
@@ -584,10 +588,10 @@ function populateSketchList() {
         tb.id = 'saveNewSketchName';
         tb.type = 'text';
 
-	space = document.createElement('space');
-	space.innerHTML = ' ';
-	
-        var a = document.createElement('a');
+        padding = document.createElement('span');
+        padding.innerHTML = ' ';
+
+        a = document.createElement('a');
         a.setAttribute('class', 'teal_button');
         a.setAttribute('href', '#');
         a.innerHTML = 'Save in browser';
@@ -595,18 +599,17 @@ function populateSketchList() {
 
         li = document.createElement('li');
         li.appendChild(lab);
-	li.appendChild(space);
+        li.appendChild(padding);
         li.appendChild(tb);
-	li.appendChild(space);
+        li.appendChild(padding);
         li.appendChild(a);
 
         ul.appendChild(li);
-
     }
 
     {
-	var hr = document.createElement("HR");
-	ul.appendChild(hr);
+        var hr = document.createElement('hr');
+        ul.appendChild(hr);
     }
 
     // Add an entry for GitHub, or add a signup link if one doesn't exists
@@ -628,13 +631,13 @@ function populateSketchList() {
     {
         li = document.createElement('li');
 
-	var note = document.createElement("P");
-	var t = document.createTextNode("Files saved in browser are temporary and will eventually be be lost when your browser clears its history.");
-	var t2 = document.createTextNode("Please click 'download' and save your program to your device when you're done, so you don't lose it!");
-	note.appendChild(t);
-	note.appendChild(document.createElement("BR"));
-	note.appendChild(t2);
-	
+        note = document.createElement('p');
+        t = document.createTextNode('Files saved in browser are temporary and will eventually be be lost when your browser clears its history.');
+        var t2 = document.createTextNode('Please click \'download\' and save your program to your device when you\'re done, so you don\'t lose it!');
+        note.appendChild(t);
+        note.appendChild(document.createElement('br'));
+        note.appendChild(t2);
+
         i = document.createElement('input');
         i.setAttribute('name', 'download_name');
         i.setAttribute('id', 'download_name');
@@ -643,18 +646,18 @@ function populateSketchList() {
             fileName = t.value;
         };
 
-	space = document.createElement('space');
-	space.innerHTML = ' ';
-	
+        padding = document.createElement('span');
+        padding.innerHTML = ' ';
+
         a = document.createElement('a');
         a.innerHTML = 'Download';
         a.setAttribute('href', '#');
         a.setAttribute('class', 'teal_button');
         a.onclick = downloadSketch;
 
-	li.appendChild(note);
+        li.appendChild(note);
         li.appendChild(i);
-	li.appendChild(space);
+        li.appendChild(padding);
         li.appendChild(a);
         ul.appendChild(li);
     }
@@ -662,10 +665,10 @@ function populateSketchList() {
     {
         li = document.createElement('li');
 
-	var note = document.createElement("P");
-	var t = document.createTextNode("Click upload to select files stored on your device and load them into the LTC editor!");
-	note.appendChild(t);
-	
+        note = document.createElement('p');
+        t = document.createTextNode('Click upload to select files stored on your device and load them into the LTC editor!');
+        note.appendChild(t);
+
         i = document.createElement('input');
         i.type = 'file';
         i.setAttribute('id', 'upload_files');
@@ -683,7 +686,7 @@ function populateSketchList() {
         a.setAttribute('class', 'teal_button');
         a.onclick = function (e) { i.click(); return false; };
 
-	li.appendChild(note);
+        li.appendChild(note);
         li.appendChild(i);
         li.appendChild(a);
         ul.appendChild(li);
