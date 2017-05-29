@@ -195,6 +195,32 @@ function loadSavedEditor() {
 }
 */
 
+function downloadSketch(contents, fileName) {
+    // Automatically download the sketch.
+    // Note: this is a bit annoying, so we may disable it.
+    var blob = new Blob([contents], { type: 'application/octet-binary' });
+    var a = document.createElement('a');
+    document.body.appendChild(a);
+    a.style = 'display: none';
+    var url = window.URL.createObjectURL(blob);
+    a.href = url;
+
+    if (fileName === '') {
+        fileName = 'LTC-program.ino';
+    }
+    if (!fileName.endsWith('.ino')) {
+        fileName = fileName + '.ino';
+    }
+    a.download = fileName;
+    a.click();
+
+    // Remove the URL in 100 ms, enough time for the downloader to run.
+    setTimeout(function () {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }, 100);
+}
+
 function saveLocalSketchAs(e) {
     var localSketches = getLocalSketches();
 
@@ -217,29 +243,7 @@ function saveLocalSketchAs(e) {
     selectTab('code_editor');
     editor.refresh();
 
-    // Automatically download the sketch.
-    // Note: this is a bit annoying, so we may disable it.
-    var blob = new Blob([editor.getValue()], { type: 'application/octet-binary' });
-    var a = document.createElement('a');
-    document.body.appendChild(a);
-    a.style = 'display: none';
-    var url = window.URL.createObjectURL(blob);
-    a.href = url;
-    var fileName = sketchName;
-    if (fileName === '') {
-        fileName = 'LTC-program.ino';
-    }
-    if (!fileName.endsWith('.ino')) {
-        fileName = fileName + '.ino';
-    }
-    a.download = fileName;
-    a.click();
-
-    // Remove the URL in 100 ms, enough time for the downloader to run.
-    setTimeout(function () {
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-    }, 100);
+    downloadSketch(editor.getValue(), sketchName);
 
     // Don't let the form submit.
     return false;
@@ -264,6 +268,8 @@ function overwriteSketch(e) {
 
     selectTab('code_editor');
     editor.refresh();
+
+    downloadSketch(editor.getValue(), sketchName);
 
     // Don't let the form submit.
     return false;
