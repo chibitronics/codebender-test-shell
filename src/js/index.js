@@ -586,6 +586,13 @@ function populateSketchList() {
         var tb = document.createElement('input');
         tb.name = 'saveNewSketchName';
         tb.id = 'saveNewSketchName';
+        tb.onkeypress = function (e) {
+            if (e.keyCode === 13) {
+                saveLocalSketchAs(e);
+                return false;
+            }
+            return true;
+        };
         tb.type = 'text';
 
         padding = document.createElement('span');
