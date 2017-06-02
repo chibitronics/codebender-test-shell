@@ -51,6 +51,8 @@ static int fade_to(int current, int target, int rate, int pin, int pause) {
     current = current + ((target - current) > 0 ? rate : - rate);
     delay(pause);
   }
+  current = target; // handle cases where target and rate aren't multiples of 255
+  analogWrite(pin, current);
   return current;
 }
 
@@ -74,10 +76,11 @@ static void heartbeat_effect(struct effects_thread_arg *cfg) {
   current = fade_to(current, 0xc0, 2, cfg->pin, 1);
   current = fade_to(current, 0x4, 2, cfg->pin, 1);
   delay(80); // fastest rate
-  delay( (13 - cfg->tempo) * 15 );
+  delay( (13 - cfg->tempo) * 13 );
   //delay(180);
   current = fade_to(current, 0xff, 2, cfg->pin, 1);
   current = fade_to(current, 0x00, 2, cfg->pin, 1);
+  digitalWrite(cfg->pin, 0);
   delay(214); // fastest rate
   delay( (13 - cfg->tempo) * 37 );
   //delay(420);
@@ -119,7 +122,7 @@ void setup(void) {
     digitalWrite(port[i].pin, LOW);
     if (port[i].effect == NONE)
       continue;
-    light_threads[i] = createThreadFromHeap(64,
+    light_threads[i] = createThreadFromHeap(32,
                                            20,
                                            effects_thread,
                                            &port[i]);
