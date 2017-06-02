@@ -23,6 +23,8 @@ Then build and serve using gulp:
     gulp build
     gulp watch
 
+Note that the example menu needs to be hand-edited in src/index.html
+
 Deploying
 ---------
 
