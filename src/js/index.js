@@ -486,7 +486,8 @@ function startDownloadSketch(e) {
 }
 
 function uploadSketch(e) {
-    var files = e.target.files;
+    var elt = e.target;
+    var files = elt.files;
     if (files.length < 1) {
         console.log('No files were selected');
         return false;
@@ -506,6 +507,7 @@ function uploadSketch(e) {
             editor.setValue(e.target.result);
             selectTab('code_editor');
             editor.refresh();
+            elt.value = null;
         };
     })(file);
     reader.readAsText(file);
