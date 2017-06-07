@@ -13,6 +13,8 @@
 </head>
 
 <body class="Site">
+  <script src="js/jscolor.min.js" type="text/javascript"></script>
+  
     <header class="Site-header" id="Site-header">
         <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
         <img class="logo" src="/images/white_chibi_logo.png" alt="Chibitronics Love-to-Code" width="130">
@@ -48,6 +50,7 @@
                     <span class="slider round"></span>
                 </label>
             </div>
+
         </div>
     </header>
     <div id="main" class="Site-content">
@@ -57,119 +60,68 @@
         </div>
 
         <form method="post" id="show-result" target="result">
-            <div id="examples_list" class="ExamplesList maintab">
-                <ol class="ExampleOrderedList">
-                    <li class="ExampleCategory">Basics</li>
-                    <li class="ExampleCategoryContents">
-                        <ul>
-                            <li class="ExampleItem"><a href="examples/01.Basics/AnalogReadSerial/AnalogReadSerial.ino">Analog Read Serial</a></li>
-                            <li class="ExampleItem"><a href="examples/01.Basics/BareMinimum/BareMinimum.ino">Bare Minimum</a></li>
-                            <li class="ExampleItem"><a href="examples/01.Basics/Blink/Blink.ino">Blink</a></li>
-                            <li class="ExampleItem"><a href="examples/01.Basics/DigitalReadSerial/DigitalReadSerial.ino">Digital Read Serial</a></li>
-                            <li class="ExampleItem"><a href="examples/01.Basics/Fade/Fade.ino">Fade</a></li>
-                            <li class="ExampleItem"><a href="examples/01.Basics/ReadAnalogVoltage/ReadAnalogVoltage.ino">Read Analog Voltage</a></li>
-                        </ul>
-                    </li>
-                    <li class="ExampleCategory">Digital</li>
-                    <li class="ExampleCategoryContents">
-                        <ul>
-                            <li class="ExampleItem"><a href="examples/02.Digital/BlinkWithoutDelay/BlinkWithoutDelay.ino">Blink Without Delay</a></li>
-                            <li class="ExampleItem"><a href="examples/02.Digital/Button/Button.ino">Button</a></li>
-                            <li class="ExampleItem"><a href="examples/02.Digital/Debounce/Debounce.ino">Debounce</a></li>
-                            <li class="ExampleItem"><a href="examples/02.Digital/DigitalInputPullup/DigitalInputPullup.ino">Digital Input Pullup</a></li>
-                            <li class="ExampleItem"><a href="examples/02.Digital/ResistiveTouch/ResistiveTouch.ino">Resistive Touch</a></li>
-                            <li class="ExampleItem"><a href="examples/02.Digital/StateChangeDetection/StateChangeDetection.ino">State Change Detection</a></li>
-                            <li class="ExampleItem"><a href="examples/02.Digital/toneMelody/toneMelody.ino">tone Melody</a></li>
-                            <li class="ExampleItem"><a href="examples/02.Digital/toneMultiple/toneMultiple.ino">tone Multiple</a></li>
-                            <li class="ExampleItem"><a href="examples/02.Digital/tonePitchFollower/tonePitchFollower.ino">tone Pitch Follower</a></li>
-                        </ul>
-                    </li>
-                    <li class="ExampleCategory">Analog</li>
-                    <li class="ExampleCategoryContents">
-                        <ul>
-                            <li class="ExampleItem"><a href="examples/03.Analog/AnalogInOutSerial/AnalogInOutSerial.ino">Analog In Out Serial</a></li>
-                            <li class="ExampleItem"><a href="examples/03.Analog/AnalogInput/AnalogInput.ino">Analog Input</a></li>
-                            <li class="ExampleItem"><a href="examples/03.Analog/Calibration/Calibration.ino">Calibration</a></li>
-                            <li class="ExampleItem"><a href="examples/03.Analog/Fading/Fading.ino">Fading</a></li>
-                            <li class="ExampleItem"><a href="examples/03.Analog/Smoothing/Smoothing.ino">Smoothing</a></li>
-                        </ul>
-                    </li>
-                    <li class="ExampleCategory">Communication</li>
-                    <li class="ExampleCategoryContents">
-                        <ul>
-                            <li class="ExampleItem"><a href="examples/04.Communication/ASCIITable/ASCIITable.ino">ASCIITable</a></li>
-                            <li class="ExampleItem"><a href="examples/04.Communication/Dimmer/Dimmer.ino">Dimmer</a></li>
-                            <li class="ExampleItem"><a href="examples/04.Communication/Graph/Graph.ino">Graph</a></li>
-                            <li class="ExampleItem"><a href="examples/04.Communication/PhysicalPixel/PhysicalPixel.ino">Physical Pixel</a></li>
-                            <li class="ExampleItem"><a href="examples/04.Communication/SerialEvent/SerialEvent.ino">Serial Event</a></li>
-                            <li class="ExampleItem"><a href="examples/04.Communication/VirtualColorMixer/VirtualColorMixer.ino">Virtual Color Mixer</a></li>
-                        </ul>
-                    </li>
-                    <li class="ExampleCategory">Control</li>
-                    <li class="ExampleCategoryContents">
-                        <ul>
-                            <li class="ExampleItem"><a href="examples/05.Control/Arrays/Arrays.ino">Arrays</a></li>
-                            <li class="ExampleItem"><a href="examples/05.Control/ForLoopIteration/ForLoopIteration.ino">For Loop Iteration</a></li>
-                            <li class="ExampleItem"><a href="examples/05.Control/IfStatementConditional/IfStatementConditional.ino">If Statement Conditional</a></li>
-                            <li class="ExampleItem"><a href="examples/05.Control/switchCase2/switchCase2.ino">switch Case2</a></li>
-                            <li class="ExampleItem"><a href="examples/05.Control/switchCase/switchCase.ino">switch Case</a></li>
-                            <li class="ExampleItem"><a href="examples/05.Control/WhileStatementConditional/WhileStatementConditional.ino">While Statement Conditional</a></li>
-                        </ul>
-                    </li>
-                    <li class="ExampleCategory">Strings</li>
-                    <li class="ExampleCategoryContents">
-                        <ul>
-                            <li class="ExampleItem"><a href="examples/08.Strings/CharacterAnalysis/CharacterAnalysis.ino">Character Analysis</a></li>
-                            <li class="ExampleItem"><a href="examples/08.Strings/StringAdditionOperator/StringAdditionOperator.ino">String Addition Operator</a></li>
-                            <li class="ExampleItem"><a href="examples/08.Strings/StringAppendOperator/StringAppendOperator.ino">String Append Operator</a></li>
-                            <li class="ExampleItem"><a href="examples/08.Strings/StringCaseChanges/StringCaseChanges.ino">String Case Changes</a></li>
-                            <li class="ExampleItem"><a href="examples/08.Strings/StringCharacters/StringCharacters.ino">String Characters</a></li>
-                            <li class="ExampleItem"><a href="examples/08.Strings/StringComparisonOperators/StringComparisonOperators.ino">String Comparison Operators</a></li>
-                            <li class="ExampleItem"><a href="examples/08.Strings/StringConstructors/StringConstructors.ino">String Constructors</a></li>
-                            <li class="ExampleItem"><a href="examples/08.Strings/StringIndexOf/StringIndexOf.ino">String Index Of</a></li>
-                            <li class="ExampleItem"><a href="examples/08.Strings/StringLength/StringLength.ino">String Length</a></li>
-                            <li class="ExampleItem"><a href="examples/08.Strings/StringLengthTrim/StringLengthTrim.ino">String Length Trim</a></li>
-                            <li class="ExampleItem"><a href="examples/08.Strings/StringReplace/StringReplace.ino">String Replace</a></li>
-                            <li class="ExampleItem"><a href="examples/08.Strings/StringStartsWithEndsWith/StringStartsWithEndsWith.ino">String Starts With Ends With</a></li>
-                            <li class="ExampleItem"><a href="examples/08.Strings/StringSubstring/StringSubstring.ino">String Substring</a></li>
-                            <li class="ExampleItem"><a href="examples/08.Strings/StringToIntRGB/StringToIntRGB.ino">String To Int RGB</a></li>
-                            <li class="ExampleItem"><a href="examples/08.Strings/StringToInt/StringToInt.ino">String To Int</a></li>
-                        </ul>
-                    </li>
-                    <li class="ExampleCategory">USB</li>
-                    <li class="ExampleCategoryContents">
-                        <ul>
-                            <li class="ExampleItem"><a href="examples/09.USB/KeyboardAndMouseControl/KeyboardAndMouseControl.ino">Keyboard And Mouse Control</a></li>
-                            <li class="ExampleItem"><a href="examples/09.USB/Keyboard/KeyboardLogout/KeyboardLogout.ino">Keyboard Logout</a></li>
-                            <li class="ExampleItem"><a href="examples/09.USB/Keyboard/KeyboardMessage/KeyboardMessage.ino">Keyboard Message</a></li>
-                            <li class="ExampleItem"><a href="examples/09.USB/Keyboard/KeyboardReprogram/KeyboardReprogram.ino">Keyboard Reprogram</a></li>
-                            <li class="ExampleItem"><a href="examples/09.USB/Keyboard/KeyboardSerial/KeyboardSerial.ino">Keyboard Serial</a></li>
-                            <li class="ExampleItem"><a href="examples/09.USB/Mouse/ButtonMouseControl/ButtonMouseControl.ino">Button Mouse Control</a></li>
-                            <li class="ExampleItem"><a href="examples/09.USB/Mouse/JoystickMouseControl/JoystickMouseControl.ino">Joystick Mouse Control</a></li>
-                        </ul>
-                    </li>
-                    <li class="ExampleCategory">Chibitronics</li>
-                    <li class="ExampleCategoryContents">
-                        <ul>
-                            <li class="ExampleItem"><a href="examples/chibitronics/neopixel/neopixel.ino">neopixel</a></li>
-                            <li class="ExampleItem"><a href="examples/chibitronics/PhysicalProgramming/physical-programming.ino">physical-programming</a></li>
-                            <li class="ExampleItem"><a href="examples/chibitronics/threading/threading.ino">threading</a></li>
-                            <li class="ExampleItem"><a href="examples/chibitronics/effects/effects.ino">effects</a></li>
-                        </ul>
-                    </li>
-                </ol>
+          <div id="examples_list" class="ExamplesList maintab">
+	    <ol>
+	      <li class="ExampleCategory">Basics</li>
+	      <ul>
+		<li class="ExampleItem"><a href="examples-ltc/1.Basics/Blink/Blink.ino">Blink</a></li>
+		<li class="ExampleItem"><a href="examples-ltc/1.Basics/Fade/Fade.ino">Fade</a></li>
+		<li class="ExampleItem"><a href="examples-ltc/1.Basics/PushOnPushOffSwitch/PushOnPushOffSwitch.ino">Push On Push Off Switch</a></li>
+	      </ul>
+	      <li class="ExampleCategory">Craft Effects</li>
+	      <ul>
+		<li class="ExampleItem"><a href="examples-ltc/2.Effects/CraftEffects/CraftEffects.ino">Craft Effects</a></li>
+		<li class="ExampleItem"><a href="examples-ltc/2.Effects/CascadeDefault/CascadeDefault.ino">Cascade (Default LTC Program)</a></li>
+	      </ul>
+	      <li class="ExampleCategory">Chibiscope</li>
+	      <ul>
+		<li class="ExampleItem"><a href="examples-ltc/3.Chibiscope/Hello/Hello.ino">Hello</a></li>
+		<li class="ExampleItem"><a href="examples-ltc/3.Chibiscope/PositioningText/PositioningText.ino">Positioning Text</a></li>
+		<li class="ExampleItem"><a href="examples-ltc/3.Chibiscope/Animation/Animation.ino">Animation</a></li>
+	      </ul>
+	      <li class="ExampleCategory">RainbowTape</li>
+	      <ul>
+		<li class="ExampleItem"><a href="examples-ltc/4.RainbowTape/SimpleColor/SimpleColor.ino">Simple Color</a></li>
+		<li class="ExampleItem"><a href="examples-ltc/4.RainbowTape/FadeColor/FadeColor.ino">Fade Color</a></li>		
+	      </ul>
+	      <li class="ExampleCategory">Sensors</li>
+	      <ul>
+		<li class="ExampleItem"><a href="examples-ltc/5.Sensors/LightSensor/LightSensor.ino">Light Sensor</a></li>
+	      </ul>
+	      <li class="ExampleCategory">LTCVolume1</li>
+	      <ul>
+		<li class="ExampleItem"><a href="examples-ltc/6.LTCVolume1/Test1/Test1.ino">Test1</a></li>
+		<li class="ExampleItem"><a href="examples-ltc/6.LTCVolume1/Test2/Test2.ino">Test2</a></li>
+		<li class="ExampleItem"><a href="examples-ltc/6.LTCVolume1/Test2/Test3.ino">Test3</a></li>
+	      </ul>
+	      <li class="ExampleCategory">CodeReference</li>
+	      <ul>
+		<li class="ExampleItem"><a href="examples-ltc/A.CodeReference/DecisionElements/DecisionElements.ino">Decision Elements</a></li>
+		<li class="ExampleItem"><a href="examples-ltc/A.CodeReference/LoopElements/LoopElements.ino">Loop Elements</a></li>
+	      </ul>
+	      <li class="ExampleCategory">Threads</li>
+	      <ul>
+		<li class="ExampleItem"><a href="examples-ltc/B.Threads/BasicThreads/BasicThreads.ino">Basic Threads</a></li>
+	      </ul>
+	    </ol>
             </div>
             <div id="code_editor" class="maintab">
-                <textarea id="code_editor_textarea">void setup() {
-  ;
-}
-
-void loop() {
-  ;
-}</textarea>
+              <textarea id="code_editor_textarea">void setup() {
+		;
+		}
+		void loop() {
+		;
+		}</textarea>
             </div>
             <div id="sketch_list" class="maintab"></div>
         </form>
+
+	    <div class="switch_container">
+	      <div class="switch_text">Color Gadget </div>
+	      <input class="jscolor" value="17c7d1">
+	    </div>
+	    
+	
     </div>
     <footer class="Site-footer" id="Site-footer">
         <canvas id="wavStrip"></canvas>
@@ -183,7 +135,6 @@ void loop() {
     <!-- endbuild -->
 
     <script src="js/index.js" type="text/javascript"></script>
-
 </body>
 
 </html>

@@ -5,7 +5,7 @@ current_category=0
 
 echo "<ol>"
 
-for i in $(find examples | sort -n)
+for i in $(find examples-ltc | sort -n)
 do
 	if [ -d ${i} ]
 	then

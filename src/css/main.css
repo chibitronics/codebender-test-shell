@@ -73,6 +73,17 @@ html {
 
 }
 
+.jscolor {
+	font-size: 17px;
+	font-family: Helvetica, Arial, Sans-Serif;
+	color: gray;
+    float: left;
+    margin-top: 12px;
+    margin-left: 10px;
+    margin-right: 10px;
+
+}
+
 .logo {
     float: left;
     margin-left: 10px; 

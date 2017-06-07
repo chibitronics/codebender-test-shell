@@ -84,18 +84,18 @@ gulp.task('compress-br', function () {
 });
 
 gulp.task('compress-br-examples', function () {
-    return gulp.src('build/examples/**')
+    return gulp.src('build/examples-ltc/**')
         .pipe(brotli.compress({
             quality: 11,
             skipLarger: true
         }))
-        .pipe(gulp.dest('build/examples'))
+        .pipe(gulp.dest('build/examples-ltc'))
 });
 
 gulp.task('compress-gz-examples', function () {
-    return gulp.src('build/examples/**')
+    return gulp.src('build/examples-ltc/**')
         .pipe(gzip())
-        .pipe(gulp.dest('build/examples'))
+        .pipe(gulp.dest('build/examples-ltc'))
 });
 
 gulp.task('lint-src', function () {
@@ -152,9 +152,14 @@ gulp.task('build-lame', function () {
         .pipe(gulp.dest('build/js/'))
 });
 
+gulp.task('build-jscolor', function () {
+    return gulp.src('colorjs/jscolor.min.js')
+        .pipe(gulp.dest('build/js/'))
+});
+
 gulp.task('copy-examples', function () {
-    return gulp.src('examples/**/*')
-        .pipe(gulp.dest('build/examples'))
+    return gulp.src('examples-ltc/**/*')
+        .pipe(gulp.dest('build/examples-ltc'))
 });
 
 gulp.task('copy-images', function () {
@@ -183,7 +188,7 @@ gulp.task('browserSync', function () {
 
 gulp.task('build', function (callback) {
     runSequence('clean:build', ['build-html',
-        'lint-src', 'build-scripts', 'build-lame',
+	'lint-src', 'build-scripts', 'build-lame', 'build-jscolor',
         'copy-images',
         'copy-examples',
     ],
