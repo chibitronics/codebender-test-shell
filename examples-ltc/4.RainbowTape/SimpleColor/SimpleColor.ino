@@ -7,13 +7,17 @@
 #define pixelCount 5 // number of pixels in the chain; doesn't hurt to have less actual pixels in your project
 #define dimLevel   1 // a level from 0-5
 
+#include "html_colors.h" // add this line to use color names instead of codes
+// visit https://github.com/chibitronics/ltc-compiler-layer/blob/master/support/html_colors.h
+// for a full list of colors
+
 // select colors codes using the "Color Gadget" below the text editor!
 unsigned int pixel_color[pixelCount] = {
   0x17c7d1,
-  0x17c7d1,  // chibi teal
-  0xfd2600,  // chibi red
-  0xff7600,  // chibi yellow
-  0x6F5C96,  // lilac
+  0x17c7d1,        // hex code for chibi teal (pick from the color gadget)
+  0xfd2600,        // hex code for chibi red (pick from the color gadget)
+  COLOR_GOLD,      // color by name (if you use html_colors.h)
+  COLOR_LIMEGREEN  // color by name (if you use html_colors.h)
 };
 
 #include "Adafruit_NeoPixel.h"
