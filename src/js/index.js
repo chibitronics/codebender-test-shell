@@ -288,6 +288,10 @@ function resizeHeader() {
     var height = header.offsetHeight;
     document.getElementById('main').style.marginTop = height + 'px';
     header.style.top = 0;
+
+
+    var gadget = document.getElementById('color_gadget');
+    gadget.style.display = 'none';
 }
 
 function installHooks() {
@@ -357,6 +361,17 @@ function selectTab(e) {
     }
 }
 
+function checkRainbow(s) {
+    var hasrainbow = s.search(/rainbow/i);
+    if (hasrainbow != -1) {
+	var gadget = document.getElementById('color_gadget');
+	gadget.style.display = 'block';
+    } else {
+	var gadget = document.getElementById('color_gadget');
+	gadget.style.display = 'none';
+    }
+}
+
 function loadExampleFromLink(e) {
 
     var request = new window.XMLHttpRequest();
@@ -378,6 +393,7 @@ function loadExampleFromLink(e) {
 
             if (request.status === 200) {
                 editor.setValue(request.responseText);
+		checkRainbow(request.responseText);
             }
         }
     };
@@ -473,6 +489,8 @@ function loadLocalSketch(e) {
     }
 
     editor.setValue(sketch.document);
+    checkRainbow(sketch.document);
+    
     selectTab('code_editor');
     editor.refresh();
 
@@ -505,6 +523,8 @@ function uploadSketch(e) {
     reader.onload = (function (contents) {
         return function (e) {
             editor.setValue(e.target.result);
+	    checkRainbow(e.target.result);
+	    
             selectTab('code_editor');
             editor.refresh();
             elt.value = null;

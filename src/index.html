@@ -13,7 +13,7 @@
 </head>
 
 <body class="Site">
-  <script src="js/jscolor.min.js" type="text/javascript"></script>
+  <script src="js/jscolor.js" type="text/javascript"></script>
   
     <header class="Site-header" id="Site-header">
         <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
@@ -50,6 +50,11 @@
                     <span class="slider round"></span>
                 </label>
             </div>
+
+	    <div class="switch_container" id="color_gadget">
+	      <div class="switch_text">Color Gadget </div>
+	      <input class="jscolor" value="fd2600">
+	    </div>
 
         </div>
     </header>
@@ -132,12 +137,6 @@ void loop() {
             <div id="sketch_list" class="maintab"></div>
         </form>
 
-	    <div class="switch_container">
-	      <div class="switch_text">Color Gadget </div>
-	      <input class="jscolor" value="fd2600">
-	    </div>
-	    
-	
     </div>
     <footer class="Site-footer" id="Site-footer">
         <canvas id="wavStrip"></canvas>

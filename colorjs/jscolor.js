@@ -983,7 +983,7 @@ var jsc = {
 		this.styleElement = targetElement; // element that will preview the picked color using CSS backgroundColor
 		this.required = true; // whether the associated text <input> can be left empty
 		this.refine = true; // whether to refine the entered color code (e.g. uppercase it and remove whitespace)
-		this.hash = false; // whether to prefix the HEX color code with # symbol
+		this.hash = true; // whether to prefix the HEX color code with # symbol
 		this.uppercase = true; // whether to uppercase the color code
 		this.onFineChange = null; // called instantly every time the color changes (value can be either a function or a string with javascript code)
 		this.activeClass = 'jscolor-active'; // class to be set to the target element when a picker window is open on it
@@ -1095,7 +1095,7 @@ var jsc = {
 			if (!(flags & jsc.leaveValue) && this.valueElement) {
 				var value = this.toString();
 				if (this.uppercase) { value = value.toUpperCase(); }
-				if (this.hash) { value = '#' + value; }
+				if (this.hash) { value = '0x' + value; }
 
 				if (jsc.isElementType(this.valueElement, 'input')) {
 					this.valueElement.value = value;

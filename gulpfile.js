@@ -153,7 +153,7 @@ gulp.task('build-lame', function () {
 });
 
 gulp.task('build-jscolor', function () {
-    return gulp.src('colorjs/jscolor.min.js')
+    return gulp.src('colorjs/jscolor.js')
         .pipe(gulp.dest('build/js/'))
 });
 
