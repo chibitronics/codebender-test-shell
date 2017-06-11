@@ -284,14 +284,11 @@ function initializeEditor() {
 }
 
 function resizeHeader() {
+    checkRainbow(editor.getValue());
     var header = document.getElementById('Site-header');
     var height = header.offsetHeight;
     document.getElementById('main').style.marginTop = height + 'px';
     header.style.top = 0;
-
-
-    var gadget = document.getElementById('color_gadget');
-    gadget.style.display = 'none';
 }
 
 function installHooks() {
@@ -363,12 +360,11 @@ function selectTab(e) {
 
 function checkRainbow(s) {
     var hasrainbow = s.search(/rainbow/i);
-    var gadget;
+
+    var gadget = document.getElementById('color_gadget');
     if (hasrainbow !== -1) {
-	    gadget = document.getElementById('color_gadget');
-	    gadget.style.display = 'block';
+    	gadget.style.display = 'block';
     } else {
-	    gadget = document.getElementById('color_gadget');
 	    gadget.style.display = 'none';
     }
 }
@@ -394,7 +390,7 @@ function loadExampleFromLink(e) {
 
             if (request.status === 200) {
                 editor.setValue(request.responseText);
-		checkRainbow(request.responseText);
+                resizeHeader();
             }
         }
     };
@@ -490,7 +486,7 @@ function loadLocalSketch(e) {
     }
 
     editor.setValue(sketch.document);
-    checkRainbow(sketch.document);
+    resizeHeader();
 
     selectTab('code_editor');
     editor.refresh();
@@ -524,7 +520,7 @@ function uploadSketch(e) {
     reader.onload = (function (contents) {
         return function (e) {
             editor.setValue(e.target.result);
-	    checkRainbow(e.target.result);
+            resizeHeader();
 
             selectTab('code_editor');
             editor.refresh();
