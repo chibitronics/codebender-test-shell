@@ -4,3 +4,4 @@
 *.git
 /node_modules
 /build
+/src/examples.inc

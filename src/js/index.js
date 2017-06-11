@@ -360,6 +360,7 @@ function selectTab(e) {
 
 function checkRainbow(s) {
     var hasrainbow = s.search(/rainbow/i);
+
     var gadget = document.getElementById('color_gadget');
     if (hasrainbow !== -1) {
     	gadget.style.display = 'block';
