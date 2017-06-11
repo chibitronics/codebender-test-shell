@@ -1,10 +1,13 @@
 var gulp = require('gulp');
 var useref = require('gulp-useref');
 var gulpIf = require('gulp-if');
+var fileinc = require('gulp-file-include');
 var serve = require('gulp-serve');
 var cssnano = require('gulp-cssnano');
 var imagemin = require('gulp-imagemin');
 var fs = require('fs-extra');
+var klaw = require('klaw');
+var path = require('path');
 var runSequence = require('run-sequence');
 var browserSync = require('browser-sync').create();
 var htmlmin = require('gulp-htmlmin');
@@ -59,6 +62,45 @@ try {
         ]
     }));
 } catch (e) { };
+
+gulp.task('build-examples', function() {
+    var currentDirectory = '';
+    var fileList = [];
+    return klaw('examples-ltc')
+        .on('data', function(item) {
+            if (path.extname(item.path) === '.ino') {
+                paths = item.path.split(path.sep);
+                currentDirectory = paths[paths.length - 3];
+                if (fileList[currentDirectory] === undefined) {
+                    fileList[currentDirectory] = [];
+                }
+                var fileName = paths[paths.length - 1];
+                var baseName = path.basename(fileName, '.ino');
+                fileList[currentDirectory].push(baseName);
+            }
+        })
+        .on('end', function () {
+            var examplesFile = '          <div id="examples_list" class="ExamplesList maintab">\n'
+                             + '              <ol class="ExampleOrderedList">\n';
+            for (var categoryDir in fileList) {
+                var categoryName = categoryDir.split('.');
+                categoryName.shift();
+                categoryName = categoryName.join('.');
+
+                examplesFile += '                 <li class="ExampleCategory">' + categoryName + '</li>\n';
+                examplesFile += '                 <li class="ExampleCategoryContents">\n';
+                examplesFile += '                     <ul>\n';
+                fileList[categoryDir].forEach(function(exampleName) {
+                    examplesFile += '                         <li class="ExampleItem"><a href="examples-ltc/' + categoryDir + '/' + exampleName + '/' + exampleName + '.ino">' + exampleName + '</a></li>\n';
+                });
+                examplesFile += '                     </ul>\n';
+                examplesFile += '                 </li>\n';
+            }
+            examplesFile += '              </ol>\n'
+                          + '          </div>\n';
+            fs.outputFileSync('src/examples.html', examplesFile);
+        });
+});
 
 gulp.task('build-html', function () {
     return gulp.src('src/*.html') /* Load all HTML files */
