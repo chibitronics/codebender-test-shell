@@ -14,7 +14,7 @@
 
 <body class="Site">
   <script src="js/jscolor.js" type="text/javascript"></script>
-  
+
     <header class="Site-header" id="Site-header">
         <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
         <img class="logo" src="/images/white_chibi_logo.png" alt="Chibitronics Love-to-Code" width="130">
@@ -65,52 +65,7 @@
         </div>
 
         <form method="post" id="show-result" target="result">
-          <div id="examples_list" class="ExamplesList maintab">
-	    <ol>
-	      <li class="ExampleCategory">Basics</li>
-	      <ul>
-		<li class="ExampleItem"><a href="examples-ltc/1.Basics/Blink/Blink.ino">Blink</a></li>
-		<li class="ExampleItem"><a href="examples-ltc/1.Basics/Fade/Fade.ino">Fade</a></li>
-		<li class="ExampleItem"><a href="examples-ltc/1.Basics/PushOnPushOffSwitch/PushOnPushOffSwitch.ino">Push On Push Off Switch</a></li>
-	      </ul>
-	      <li class="ExampleCategory">Craft Effects</li>
-	      <ul>
-		<li class="ExampleItem"><a href="examples-ltc/2.Effects/CraftEffects/CraftEffects.ino">Craft Effects</a></li>
-		<li class="ExampleItem"><a href="examples-ltc/2.Effects/CascadeDefault/CascadeDefault.ino">Cascade (Default LTC Program)</a></li>
-	      </ul>
-	      <li class="ExampleCategory">Chibiscope</li>
-	      <ul>
-		<li class="ExampleItem"><a href="examples-ltc/3.Chibiscope/Hello/Hello.ino">Hello</a></li>
-		<li class="ExampleItem"><a href="examples-ltc/3.Chibiscope/PositioningText/PositioningText.ino">Positioning Text</a></li>
-		<li class="ExampleItem"><a href="examples-ltc/3.Chibiscope/Animation/Animation.ino">Animation</a></li>
-	      </ul>
-	      <li class="ExampleCategory">RainbowTape</li>
-	      <ul>
-		<li class="ExampleItem"><a href="examples-ltc/4.RainbowTape/SimpleColor/SimpleColor.ino">Simple Color</a></li>
-		<li class="ExampleItem"><a href="examples-ltc/4.RainbowTape/FadeColor/FadeColor.ino">Fade Color</a></li>
-		<li class="ExampleItem"><a href="examples-ltc/4.RainbowTape/RainbowCycle/RainbowCycle.ino">Rainbow Cycle</a></li>
-	      </ul>
-	      <li class="ExampleCategory">Sensors</li>
-	      <ul>
-		<li class="ExampleItem"><a href="examples-ltc/5.Sensors/LightSensor/LightSensor.ino">Light Sensor</a></li>
-	      </ul>
-	      <li class="ExampleCategory">LTCVolume1</li>
-	      <ul>
-		<li class="ExampleItem"><a href="examples-ltc/6.LTCVolume1/Test1/Test1.ino">Test1</a></li>
-		<li class="ExampleItem"><a href="examples-ltc/6.LTCVolume1/Test2/Test2.ino">Test2</a></li>
-		<li class="ExampleItem"><a href="examples-ltc/6.LTCVolume1/Test2/Test3.ino">Test3</a></li>
-	      </ul>
-	      <li class="ExampleCategory">CodeReference</li>
-	      <ul>
-		<li class="ExampleItem"><a href="examples-ltc/A.CodeReference/DecisionElements/DecisionElements.ino">Decision Elements</a></li>
-		<li class="ExampleItem"><a href="examples-ltc/A.CodeReference/LoopElements/LoopElements.ino">Loop Elements</a></li>
-	      </ul>
-	      <li class="ExampleCategory">Threads</li>
-	      <ul>
-		<li class="ExampleItem"><a href="examples-ltc/B.Threads/BasicThreads/BasicThreads.ino">Basic Threads</a></li>
-	      </ul>
-	    </ol>
-            </div>
+@@include('./examples.inc')
             <div id="code_editor" class="maintab">
               <textarea id="code_editor_textarea">// Love to Code
 
