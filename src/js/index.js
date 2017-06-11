@@ -364,12 +364,13 @@ function selectTab(e) {
 
 function checkRainbow(s) {
     var hasrainbow = s.search(/rainbow/i);
-    if (hasrainbow != -1) {
-	var gadget = document.getElementById('color_gadget');
-	gadget.style.display = 'block';
+    var gadget;
+    if (hasrainbow !== -1) {
+	    gadget = document.getElementById('color_gadget');
+	    gadget.style.display = 'block';
     } else {
-	var gadget = document.getElementById('color_gadget');
-	gadget.style.display = 'none';
+	    gadget = document.getElementById('color_gadget');
+	    gadget.style.display = 'none';
     }
 }
 
