@@ -490,7 +490,7 @@ function loadLocalSketch(e) {
 
     editor.setValue(sketch.document);
     checkRainbow(sketch.document);
-    
+
     selectTab('code_editor');
     editor.refresh();
 
@@ -524,7 +524,7 @@ function uploadSketch(e) {
         return function (e) {
             editor.setValue(e.target.result);
 	    checkRainbow(e.target.result);
-	    
+
             selectTab('code_editor');
             editor.refresh();
             elt.value = null;
