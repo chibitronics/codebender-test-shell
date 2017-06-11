@@ -363,11 +363,10 @@ function selectTab(e) {
 
 function checkRainbow(s) {
     var hasrainbow = s.search(/rainbow/i);
-    if (hasrainbow != -1) {
-	var gadget = document.getElementById('color_gadget');
+    var gadget = document.getElementById('color_gadget');
+    if (hasrainbow !== -1) {
 	gadget.style.display = 'block';
     } else {
-	var gadget = document.getElementById('color_gadget');
 	gadget.style.display = 'none';
     }
 }
