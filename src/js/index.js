@@ -1,5 +1,6 @@
 var ModulationController = require('chibitronics-ltc-modulate');
 var CodeMirror = require('codemirror');
+require('jscolor-picker');
 require('codemirror/mode/clike/clike');
 require('codemirror/addon/lint/lint');
 require('./chibi-lint.js');
