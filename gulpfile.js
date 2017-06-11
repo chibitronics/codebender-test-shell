@@ -98,13 +98,14 @@ gulp.task('build-examples', function() {
             }
             examplesFile += '              </ol>\n'
                           + '          </div>\n';
-            fs.outputFileSync('src/examples.html', examplesFile);
+            fs.outputFileSync('src/examples.inc', examplesFile);
         });
 });
 
 gulp.task('build-html', function () {
     return gulp.src('src/*.html') /* Load all HTML files */
         .pipe(useref()) /* Combine files into one */
+        .pipe(fileinc()) /* Process @@include() directives */
         .pipe(gulpIf('*.css', cssnano())) /* minify css files */
         .pipe(gulpIf('*.html', htmlmin({ collapseWhitespace: false, minifyJS: false, minifyCSS: false }))) /* also minify html */
         .pipe(gulp.dest('build')) /* Write out to 'html' output directory */
@@ -229,7 +230,7 @@ gulp.task('browserSync', function () {
 });
 
 gulp.task('build', function (callback) {
-    runSequence('clean:build', ['build-html',
+    runSequence('clean:build', 'build-examples', ['build-html',
 	'lint-src', 'build-scripts', 'build-lame', 'build-jscolor',
         'copy-images',
         'copy-examples',
@@ -254,5 +255,6 @@ gulp.task('watch', ['browserSync'], function (callback) {
     gulp.watch('src/*.html', ['build-html', browserSync.reload]);
     gulp.watch('src/**/*.css', ['build-html', browserSync.reload]);
     gulp.watch('src/js/**/*.js', ['build-scripts', browserSync.reload]);
+    gulp.watch('src/**/*.ino', ['build-examples', 'build-html', browserSync.reload]);
     runSequence('clean:build', 'build', callback);
 });
