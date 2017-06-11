@@ -360,13 +360,11 @@ function selectTab(e) {
 
 function checkRainbow(s) {
     var hasrainbow = s.search(/rainbow/i);
-    var gadget;
+    var gadget = document.getElementById('color_gadget');
     if (hasrainbow !== -1) {
-        gadget = document.getElementById('color_gadget');
-        gadget.style.display = 'block';
+    	gadget.style.display = 'block';
     } else {
-        gadget = document.getElementById('color_gadget');
-        gadget.style.display = 'none';
+	    gadget.style.display = 'none';
     }
 }
 
