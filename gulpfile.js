@@ -66,6 +66,7 @@ try {
 gulp.task('build-examples', function() {
     var currentDirectory = '';
     var fileList = [];
+    var dirList = [];
     return klaw('examples-ltc')
         .on('data', function(item) {
             if (path.extname(item.path) === '.ino') {
@@ -74,9 +75,13 @@ gulp.task('build-examples', function() {
                 if (fileList[currentDirectory] === undefined) {
                     fileList[currentDirectory] = [];
                 }
+                if (dirList[currentDirectory] === undefined) {
+                    dirList[currentDirectory] = [];
+                }
                 var fileName = paths[paths.length - 1];
                 var baseName = path.basename(fileName, '.ino');
                 fileList[currentDirectory].push(baseName);
+		dirList[currentDirectory].push(paths[paths.length - 2]);
             }
         })
         .on('end', function () {
@@ -90,9 +95,10 @@ gulp.task('build-examples', function() {
                 examplesFile += '                 <li class="ExampleCategory">' + categoryName + '</li>\n';
                 examplesFile += '                 <li class="ExampleCategoryContents">\n';
                 examplesFile += '                     <ul>\n';
+		var i = 0;
                 fileList[categoryDir].forEach(function(exampleFile) {
                     var exampleName = exampleFile.replace(/([A-Z0-9][a-z])/g, ' $1').replace(/([a-z])([A-Z0-9])$/, '$1 $2').replace(/^ /, '');
-                    examplesFile += '                         <li class="ExampleItem"><a href="examples-ltc/' + categoryDir + '/' + exampleFile + '/' + exampleFile + '.ino">' + exampleName + '</a></li>\n';
+                    examplesFile += '                         <li class="ExampleItem"><a href="examples-ltc/' + categoryDir + '/' + dirList[categoryDir][i++] + '/' + exampleFile + '.ino">' + exampleName + '</a></li>\n';
                 });
                 examplesFile += '                     </ul>\n';
                 examplesFile += '                 </li>\n';
