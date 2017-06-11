@@ -11,9 +11,9 @@
 // visit https://github.com/chibitronics/ltc-compiler-layer/blob/master/support/html_colors.h
 // for a full list of colors
 
-// select colors codes using the "Color Gadget" below the text editor!
+// select colors codes using the "Rainbow Gadget"!
 unsigned int pixel_color[pixelCount] = {
-  0x17c7d1,
+  0x17c7d1,        // try using the Rainbow Gadget to put a new color here!
   0x17c7d1,        // hex code for chibi teal (pick from the color gadget)
   0xfd2600,        // hex code for chibi red (pick from the color gadget)
   COLOR_GOLD,      // color by name (if you use html_colors.h)

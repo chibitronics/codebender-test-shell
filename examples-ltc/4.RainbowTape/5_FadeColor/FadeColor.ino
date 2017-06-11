@@ -4,7 +4,7 @@
 
 // This simple demo enables you to fade a pixel between two colors
 
-// select colors codes using the "Color Gadget" below the text editor,
+// select colors codes using the "Rainbow Gadget".
 // or use any color from https://github.com/chibitronics/ltc-compiler-layer/blob/master/support/html_colors.h
 #include "html_colors.h"
 int pix0_colorA = 0x17c7d1;      // can specify color as hex code
