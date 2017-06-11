@@ -85,13 +85,13 @@ gulp.task('build-examples', function() {
             for (var categoryDir in fileList) {
                 var categoryName = categoryDir.split('.');
                 categoryName.shift();
-                categoryName = categoryName.join('.').replace(/([A-Z][a-z])/g, ' $1');
+                categoryName = categoryName.join('.').replace(/([A-Z0-9][a-z])/g, ' $1').replace(/([a-z])([A-Z0-9])$/, '$1 $2').replace(/^ /, '');
 
                 examplesFile += '                 <li class="ExampleCategory">' + categoryName + '</li>\n';
                 examplesFile += '                 <li class="ExampleCategoryContents">\n';
                 examplesFile += '                     <ul>\n';
                 fileList[categoryDir].forEach(function(exampleFile) {
-                    var exampleName = exampleFile.replace(/([A-Z][a-z])/g, ' $1');
+                    var exampleName = exampleFile.replace(/([A-Z0-9][a-z])/g, ' $1').replace(/([a-z])([A-Z0-9])$/, '$1 $2').replace(/^ /, '');
                     examplesFile += '                         <li class="ExampleItem"><a href="examples-ltc/' + categoryDir + '/' + exampleFile + '/' + exampleFile + '.ino">' + exampleName + '</a></li>\n';
                 });
                 examplesFile += '                     </ul>\n';
