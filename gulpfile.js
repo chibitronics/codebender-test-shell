@@ -233,7 +233,7 @@ gulp.task('browserSync', function () {
 
 gulp.task('build', function (callback) {
     runSequence('clean:build', 'build-examples', ['build-html',
-	'lint-src', 'build-scripts', 'build-lame', 'build-jscolor',
+	'lint-src', 'build-scripts', 'build-lame',
         'copy-images',
         'copy-examples',
     ],
