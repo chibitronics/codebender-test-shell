@@ -1,10 +1,13 @@
 var gulp = require('gulp');
 var useref = require('gulp-useref');
 var gulpIf = require('gulp-if');
+var fileinc = require('gulp-file-include');
 var serve = require('gulp-serve');
 var cssnano = require('gulp-cssnano');
 var imagemin = require('gulp-imagemin');
 var fs = require('fs-extra');
+var klaw = require('klaw');
+var path = require('path');
 var runSequence = require('run-sequence');
 var browserSync = require('browser-sync').create();
 var htmlmin = require('gulp-htmlmin');
@@ -60,9 +63,56 @@ try {
     }));
 } catch (e) { };
 
+gulp.task('build-examples', function() {
+    var currentDirectory = '';
+    var fileList = [];
+    var dirList = [];
+    return klaw('examples-ltc')
+        .on('data', function(item) {
+            if (path.extname(item.path) === '.ino') {
+                paths = item.path.split(path.sep);
+                currentDirectory = paths[paths.length - 3];
+                if (fileList[currentDirectory] === undefined) {
+                    fileList[currentDirectory] = [];
+                }
+                if (dirList[currentDirectory] === undefined) {
+                    dirList[currentDirectory] = [];
+                }
+                var fileName = paths[paths.length - 1];
+                var baseName = path.basename(fileName, '.ino');
+                fileList[currentDirectory].push(baseName);
+		dirList[currentDirectory].push(paths[paths.length - 2]);
+            }
+        })
+        .on('end', function () {
+            var examplesFile = '          <div id="examples_list" class="ExamplesList maintab">\n'
+                             + '              <ol class="ExampleOrderedList">\n';
+            for (var categoryDir in fileList) {
+                var categoryName = categoryDir.split('.');
+                categoryName.shift();
+                categoryName = categoryName.join('.').replace(/([A-Z0-9][a-z])/g, ' $1').replace(/([a-z])([A-Z0-9])$/, '$1 $2').replace(/^ /, '');
+
+                examplesFile += '                 <li class="ExampleCategory">' + categoryName + '</li>\n';
+                examplesFile += '                 <li class="ExampleCategoryContents">\n';
+                examplesFile += '                     <ul>\n';
+		var i = 0;
+                fileList[categoryDir].forEach(function(exampleFile) {
+                    var exampleName = exampleFile.replace(/([A-Z0-9][a-z])/g, ' $1').replace(/([a-z])([A-Z0-9])$/, '$1 $2').replace(/^ /, '');
+                    examplesFile += '                         <li class="ExampleItem"><a href="examples-ltc/' + categoryDir + '/' + dirList[categoryDir][i++] + '/' + exampleFile + '.ino">' + exampleName + '</a></li>\n';
+                });
+                examplesFile += '                     </ul>\n';
+                examplesFile += '                 </li>\n';
+            }
+            examplesFile += '              </ol>\n'
+                          + '          </div>\n';
+            fs.outputFileSync('src/examples.inc', examplesFile);
+        });
+});
+
 gulp.task('build-html', function () {
     return gulp.src('src/*.html') /* Load all HTML files */
         .pipe(useref()) /* Combine files into one */
+        .pipe(fileinc()) /* Process @@include() directives */
         .pipe(gulpIf('*.css', cssnano())) /* minify css files */
         .pipe(gulpIf('*.html', htmlmin({ collapseWhitespace: false, minifyJS: false, minifyCSS: false }))) /* also minify html */
         .pipe(gulp.dest('build')) /* Write out to 'html' output directory */
@@ -182,8 +232,8 @@ gulp.task('browserSync', function () {
 });
 
 gulp.task('build', function (callback) {
-    runSequence('clean:build', ['build-html',
-	'lint-src', 'build-scripts', 'build-lame',
+    runSequence('clean:build', 'build-examples', ['build-html',
+	'lint-src', 'build-scripts', 'build-lame', 'build-jscolor',
         'copy-images',
         'copy-examples',
     ],
@@ -207,5 +257,6 @@ gulp.task('watch', ['browserSync'], function (callback) {
     gulp.watch('src/*.html', ['build-html', browserSync.reload]);
     gulp.watch('src/**/*.css', ['build-html', browserSync.reload]);
     gulp.watch('src/js/**/*.js', ['build-scripts', browserSync.reload]);
+    gulp.watch('src/**/*.ino', ['build-examples', 'build-html', browserSync.reload]);
     runSequence('clean:build', 'build', callback);
 });
