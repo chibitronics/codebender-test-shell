@@ -43,20 +43,6 @@ struct fade_thread_config {
 };
 static fade_thread_config thread_config[NUMBER_OF_THREADS];
 
-static thread_t *fade_threads[NUMBER_OF_THREADS];
-
-// this magic function creates a Thread from heap
-static thread_t *runThread(tfunc_t pf, void *arg) {
-  thread_t *thr = (thread_t *)malloc(THD_WORKING_AREA_SIZE(THREAD_MEMORY));
-  createThread((void *)thr, THD_WORKING_AREA_SIZE(THREAD_MEMORY), THREAD_PRIORITY, pf, arg);
-
-  /* Mark thr->p_flags as CH_FLAG_MODE_HEAP, so ChibiOS will call free()
-   * on the memory after it exits.
-   */
-  ((uint8_t *)thr)[0x1d] = 1;
-  return thr;
-}
-
 // You'll recognize this code from the "fade" demo!
 void fade_code(void *config) {
   struct fade_thread_config *cfg = (struct fade_thread_config *)config;
@@ -95,12 +81,14 @@ void setup(void) {
   // we don't want to keep on starting threads over and over again!
 
   // The first thread starts running after this line of code.
-  fade_threads[0] = runThread(fade_code, &thread_config[0]);
+  createThreadFromHeap(THD_WORKING_AREA_SIZE(THREAD_MEMORY), THREAD_PRIORITY,
+                       fade_code, &thread_config[0]);
 
   delay(1000); // this will delay the start of the second thread by 1 second
 
   // The second thread starts running after this line of code.
-  fade_threads[1] = runThread(fade_code, &thread_config[1]);
+  createThreadFromHeap(THD_WORKING_AREA_SIZE(THREAD_MEMORY), THREAD_PRIORITY,
+                       fade_code, &thread_config[1]);
 }
 
 void loop(void) {
