@@ -1,37 +1,48 @@
 // Love to Code
 
-// Rainbow tape "Fade Color" demo.
+// Rainbow tape "Fade Color" demo in HSV space.
 
-// This simple demo enables you to fade a pixel between two colors
 // In this variant, we fade using HSV space, instead of alpha blending
+// We also add randomness and depth, so we can use this demo to create
+// simple flame effects, as demonstrated on the default pix0 configuration
 
 // select colors codes using the "Rainbow Gadget".
 // or use any color from https://github.com/chibitronics/ltc-compiler-layer/blob/master/support/html_colors.h
 #include "html_colors.h"
-int pix0_colorA = 0x17c7d1;      // can specify color as hex code
-int pix0_colorB = COLOR_DARKRED; // or specify color as html-standard name
-int pix0_speed = 3;              // a number 0-100
-int pix0_brightness = 50;        // a number 0-100
+int pix0_colorA = COLOR_ORANGERED;  // can specify color as hex code
+int pix0_colorB = COLOR_RED;   // or specify color as html-standard name
+int pix0_speed = 3;             // a number 0-100, how fast the transitions happen
+int pix0_brightness = 80;       // a number 0-100, how bright the overall effect is
+int pix0_randomness = 20;       // a number 0-100, how random the timing is between color transitions
+int pix0_depth = 20;            // a number 0-100, how dark to get between transitions
 
 int pix1_colorA = COLOR_GREEN;
 int pix1_colorB = COLOR_RED;
 int pix1_speed = 5;
 int pix1_brightness = 20;
+int pix1_randomness = 0;
+int pix1_depth = 100;
 
 int pix2_colorA = COLOR_BLUE;
 int pix2_colorB = COLOR_HOTPINK;
 int pix2_speed = 4;
 int pix2_brightness = 100;
+int pix2_randomness = 0;
+int pix2_depth = 100;
 
 int pix3_colorA = COLOR_TEAL;
 int pix3_colorB = COLOR_FUCHSIA;
 int pix3_speed = 3;
 int pix3_brightness = 80;
+int pix3_randomness = 0;
+int pix3_depth = 100;
 
 int pix4_colorA = COLOR_RED;
 int pix4_colorB = COLOR_BLUE;
 int pix4_speed = 2;
 int pix4_brightness = 15;
+int pix4_randomness = 0;
+int pix4_depth = 100;
 
 #include "Adafruit_NeoPixel.h"
 
@@ -195,6 +206,8 @@ struct pix_config {
   int speed;
   uint8_t brightness;
   int state;
+  int randomness;
+  int depth;
 };
 static pix_config config[pixelCount]; 
 
@@ -216,6 +229,8 @@ void setup() {
 	  &config[0].colorB);
   config[0].speed = pix0_speed;
   config[0].brightness = pix0_brightness;
+  config[0].randomness = pix0_randomness;
+  config[0].depth = pix0_depth;
 
   rgb2hsv((pix1_colorA >> 16) & 0xff, (pix1_colorA >> 8 & 0xff), pix1_colorA & 0xff,
 	  &config[1].colorA);
@@ -223,6 +238,8 @@ void setup() {
 	  &config[1].colorB);
   config[1].speed = pix1_speed;
   config[1].brightness = pix1_brightness;
+  config[1].randomness = pix1_randomness;
+  config[1].depth = pix1_depth;
   
   rgb2hsv((pix2_colorA >> 16) & 0xff, (pix2_colorA >> 8 & 0xff), pix2_colorA & 0xff,
 	  &config[2].colorA);
@@ -230,6 +247,8 @@ void setup() {
 	  &config[2].colorB);
   config[2].speed = pix2_speed;
   config[2].brightness = pix2_brightness;
+  config[2].randomness = pix2_randomness;
+  config[2].depth = pix2_depth;
 
   rgb2hsv((pix3_colorA >> 16) & 0xff, (pix3_colorA >> 8 & 0xff), pix3_colorA & 0xff,
 	  &config[3].colorA);
@@ -237,6 +256,8 @@ void setup() {
 	  &config[3].colorB);
   config[3].speed = pix3_speed;
   config[3].brightness = pix3_brightness;
+  config[3].randomness = pix3_randomness;
+  config[3].depth = pix3_depth;
 
   rgb2hsv((pix4_colorA >> 16) & 0xff, (pix4_colorA >> 8 & 0xff), pix4_colorA & 0xff,
 	  &config[4].colorA);
@@ -244,6 +265,8 @@ void setup() {
 	  &config[4].colorB);
   config[4].speed = pix4_speed;
   config[4].brightness = pix4_brightness;
+  config[4].randomness = pix4_randomness;
+  config[4].depth = pix4_depth;
 
   for( i = 0; i < pixelCount; i++ ) {
     config[i].state = 0;
@@ -275,11 +298,15 @@ void loop() {
     strip.setPixelColor(i, rgb_to_hexcolor(blended_rgb));
     
     config[i].state = config[i].state + config[i].speed;
-    if( config[i].state <= 0 || config[i].state >= 100 ) {
+    if( config[i].speed > 0 )
+      config[i].state = config[i].state + random(0, config[i].randomness);
+    else
+      config[i].state = config[i].state - random(0, config[i].randomness);
+    if( config[i].state <= (100 - config[i].depth) || config[i].state >= 100 ) {
       config[i].speed = -config[i].speed;
     }
-    if( config[i].state <= 0 )
-      config[i].state = 0;
+    if( config[i].state <= (100 - config[i].depth) )
+      config[i].state = (100 - config[i].depth);
     if( config[i].state >= 100 )
       config[i].state = 100;
   }
