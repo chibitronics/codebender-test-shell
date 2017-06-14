@@ -1,9 +1,11 @@
 // Love to Code
 
-// Makey-Makey style resistive touch to keyboard output demo.
-
-// Note that on Love to Code, you need to touch and hold +3V and press
-// a pin, unlike Makey Makey where you hold ground and press a pin.
+// Resistive touch to keyboard demo. The Chibi Chip becomes a virtual
+// keyboard, mapping pins to key presses.
+//
+// To press a pin, hold +3V on the far right with one hand, and press
+// any pin with your other hand. Your body completes the circuit, triggering
+// a key press event!
 
 #include "Keyboard.h"
 
