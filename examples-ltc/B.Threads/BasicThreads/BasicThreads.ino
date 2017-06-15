@@ -28,7 +28,7 @@
 #define THREAD_MEMORY 64
 // higher numbers will get run first if there's a scheduling conflict
 // The highest number is 127
-#define THREAD_PRIORITY 20 
+#define THREAD_PRIORITY 20
 
 // You can make more threads if you want, to control more pins!
 #define NUMBER_OF_THREADS 2
@@ -43,39 +43,25 @@ struct fade_thread_config {
 };
 static fade_thread_config thread_config[NUMBER_OF_THREADS];
 
-static thread_t *fade_threads[NUMBER_OF_THREADS]; 
-
-// this magic function creates a Thread from heap
-static thread_t *runThread(tfunc_t pf, void *arg) {
-  thread_t *thr = (thread_t *)malloc(THD_WORKING_AREA_SIZE(THREAD_MEMORY));
-  createThread((void *)thr, THD_WORKING_AREA_SIZE(THREAD_MEMORY), THREAD_PRIORITY, pf, arg);
-
-  /* Mark thr->p_flags as CH_FLAG_MODE_HEAP, so ChibiOS will call free()
-   * on the memory after it exits.
-   */
-  ((uint8_t *)thr)[0x1d] = 1;
-  return thr;
-}
-
 // You'll recognize this code from the "fade" demo!
 void fade_code(void *config) {
   struct fade_thread_config *cfg = (struct fade_thread_config *)config;
-  
-  int led = cfg->pin;       
+
+  int led = cfg->pin;
   int fadeAmount = cfg->speed;
-  
+
   int brightness = 0;
   while(1) {
     analogWrite(led, brightness);    // update the led's brightness
 
     // move the brightness by fadeAmount toward a brightness limit
     brightness = brightness + fadeAmount;
-    
+
     // check if the brightness is at the bottom or top of the 0-255 scale
     // if it is, invert the amount we fade by
     if (brightness <= 0 || brightness >= 255) {
-      fadeAmount = -fadeAmount ; 
-    }     
+      fadeAmount = -fadeAmount;
+    }
     // pause for 30 milliseconds, or else the effect is too fast
     delay(30);
   }
@@ -86,21 +72,23 @@ void setup(void) {
   thread_config[0].pin = 3; // pin number can be set to any number 0-5
   thread_config[1].pin = 4;
   //            ^ this is the thread number, has to be less than NUMBER_OF_THREADS
-  
+
   // configure the speed of fading
   thread_config[0].speed = 5;
   thread_config[1].speed = 8;
 
   // start each of the threads. We do this in setup, not loop, because
   // we don't want to keep on starting threads over and over again!
-  
-  // The first thread starts running after this line of code. 
-  fade_threads[0] = runThread(fade_code, &thread_config[0]);
-  
+
+  // The first thread starts running after this line of code.
+  createThreadFromHeap(THD_WORKING_AREA_SIZE(THREAD_MEMORY), THREAD_PRIORITY,
+                       fade_code, &thread_config[0]);
+
   delay(1000); // this will delay the start of the second thread by 1 second
-  
+
   // The second thread starts running after this line of code.
-  fade_threads[1] = runThread(fade_code, &thread_config[1]);
+  createThreadFromHeap(THD_WORKING_AREA_SIZE(THREAD_MEMORY), THREAD_PRIORITY,
+                       fade_code, &thread_config[1]);
 }
 
 void loop(void) {
