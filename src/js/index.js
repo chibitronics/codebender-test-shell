@@ -9,6 +9,9 @@ var codeobj = {};
 var modController;
 var autosaveGeneration = null;
 
+// Piwik tracking interface
+window._paq = window._paq || [];
+
 // Default 'save' filename
 var fileName = 'LTC-program.ino';
 
@@ -49,6 +52,7 @@ function getWaveFooter() {
 function buildResult(results, textStatus, status, jqXHR) {
     if (status !== 200) {
         console.log('Don\'t know what to do.  Backend failure?');
+        _paq.push(['trackEvent', 'Compile', 'internal-error', textStatus, status]);
         return;
     }
 
@@ -56,6 +60,9 @@ function buildResult(results, textStatus, status, jqXHR) {
 
     if (results.success) {
         document.getElementById('buildoutput').innerHTML = 'Build complete';
+
+        // We do enjoy it when code compiles successfully.
+        _paq.push(['trackEvent', 'Compile', 'success']);
 
         var data = atob(results.output);
         var dataU8 = new Uint8Array(data.length);
@@ -89,6 +96,7 @@ function buildResult(results, textStatus, status, jqXHR) {
 
         getWaveFooter().style.display = 'block';
     } else {
+        _paq.push(['trackEvent', 'Compile', 'fail', 'errors', results.log.length]);
         editor.chibiErrorString = results.message;
         editor.performLint();
     }
@@ -150,6 +158,7 @@ function clickUpload(e) {
         }
     };
     request.open('POST', config.compileUrl, true);
+    _paq.push(['trackEvent', 'Compile', 'start']);
     request.send(JSON.stringify(codeobj));
 
     return false;
@@ -394,6 +403,12 @@ function loadExampleFromLink(e) {
             }
         }
     };
+    try {
+        // Log the selected example
+        var parentCategoryName = target.parentElement.parentElement.parentElement.previousElementSibling.textContent;
+        var exampleName = target.textContent;
+        _paq.push(['trackEvent', 'Example', 'Load', parentCategoryName + ' / ' + exampleName]);
+    } catch (e) { }
     request.open('GET', target.href, true);
     request.send();
 
@@ -826,6 +841,22 @@ function fetchConfiguration() {
     request.send(JSON.stringify(codeobj));
 }
 
+function installPiwik() {
+    // accurately measure the time spent on the last pageview of a visit
+    window._paq.push(['enableHeartBeatTimer']);
+
+    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+    window._paq.push(['trackPageView']);
+    window._paq.push(['enableLinkTracking']);
+    (function () {
+        var u = "//ltc-piwik.xobs.io/";
+        window._paq.push(['setTrackerUrl', u + 'piwik.php']);
+        window._paq.push(['setSiteId', '1']);
+        var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+        g.type = 'text/javascript'; g.async = true; g.defer = true; g.src = u + 'piwik.js'; s.parentNode.insertBefore(g, s);
+    })();
+}
+
 fetchConfiguration();
 installHooks();
 initializeEditor();
@@ -833,3 +864,4 @@ resizeHeader();
 fixupExamples();
 populateSketchList();
 installWaveRenderer();
+installPiwik();
