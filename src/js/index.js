@@ -52,7 +52,7 @@ function getWaveFooter() {
 function buildResult(results, textStatus, status, jqXHR) {
     if (status !== 200) {
         console.log('Don\'t know what to do.  Backend failure?');
-        _paq.push(['trackEvent', 'Compile', 'internal-error', textStatus, status]);
+        window._paq.push(['trackEvent', 'Compile', 'internal-error', textStatus, status]);
         return;
     }
 
@@ -62,7 +62,7 @@ function buildResult(results, textStatus, status, jqXHR) {
         document.getElementById('buildoutput').innerHTML = 'Build complete';
 
         // We do enjoy it when code compiles successfully.
-        _paq.push(['trackEvent', 'Compile', 'success']);
+        window._paq.push(['trackEvent', 'Compile', 'success']);
 
         var data = atob(results.output);
         var dataU8 = new Uint8Array(data.length);
@@ -96,7 +96,7 @@ function buildResult(results, textStatus, status, jqXHR) {
 
         getWaveFooter().style.display = 'block';
     } else {
-        _paq.push(['trackEvent', 'Compile', 'fail', 'errors', results.log.length]);
+        window._paq.push(['trackEvent', 'Compile', 'fail', 'errors', results.log.length]);
         editor.chibiErrorString = results.message;
         editor.performLint();
     }
@@ -158,7 +158,7 @@ function clickUpload(e) {
         }
     };
     request.open('POST', config.compileUrl, true);
-    _paq.push(['trackEvent', 'Compile', 'start']);
+    window._paq.push(['trackEvent', 'Compile', 'start']);
     request.send(JSON.stringify(codeobj));
 
     return false;
@@ -407,7 +407,7 @@ function loadExampleFromLink(e) {
         // Log the selected example
         var parentCategoryName = target.parentElement.parentElement.parentElement.previousElementSibling.textContent;
         var exampleName = target.textContent;
-        _paq.push(['trackEvent', 'Example', 'Load', parentCategoryName + ' / ' + exampleName]);
+        window._paq.push(['trackEvent', 'Example', 'Load', parentCategoryName + ' / ' + exampleName]);
     } catch (e) { }
     request.open('GET', target.href, true);
     request.send();
@@ -849,7 +849,7 @@ function installPiwik() {
     window._paq.push(['trackPageView']);
     window._paq.push(['enableLinkTracking']);
     (function () {
-        var u = "//ltc-piwik.xobs.io/";
+        var u = '//ltc-piwik.xobs.io/';
         window._paq.push(['setTrackerUrl', u + 'piwik.php']);
         window._paq.push(['setSiteId', '1']);
         var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
