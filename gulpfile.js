@@ -202,11 +202,6 @@ gulp.task('build-lame', function () {
         .pipe(gulp.dest('build/js/'))
 });
 
-gulp.task('build-jscolor', function () {
-    return gulp.src('colorjs/jscolor.js')
-        .pipe(gulp.dest('build/js/'))
-});
-
 gulp.task('copy-examples', function () {
     return gulp.src('examples-ltc/**/*')
         .pipe(gulp.dest('build/examples-ltc'))
@@ -238,7 +233,7 @@ gulp.task('browserSync', function () {
 
 gulp.task('build', function (callback) {
     runSequence('clean:build', 'build-examples', ['build-html',
-	'lint-src', 'build-scripts', 'build-lame', 'build-jscolor',
+	'lint-src', 'build-scripts', 'build-lame',
         'copy-images',
         'copy-examples',
     ],

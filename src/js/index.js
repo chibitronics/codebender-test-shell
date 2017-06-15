@@ -1,5 +1,6 @@
 var ModulationController = require('chibitronics-ltc-modulate');
 var CodeMirror = require('codemirror');
+var jscolor = require('jscolor-picker');
 require('codemirror/mode/clike/clike');
 require('codemirror/addon/lint/lint');
 require('./chibi-lint.js');
@@ -360,13 +361,36 @@ function selectTab(e) {
 
 function checkRainbow(s) {
     var hasrainbow = s.search(/rainbow/i);
-
     var gadget = document.getElementById('color_gadget');
     if (hasrainbow !== -1) {
     	gadget.style.display = 'block';
     } else {
 	    gadget.style.display = 'none';
     }
+}
+
+function addColorPicker() {
+    var input = document.createElement('INPUT');
+    input.id = 'color_gadget_input';
+    input.className = 'jscolor';
+    input.onchange = function(e) {
+        if (input.value.substring(0, 2) !== '0x') {
+            input.value = '0x' + input.value;
+        }
+        console.log("Changed value to: " + input.value);
+        e.stopPropagation();
+    };
+    input.onblur = input.onchange;
+    console.log("Adding color picker...");
+    var picker = new window.jscolor(input, {
+        onFineChange: function(e) {
+            if (input.value.substring(0, 2) !== '0x') {
+                input.value = '0x' + input.value;
+            }
+        }
+    });
+    input.value = '0xfd2600';
+    document.getElementById('color_gadget').appendChild(input);
 }
 
 function loadExampleFromLink(e) {
@@ -833,3 +857,4 @@ resizeHeader();
 fixupExamples();
 populateSketchList();
 installWaveRenderer();
+addColorPicker();
