@@ -845,7 +845,7 @@ function installPiwik() {
     // accurately measure the time spent on the last pageview of a visit
     window._paq.push(['enableHeartBeatTimer']);
 
-    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+    window._paq.push(['disableCookies']);
     window._paq.push(['trackPageView']);
     window._paq.push(['enableLinkTracking']);
     (function () {
