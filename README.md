@@ -10,6 +10,8 @@ Audio is encoded into a Wav file, which is played back by the browser.
 Building
 --------
 
+[![Build Status](https://travis-ci.org/chibitronics/ltc-webview-layer.svg?branch=master)](https://travis-ci.org/chibitronics/ltc-webview-layer)
+
 To build, install dependencies using npm:
 
     npm install
