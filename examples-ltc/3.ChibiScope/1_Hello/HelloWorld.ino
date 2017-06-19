@@ -11,13 +11,13 @@
 // Use the alligator clips to connect TXT, +5V and GND
 // between the respective holes on the ChibiChip and ChibiScope
 
-// IMPORTANT NOTE: If you are running the simple "Hello World"
-// demo after one of our more advanced text positioning demos,
-// you may need to power cycle the Chibi Scope by disconnecting
-// +5V and reconnecting it, to exit its freeze-frame animation mode.
-
 void setup() {
   Serial.begin(9600); // ChibiScope "listens" at a fixed speed of 9600 bits per second
+
+  // the following line is needed to restore the chibiscope mode into
+  // its power-on default in case you were previously running a different,
+  // more complicated demo that uses the control flow verbs to set text position
+  Serial.println("#RUN"); // put the scope into "run" mode, so println's immediately show up
 }
 
 void loop() {
