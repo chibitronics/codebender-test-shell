@@ -32,6 +32,9 @@ int pix4_colorB = COLOR_SEASHELL;
 int pix4_speed = 2;
 int pix4_brightness = 15;
 
+// If you want to just transition between colors without a fade effect,
+// see the comment inside the loop() section on how to do that!
+
 #include "Adafruit_NeoPixel.h"
 
 #define pixelCount 5 // number of pixels in the chain; doesn't hurt to have less actual pixels in your project
