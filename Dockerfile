@@ -2,11 +2,14 @@ FROM node:7.8.0
 #FROM node:7.8.0 # arch=amd64
 #FROM armhf/node:7.8.0 # arch=armhf
 
-COPY . /app
-WORKDIR /app
+# use changes to package.json to force Docker not to use the cache
+# when we change our application's nodejs dependencies:
+COPY package.json /tmp/package.json
+RUN cd /tmp && npm install --quiet --global gulp-cli && npm install --quiet
+RUN mkdir -p /app && cp -a /tmp/node_modules /app/
 
-RUN npm install --quiet --global gulp-cli
-RUN npm install --quiet
+WORKDIR /app
+COPY . /app
 
 RUN gulp
 
