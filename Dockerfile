@@ -1,4 +1,5 @@
 FROM node:7.8.0
+#FROM node:7.8.0 # arch=amd64
 #FROM armhf/node:7.8.0 # arch=armhf
 
 COPY . /app
