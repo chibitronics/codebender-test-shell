@@ -168,7 +168,7 @@ void loop() {
     } else {
       fadevalue = (config[i].state - 50) * 2;
     }
-    blended = alpha_rgb( blended, fadevalue );
+    blended = alpha_rgb( blended, fadevalue ); // comment out this line if you don't want the fading effect, but just want color transitions!
     blended = alpha_rgb( blended, config[i].brightness );
 
     strip.setPixelColor(i, rgb_to_hexcolor(blended));
