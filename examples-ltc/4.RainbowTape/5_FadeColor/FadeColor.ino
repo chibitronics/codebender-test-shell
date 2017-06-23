@@ -3,6 +3,7 @@
 // Rainbow tape "Fade Color" demo.
 
 // This simple demo enables you to fade a pixel between two colors
+// Example at https://www.instagram.com/p/BVjnnc-AcSA/
 
 // select colors codes using the "Rainbow Gadget".
 // or use any color from https://github.com/chibitronics/ltc-compiler-layer/blob/master/support/html_colors.h
