@@ -1,5 +1,5 @@
 // Love to Code
-// Effects Template
+// Effects Template - example at https://www.instagram.com/p/BVHVKuEAfyR/
 enum effects {  CONSTANT = 0,  FADE = 1,  HEARTBEAT = 2,  TWINKLE = 3 }; // don't delete this line!
 
 ////// configuration /////////
