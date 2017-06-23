@@ -2,6 +2,7 @@
 
 // Music and light effects template: play music on one pin while flashing lights on the others
 // Music code retrieved from http://www.instructables.com/id/Arduino-Tone-Music/
+// Special thanks to ShiCheng Lim
       
 // Effects Template
 enum effects {  CONSTANT = 0,  FADE = 1,  HEARTBEAT = 2,  TWINKLE = 3 }; // don't delete this line!
