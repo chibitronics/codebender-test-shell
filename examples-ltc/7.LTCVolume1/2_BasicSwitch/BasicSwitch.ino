@@ -13,9 +13,6 @@ void loop(){
   
   if (pressed == 1){
       on(0);
-      pause(300);
-      off(0);
-      pause(300);
     } else {
       off(0);
     }
