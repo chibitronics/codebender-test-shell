@@ -84,10 +84,24 @@ html {
 
 }
 
-.logo {
+.logo-face {
     float: left;
     margin-left: 10px; 
+    margin-right: 0;
+    margin-bottom: 5px;
+}
+
+.logo-text {
+    float: left;
+    margin-left: 0; 
     margin-right: 10px;
+    margin-bottom: 5px;
+}
+
+@media only screen and (max-width: 480px) {
+    .logo-text {
+        display: none;
+    }
 }
 
 .button {
@@ -104,6 +118,7 @@ html {
 	float: left;
 	margin-right: 5px;
 	margin-left: 5px;
+    margin-bottom: 5px;
 	cursor: pointer;
 }
 
@@ -280,17 +295,12 @@ input:checked + .slider:before {
     .button_group {
         display:inline-block;
         clear: both;
-        margin-top: 20px;
     }
-
 }
 
 @media only screen and (max-width: 320px) {
     .button {
         padding: 5px 10px;
-    }
-    .button_group {
-        margin-top: 10px;
     }
     #audio_output {
         margin-top: 0px;
