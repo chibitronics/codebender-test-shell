@@ -30,7 +30,7 @@ if (isIE11) {
     document.write('<script language="javascript" type="text/javascript" src="js/lame.min.js"></script>');
 
     /* IE doesn't support log10, so polyfill it */
-    Math.log10 = function (x) {
+    Math.log10 = function(x) {
         return Math.log(x) / Math.LN10;
     };
 
@@ -83,7 +83,7 @@ function buildResult(results, textStatus, status, jqXHR) {
         modController = new ModulationController({
             canvas: getCanvas(),
             lbr: lbrEnable,
-            endCallback: function () {
+            endCallback: function() {
                 getWaveFooter().style.display = 'none';
             }
         });
@@ -124,8 +124,7 @@ function clickUpload(e) {
             'AAAAAA0gAAAAARTMu//MUZAYAAAGkAAAA' +
             'AAAAA0gAAAAAOTku//MUZAkAAAGkAAAAA' +
             'AAAA0gAAAAANVVV';
-    }
-    else {
+    } else {
         audioTag.src = 'data:audio/wav;base64,' +
             'UklGRigAAABXQVZFZm10IBIAAAABAAEAR' +
             'KwAAIhYAQACABAAAABkYXRhAgAAAAEA';
@@ -152,7 +151,7 @@ function clickUpload(e) {
     editor.performLint();
 
     var request = new window.XMLHttpRequest();
-    request.onreadystatechange = function () {
+    request.onreadystatechange = function() {
         if (request.readyState === 4) {
             buildResult(request.responseText, request.statusText, request.status, request);
         }
@@ -188,8 +187,7 @@ function saveCurrentEditor() {
     // document has changed since the last generation.'
     if (autosaveGeneration === null) {
         autosaveGeneration = editor.changeGeneration();
-    }
-    else if (!editor.isClean(autosaveGeneration)) {
+    } else if (!editor.isClean(autosaveGeneration)) {
         localStorage.setItem('currentSketch', editor.getValue());
         autosaveGeneration = editor.changeGeneration();
     }
@@ -224,7 +222,7 @@ function downloadSketch(contents, fileName) {
     a.click();
 
     // Remove the URL in 100 ms, enough time for the downloader to run.
-    setTimeout(function () {
+    setTimeout(function() {
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
     }, 100);
@@ -311,8 +309,7 @@ function hideShowExampleCategory(e) {
     var elem = e.target;
     if (elem.nextElementSibling.style.display === '') {
         elem.nextElementSibling.style.display = 'none';
-    }
-    else {
+    } else {
         elem.nextElementSibling.style.display = '';
     }
     return false;
@@ -346,13 +343,11 @@ function selectTab(e) {
             if (element.style.display === 'block') {
                 element.style.display = 'none';
                 showWarning = false;
-            }
-            else {
+            } else {
                 element.style.display = 'block';
                 found = true;
             }
-        }
-        else {
+        } else {
             element.style.display = 'none';
         }
     }
@@ -372,9 +367,9 @@ function checkRainbow(s) {
 
     var gadget = document.getElementById('color_gadget');
     if (hasrainbow !== -1) {
-    	gadget.style.display = 'block';
+        gadget.style.display = 'block';
     } else {
-	    gadget.style.display = 'none';
+        gadget.style.display = 'none';
     }
 }
 
@@ -388,7 +383,7 @@ function loadExampleFromLink(e) {
         target = target.firstChild;
     }
 
-    request.onreadystatechange = function () {
+    request.onreadystatechange = function() {
         if (request.readyState === 4) {
 
             var editorBox = document.getElementById('code_editor');
@@ -408,7 +403,7 @@ function loadExampleFromLink(e) {
         var parentCategoryName = target.parentElement.parentElement.parentElement.previousElementSibling.textContent;
         var exampleName = target.textContent;
         window._paq.push(['trackEvent', 'Example', 'Load', parentCategoryName + ' / ' + exampleName]);
-    } catch (e) { }
+    } catch (e) {}
     request.open('GET', target.href, true);
     request.send();
 
@@ -433,7 +428,7 @@ function fixupExamples() {
     for (i = 0; i < exampleItems.length; i++) {
         e = exampleItems[i];
 
-        e.firstChild.onclick = function () { return false; };
+        e.firstChild.onclick = function() { return false; };
         e.onclick = loadExampleFromLink;
     }
 }
@@ -532,8 +527,8 @@ function uploadSketch(e) {
     }
 
     var reader = new FileReader();
-    reader.onload = (function (contents) {
-        return function (e) {
+    reader.onload = (function(contents) {
+        return function(e) {
             editor.setValue(e.target.result);
             resizeHeader();
 
@@ -626,7 +621,7 @@ function populateSketchList() {
         var tb = document.createElement('input');
         tb.name = 'saveNewSketchName';
         tb.id = 'saveNewSketchName';
-        tb.onkeypress = function (e) {
+        tb.onkeypress = function(e) {
             if (e.keyCode === 13) {
                 saveLocalSketchAs(e);
                 return false;
@@ -691,7 +686,7 @@ function populateSketchList() {
         i.setAttribute('name', 'download_name');
         i.setAttribute('id', 'download_name');
         i.setAttribute('value', fileName);
-        i.onchange = function (t) {
+        i.onchange = function(t) {
             fileName = t.value;
         };
 
@@ -733,7 +728,7 @@ function populateSketchList() {
         a.innerHTML = 'Upload';
         a.setAttribute('href', '#');
         a.setAttribute('class', 'teal_button');
-        a.onclick = function (e) { i.click(); return false; };
+        a.onclick = function(e) { i.click(); return false; };
 
         li.appendChild(note);
         li.appendChild(i);
@@ -832,7 +827,7 @@ function installWaveRenderer() {
 // Fetch /config.json and update the global "config" variable.
 function fetchConfiguration() {
     var request = new window.XMLHttpRequest();
-    request.onreadystatechange = function () {
+    request.onreadystatechange = function() {
         if ((request.readyState === 4) && (request.status === 200)) {
             config = JSON.parse(request.responseText);
         }
@@ -848,12 +843,18 @@ function installPiwik() {
     window._paq.push(['disableCookies']);
     window._paq.push(['trackPageView']);
     window._paq.push(['enableLinkTracking']);
-    (function () {
+    (function() {
         var u = '//ltc-piwik.xobs.io/';
         window._paq.push(['setTrackerUrl', u + 'piwik.php']);
         window._paq.push(['setSiteId', '1']);
-        var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
-        g.type = 'text/javascript'; g.async = true; g.defer = true; g.src = u + 'piwik.js'; s.parentNode.insertBefore(g, s);
+        var d = document,
+            g = d.createElement('script'),
+            s = d.getElementsByTagName('script')[0];
+        g.type = 'text/javascript';
+        g.async = true;
+        g.defer = true;
+        g.src = u + 'piwik.js';
+        s.parentNode.insertBefore(g, s);
     })();
 }
 
