@@ -30,8 +30,8 @@ var jshint = require('gulp-jshint');
 
 var compileUrl = argv.compileUrl || '//chibitronics.com/compile';
 
-var configHandler =         /* Add a live url, /config.json, that returns our current configuration. */
-    function (req, res, next) {
+var configHandler = /* Add a live url, /config.json, that returns our current configuration. */
+    function(req, res, next) {
         if (req.url !== '/config.json') {
             return next();
         }
@@ -61,7 +61,7 @@ try {
             gzipStatic(__dirname + '/build')
         ]
     }));
-} catch (e) { };
+} catch (e) {};
 
 gulp.task('build-examples', function() {
     var currentDirectory = '';
@@ -81,12 +81,12 @@ gulp.task('build-examples', function() {
                 var fileName = paths[paths.length - 1];
                 var baseName = path.basename(fileName, '.ino');
                 fileList[currentDirectory].push(baseName);
-		dirList[currentDirectory].push(paths[paths.length - 2]);
+                dirList[currentDirectory].push(paths[paths.length - 2]);
             }
         })
-        .on('end', function () {
-            var examplesFile = '          <div id="examples_list" class="ExamplesList maintab">\n'
-                             + '              <ol class="ExampleOrderedList">\n';
+        .on('end', function() {
+            var examplesFile = '          <div id="examples_list" class="ExamplesList maintab">\n' +
+                '              <ol class="ExampleOrderedList">\n';
             for (var categoryDir in fileList) {
                 var categoryName = categoryDir.split('.');
                 categoryName.shift();
@@ -95,7 +95,7 @@ gulp.task('build-examples', function() {
                 examplesFile += '                 <li class="ExampleCategory">' + categoryName + '</li>\n';
                 examplesFile += '                 <li class="ExampleCategoryContents">\n';
                 examplesFile += '                     <ul>\n';
-		var i = 0;
+                var i = 0;
                 fileList[categoryDir].forEach(function(exampleFile) {
                     var exampleName = exampleFile.replace(/([A-Z0-9][a-z])/g, ' $1').replace(/([a-z])([A-Z0-9])$/, '$1 $2').replace(/^ /, '');
                     examplesFile += '                         <li class="ExampleItem"><a href="examples-ltc/' + categoryDir + '/' + dirList[categoryDir][i++] + '/' + exampleFile + '.ino">' + exampleName + '</a></li>\n';
@@ -103,13 +103,13 @@ gulp.task('build-examples', function() {
                 examplesFile += '                     </ul>\n';
                 examplesFile += '                 </li>\n';
             }
-            examplesFile += '              </ol>\n'
-                          + '          </div>\n';
+            examplesFile += '              </ol>\n' +
+                '          </div>\n';
             fs.outputFileSync('src/examples.inc', examplesFile);
         });
 });
 
-gulp.task('build-html', function () {
+gulp.task('build-html', function() {
     return gulp.src('src/*.html') /* Load all HTML files */
         .pipe(useref()) /* Combine files into one */
         .pipe(fileinc()) /* Process @@include() directives */
@@ -118,13 +118,13 @@ gulp.task('build-html', function () {
         .pipe(gulp.dest('build')) /* Write out to 'html' output directory */
 });
 
-gulp.task('compress-gz', function () {
+gulp.task('compress-gz', function() {
     return gulp.src(['build/**/*.html', 'build/**/*.css', 'build/**/*.js', 'build/**/*.map'])
         .pipe(gzip())
         .pipe(gulp.dest('build'))
 });
 
-gulp.task('compress-br', function () {
+gulp.task('compress-br', function() {
     return gulp.src(['build/**/*.html', 'build/**/*.css', 'build/**/*.js', 'build/**/*.map'])
         .pipe(brotli.compress({
             quality: 11,
@@ -133,7 +133,7 @@ gulp.task('compress-br', function () {
         .pipe(gulp.dest('build'))
 });
 
-gulp.task('compress-br-examples', function () {
+gulp.task('compress-br-examples', function() {
     return gulp.src('build/examples-ltc/**')
         .pipe(brotli.compress({
             quality: 11,
@@ -142,19 +142,19 @@ gulp.task('compress-br-examples', function () {
         .pipe(gulp.dest('build/examples-ltc'))
 });
 
-gulp.task('compress-gz-examples', function () {
+gulp.task('compress-gz-examples', function() {
     return gulp.src('build/examples-ltc/**')
         .pipe(gzip())
         .pipe(gulp.dest('build/examples-ltc'))
 });
 
-gulp.task('lint-src', function () {
+gulp.task('lint-src', function() {
     return gulp.src('./src/**/*.js')
         .pipe(jshint())
         .pipe(jshint.reporter('default'))
 });
 
-gulp.task('build-scripts', function (cb) {
+gulp.task('build-scripts', function(cb) {
     // Single entry point to browserify
     var b = browserify({
         debug: true,
@@ -164,17 +164,17 @@ gulp.task('build-scripts', function (cb) {
     });
 
     pump([
-        b.bundle(),
-        vinylSourceStream('index.js'),
-        vinylBuffer(),
-        gulp.dest('./build/js')
-    ],
+            b.bundle(),
+            vinylSourceStream('index.js'),
+            vinylBuffer(),
+            gulp.dest('./build/js')
+        ],
         cb
     );
 
 });
 
-gulp.task('build-scripts-minimal', function (cb) {
+gulp.task('build-scripts-minimal', function(cb) {
     // Single entry point to browserify
     var b = browserify({
         debug: false,
@@ -184,51 +184,51 @@ gulp.task('build-scripts-minimal', function (cb) {
     });
 
     pump([
-        b.bundle(),
-        vinylSourceStream('index.js'),
-        vinylBuffer(),
-        sourcemaps.init({ loadMaps: true }),
-        // Add gulp plugins to the pipeline here.
-        uglify(),
-        sourcemaps.write('./'),
-        gulp.dest('./build/js')
-    ],
+            b.bundle(),
+            vinylSourceStream('index.js'),
+            vinylBuffer(),
+            sourcemaps.init({ loadMaps: true }),
+            // Add gulp plugins to the pipeline here.
+            uglify(),
+            sourcemaps.write('./'),
+            gulp.dest('./build/js')
+        ],
         cb
     );
 });
 
-gulp.task('build-lame', function () {
+gulp.task('build-lame', function() {
     return gulp.src('node_modules/lamejs/lame.min.js')
         .pipe(gulp.dest('build/js/'))
 });
 
-gulp.task('build-jscolor', function () {
+gulp.task('build-jscolor', function() {
     return gulp.src('colorjs/jscolor.js')
         .pipe(gulp.dest('build/js/'))
 });
 
-gulp.task('copy-examples', function () {
+gulp.task('copy-examples', function() {
     return gulp.src('examples-ltc/**/*')
         .pipe(gulp.dest('build/examples-ltc'))
 });
 
-gulp.task('copy-images', function () {
+gulp.task('copy-images', function() {
     return gulp.src('src/images/**/*.{png,gif,jpg,svg}')
         .pipe(imagemin())
         .pipe(gulp.dest('build/images'))
 });
 
-gulp.task('clean:build', function () {
+gulp.task('clean:build', function() {
     fs.ensureDirSync('build');
     fs.removeSync('build');
     return fs.ensureDirSync('build');
 });
 
-gulp.task('cache:clear', function (callback) {
+gulp.task('cache:clear', function(callback) {
     return cache.clearAll(callback);
 });
 
-gulp.task('browserSync', function () {
+gulp.task('browserSync', function() {
     browserSync.init({
         server: {
             baseDir: 'build'
@@ -236,19 +236,18 @@ gulp.task('browserSync', function () {
     })
 });
 
-gulp.task('build', function (callback) {
+gulp.task('build', function(callback) {
     runSequence('clean:build', 'build-examples', ['build-html',
-	'lint-src', 'build-scripts', 'build-lame', 'build-jscolor',
-        'copy-images',
-        'copy-examples',
-    ],
+            'lint-src', 'build-scripts', 'build-lame', 'build-jscolor',
+            'copy-images',
+            'copy-examples',
+        ],
         callback
     );
 });
 
-gulp.task('default', function (callback) {
-    runSequence('clean:build', 'build', 'build-scripts-minimal',
-        [
+gulp.task('default', function(callback) {
+    runSequence('clean:build', 'build', 'build-scripts-minimal', [
             'compress-gz',
             'compress-br',
             'compress-gz-examples',
@@ -258,7 +257,7 @@ gulp.task('default', function (callback) {
     );
 });
 
-gulp.task('watch', ['browserSync'], function (callback) {
+gulp.task('watch', ['browserSync'], function(callback) {
     gulp.watch('src/*.html', ['build-html', browserSync.reload]);
     gulp.watch('src/**/*.css', ['build-html', browserSync.reload]);
     gulp.watch('src/js/**/*.js', ['build-scripts', browserSync.reload]);
