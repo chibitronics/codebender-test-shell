@@ -119,6 +119,14 @@ html {
     margin-left: 5px;
     margin-bottom: 5px;
     cursor: pointer;
+    transition: background-color 300ms, color 300ms;
+}
+
+.button.uploading {
+    background: #777777;
+    color: #777777;
+    cursor: default;
+    transition: background-color 300ms, color 300ms;
 }
 
 .teal_button {

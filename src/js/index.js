@@ -106,6 +106,11 @@ function clickUpload(e) {
     selectTab(e);
     document.getElementById('buildoutput').innerHTML = 'Building code...';
 
+    // Disable the "Upload" button to prevent spamming the server.
+    var uploadButton = document.getElementById('upload_button');
+    uploadButton.classList.add("uploading");
+    uploadButton.onclick = undefined;
+
     // Play empty data onclick to enable audio playback.
     var audioTag = getAudioElement();
     if (isIE11) {
@@ -153,6 +158,12 @@ function clickUpload(e) {
     var request = new window.XMLHttpRequest();
     request.onreadystatechange = function() {
         if (request.readyState === 4) {
+            // Re-enable the "Upload" button.
+            var uploadButton = document.getElementById('upload_button');
+            uploadButton.classList.remove("uploading");
+            uploadButton.onclick = clickUpload;
+
+            // Dispatch the "build complete" message.
             buildResult(request.responseText, request.statusText, request.status, request);
         }
     };
