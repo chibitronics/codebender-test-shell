@@ -83,16 +83,13 @@ function buildResult(results, textStatus, status, jqXHR) {
         modController = new ModulationController({
             canvas: getCanvas(),
             lbr: lbrEnable,
+            format: audioFormat,
             endCallback: function() {
                 getWaveFooter().style.display = 'none';
             }
         });
 
-        modController.transcodeToAudioTag(dataU8,
-            getAudioElement(),
-            audioFormat,
-            lbrEnable,
-            modulationVersion);
+        modController.transcodeToAudioTag(dataU8, getAudioElement());
 
         getWaveFooter().style.display = 'block';
     } else {
