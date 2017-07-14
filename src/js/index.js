@@ -108,7 +108,7 @@ function clickUpload(e) {
 
     // Disable the "Upload" button to prevent spamming the server.
     var uploadButton = document.getElementById('upload_button');
-    uploadButton.classList.add("uploading");
+    uploadButton.classList.add('uploading');
     uploadButton.onclick = undefined;
 
     // Play empty data onclick to enable audio playback.
@@ -160,7 +160,7 @@ function clickUpload(e) {
         if (request.readyState === 4) {
             // Re-enable the "Upload" button.
             var uploadButton = document.getElementById('upload_button');
-            uploadButton.classList.remove("uploading");
+            uploadButton.classList.remove('uploading');
             uploadButton.onclick = clickUpload;
 
             // Dispatch the "build complete" message.
