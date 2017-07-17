@@ -4,9 +4,14 @@ var LTCGitHub = function(params) {
         params = {};
     }
 
+    // Settable parameters
     this.gatewayUrl = params.gatewayUrl || 'http://localhost:9999/authenticate/';
+    this.gitHubUrl = params.gitHubUrl || 'https://api.github.com';
     this.gitHubTokenUrl = params.gitHubTokenUrl;
     this.gitHubRepoName = params.gitHubRepoName || 'Love-to-Code-storage';
+
+    // A synchronized table of files on the server, including their SHA sums.
+    this.files = {};
 
     // Listen for messages coming from github windows
     var self = this;
@@ -40,40 +45,50 @@ LTCGitHub.prototype = {
         localStorage.removeItem('gitHubLogin');
     },
 
-    ensureRepo: function() {
-        var self = this;
-        var request = new window.XMLHttpRequest();
-        request.onload = function() {
+    refreshRepo: function(cb) {
+        this.doApiCall('GET', '/repos/' + this.getLogin() + '/' + this.gitHubRepoName + '/contents/', undefined, function(txt, status) {
             // If the repo doesn't exist, create a new one.
-            if (request.status === 404) {
+            if (status === 404) {
                 console.log('Chibitronics repo doesn\'t exist.  Creating...');
-                // Ensure that the Chibitronics repo exists
-                var createRepoData = {
-                    'name': self.gitHubRepoName,
+                this.doApiCall('POST', '/user/repos', {
+                    'name': this.gitHubRepoName,
                     'description': 'Online storage for Love-to-Code sketches',
                     'homepage': 'https://ltc.chibitronics.com',
                     'private': false,
                     'has_issues': false,
                     'has_projects': false,
                     'has_wiki': false
-                };
-
-                var req2 = new window.XMLHttpRequest();
-                req2.onload = function() {
+                }, function(txt, status) {
                     console.log('Got result from checkForChibitronicsRepo():');
-                    console.log(req2.responseText);
-                    console.log(req2);
-                };
-                req2.open('POST', 'https://api.github.com/user/repos', true);
-                req2.setRequestHeader('Authorization', 'token ' + self.getToken());
-                req2.send(JSON.stringify(createRepoData));
+                    console.log(txt)
+                    console.log('Status: ' + status);
+                    if (status >= 200 && status <= 299) {
+                        if (cb !== undefined) {
+                            cb();
+                        }
+                    }
+                });
             } else {
                 console.log('Repo exists already');
+
+                // Parse the list of returned files into a local cache of arrays
+                var self = this;
+                JSON.parse(txt).forEach(function(item) {
+                    if (item.type !== 'file') {
+                        return;
+                    }
+
+                    self.files[item.name] = {
+                        'sha': item.sha
+                    };
+                });
+
+                // Call the callback, now that we have a populated list of files.
+                if (cb !== undefined) {
+                    cb();
+                }
             }
-        };
-        request.open('GET', 'https://api.github.com/repos/' + self.getLogin() + '/' + self.gitHubRepoName, true);
-        request.setRequestHeader('Authorization', 'token ' + self.getToken());
-        request.send();
+        });
     },
 
     loginWithCode: function(code) {
@@ -85,7 +100,7 @@ LTCGitHub.prototype = {
             this.setToken(data.token);
 
             // Now that we're authenticated, figure out our username.
-            this.doApiCall('GET', 'https://api.github.com/user', undefined, function(txt) {
+            this.doApiCall('GET', '/user', undefined, function(txt) {
                 var d2 = JSON.parse(txt);
                 this.setLogin(d2.login);
 
@@ -97,15 +112,29 @@ LTCGitHub.prototype = {
         });
     },
 
-    doApiCall: function(method, url, data, cb) {
+    doApiCall: function(method, path, data, cb) {
         var request = new window.XMLHttpRequest();
         var self = this;
         request.onload = function() {
             cb.call(self, request.responseText, request.status);
         };
+
+        // Prefix the URL with the github API path, if it's relative.
+        var url = path;
+        if (!path.startsWith("http://") && !path.startsWith("https://")) {
+            url = this.gitHubUrl + path;
+        }
+
         request.open(method, url, true);
-        if (self.getToken() !== null) {
+
+        // If we're already authenticated, add the token.  This is omitted during
+        // the login process.
+        if (this.getToken() !== null) {
             request.setRequestHeader('Authorization', 'token ' + this.getToken());
+        }
+
+        if (typeof data === 'object') {
+            data = JSON.stringify(data);
         }
         request.send(data);
     },
@@ -125,6 +154,18 @@ LTCGitHub.prototype = {
         } else {
             cb(1);
         }
+    },
+
+    writeFile: function(fileName, contents, cb) {
+        this.doApiCall('PUT', '/repos/' + this.getLogin() + '/' + this.gitHubRepoName + '/contents/' + fileName, {
+            'path': fileName,
+            'message': 'Saving file',
+            'content': btoa(contents),
+        }, function(txt, status) {
+            if (cb !== undefined) {
+                cb(txt, status);
+            }
+        });
     }
 };
 
