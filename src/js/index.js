@@ -196,7 +196,6 @@ function saveLocalSketches(localSketches) {
 // Communicates between browser windows using 'message'.
 function connectToGitHub() {
     github.login(function(res) {
-
         var a = document.getElementById('gitHubButton');
         a.innerHTML = 'Remove link to GitHub';
         a.setAttribute('href', '#');
@@ -253,12 +252,14 @@ function removeLinkToGitHub() {
 
 }
 
-function checkForChibitronicsRepo() {
-    github.ensureRepo();
-}
-
 function startGitHubCommit() {
-    checkForChibitronicsRepo();
+    github.refreshRepo(function() {
+        github.writeFile(document.getElementById('commit_name').value, editor.getValue(), function(txt, status) {
+            console.log("Output:");
+            console.log(txt);
+            console.log("Status:" + status);
+        });
+    })
 }
 
 function saveCurrentEditor() {
