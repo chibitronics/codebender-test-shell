@@ -1,6 +1,6 @@
 var ModulationController = require('chibitronics-ltc-modulate');
 var CodeMirror = require('codemirror');
-var github = require('octonode');
+var LTCGitHub = require('./ltc-github.js');
 require('codemirror/mode/clike/clike');
 require('codemirror/addon/lint/lint');
 require('./chibi-lint.js');
@@ -9,6 +9,13 @@ var editor;
 var codeobj = {};
 var modController;
 var autosaveGeneration = null;
+var github = new LTCGitHub({
+    //TODO: replace this with chibitronics gatewayUrl
+    'gatewayUrl': 'http://localhost:9999/authenticate/',
+    //TODO: get client_id from config file, and create clientID for chibitronics app in github
+    'gitHubTokenUrl': 'https://github.com/login/oauth/authorize?client_id=b8c261bb2b2a5aea7f0b&scope=repo',
+    'gitHubRepoName': 'Love-to-Code-storage'
+});
 
 // Piwik tracking interface
 window._paq = window._paq || [];
@@ -16,12 +23,6 @@ window._paq = window._paq || [];
 // Default 'save' filename
 var fileName = 'LTC-program.ino';
 var commitName = 'LTC-program.ino';
-
-//github strings:
-//TODO: replace this with chibitronics gatewayUrl
-var gatewayURL = 'http://localhost:9999/authenticate/';
-//TODO: get client_id from config file, and create clientID for chibitronics app in github
-var githubTokenUrl = 'https://github.com/login/oauth/authorize?client_id=b8c261bb2b2a5aea7f0b&scope=repo';
 
 var isIE11 = /Trident.*rv[ :]*11\./.test(navigator.userAgent);
 
@@ -161,16 +162,14 @@ function clickUpload(e) {
     editor.performLint();
 
     var request = new window.XMLHttpRequest();
-    request.onreadystatechange = function() {
-        if (request.readyState === 4) {
-            // Re-enable the "Upload" button.
-            var uploadButton = document.getElementById('upload_button');
-            uploadButton.classList.remove('uploading');
-            uploadButton.onclick = clickUpload;
+    request.onload = function() {
+        // Re-enable the "Upload" button.
+        var uploadButton = document.getElementById('upload_button');
+        uploadButton.classList.remove('uploading');
+        uploadButton.onclick = clickUpload;
 
-            // Dispatch the "build complete" message.
-            buildResult(request.responseText, request.statusText, request.status, request);
-        }
+        // Dispatch the "build complete" message.
+        buildResult(request.responseText, request.statusText, request.status, request);
     };
     request.open('POST', config.compileUrl, true);
     window._paq.push(['trackEvent', 'Compile', 'start']);
@@ -193,53 +192,50 @@ function saveLocalSketches(localSketches) {
     localStorage.setItem('sketches', JSON.stringify(localSketches));
 }
 
-function getGithubToken() {
-    return localStorage.getItem('gitHubToken');
-}
-
 // Open a link to github.com and get the resulting oauth token.
 // Communicates between browser windows using 'message'.
 function connectToGitHub() {
-    window.open(githubTokenUrl);
+    github.login(function(res) {
 
-    var a = document.getElementById('gitHubButton');
-    a.innerHTML = 'Remove link to GitHub';
-    a.setAttribute('href', '#');
-    a.setAttribute('class', 'teal_button');
-    a.onclick = removeLinkToGitHub;
+        var a = document.getElementById('gitHubButton');
+        a.innerHTML = 'Remove link to GitHub';
+        a.setAttribute('href', '#');
+        a.setAttribute('class', 'teal_button');
+        a.onclick = removeLinkToGitHub;
 
-    var i = document.createElement('input');
-    //add the commit file name and commit buttons
-    i.setAttribute('name', 'commit_name');
-    i.setAttribute('id', 'commit_name');
-    i.setAttribute('value', commitName);
-    i.onchange = function(t) {
-        commitName = t.value;
-    };
-    var b = document.createElement('b');
-    b.innerHTML = 'Commit';
-    b.id = 'commitButton';
-    b.setAttribute('class', 'teal_button');
-    b.onclick = startGitHubCommit;
+        var i = document.createElement('input');
+        //add the commit file name and commit buttons
+        i.setAttribute('name', 'commit_name');
+        i.setAttribute('id', 'commit_name');
+        i.setAttribute('value', commitName);
+        i.onchange = function(t) {
+            commitName = t.value;
+        };
+        var b = document.createElement('b');
+        b.innerHTML = 'Commit';
+        b.id = 'commitButton';
+        b.setAttribute('class', 'teal_button');
+        b.onclick = startGitHubCommit;
 
-    var padding = document.createElement('span');
-    padding.id = 'pad1';
-    padding.innerHTML = ' ';
+        var padding = document.createElement('span');
+        padding.id = 'pad1';
+        padding.innerHTML = ' ';
 
-    var padding2 = document.createElement('span');
-    padding2.id = 'pad2';
-    padding2.innerHTML = ' ';
+        var padding2 = document.createElement('span');
+        padding2.id = 'pad2';
+        padding2.innerHTML = ' ';
 
-    var li = a.parentNode;
-    //add the commit file name and commit buttons
-    li.prepend(padding2);
-    li.prepend(b);
-    li.prepend(padding);
-    li.prepend(i);
+        var li = a.parentNode;
+        //add the commit file name and commit buttons
+        li.prepend(padding2);
+        li.prepend(b);
+        li.prepend(padding);
+        li.prepend(i);
+    });
 }
 
 function removeLinkToGitHub() {
-    localStorage.removeItem('gitHubToken');
+    github.clear();
     var a = document.getElementById('gitHubButton');
     a.innerHTML = 'Connect to GitHub';
     a.setAttribute('href', '#');
@@ -258,12 +254,7 @@ function removeLinkToGitHub() {
 }
 
 function checkForChibitronicsRepo() {
-    //make a client and get the user
-    var client = github.client(getGithubToken());
-    var ghme = client.me();
-
-    //TODO: check if the repo exists, if not create it.
-    //then.. do everything else required to save the file
+    github.ensureRepo();
 }
 
 function startGitHubCommit() {
@@ -284,12 +275,6 @@ function saveCurrentEditor() {
     // Run autosave again in five seconds.
     window.setTimeout(saveCurrentEditor, 5000);
 }
-
-/*
-function loadSavedEditor() {
-    editor.setValue(localStorage.getItem('currentSketch'));
-}
-*/
 
 function downloadSketch(contents, fileName) {
     // Automatically download the sketch.
@@ -392,27 +377,6 @@ function installHooks() {
     document.getElementById('upload_button').onclick = clickUpload;
     document.getElementById('examples_button').onclick = selectTab;
     document.getElementById('saveas_button').onclick = selectTab;
-
-    // Listen for messages coming from github windows
-    window.addEventListener('message', function(event) {
-        if (event.data.githubCode === undefined) {
-            return;
-        }
-        var code = event.data.githubCode;
-
-        // Once we get the token, bounce it to the "gatekeeper" gateway
-        // to mark the token as "live", and turn the "code" into a "token".
-        var request = new window.XMLHttpRequest();
-        request.onload = function() {
-            console.log('Response: ' + request.responseText);
-            var data = JSON.parse(request.responseText);
-            console.log(data);
-            console.log('github token: ' + data.token);
-            localStorage.setItem('gitHubToken', data.token);
-        };
-        request.open('GET', gatewayURL + code, true);
-        request.send();
-    });
 }
 
 function hideShowExampleCategory(e) {
@@ -774,7 +738,7 @@ function populateSketchList() {
         a = document.createElement('a');
         a.id = 'gitHubButton';
 
-        if (getGithubToken() === null) {
+        if (!github.loggedIn()) {
             a.innerHTML = 'Connect to GitHub';
             //a.setAttribute('href', '#');
             a.setAttribute('class', 'teal_button');
