@@ -1,0 +1,7 @@
+<script>
+    var code = window.location.toString().replace(/.+code=/, '');
+    window.opener.postMessage({
+        "githubCode": code
+    }, window.location);
+    window.close();
+</script>
