@@ -10,10 +10,13 @@ var codeobj = {};
 var modController;
 var autosaveGeneration = null;
 var github = new LTCGitHub({
-    //TODO: replace this with chibitronics gatewayUrl
+    // Update this URL from the config file later on
     'gatewayUrl': 'http://localhost:9999/authenticate/',
-    //TODO: get client_id from config file, and create clientID for chibitronics app in github
-    'gitHubTokenUrl': 'https://github.com/login/oauth/authorize?client_id=b8c261bb2b2a5aea7f0b&scope=repo',
+
+    // Also update this from the config file.
+    'gitHubClientId': 'b8c261bb2b2a5aea7f0b',
+
+    // This is the name of the repo where files will be stored,
     'gitHubRepoName': 'Love-to-Code-storage'
 });
 
@@ -196,6 +199,9 @@ function saveLocalSketches(localSketches) {
 // Communicates between browser windows using 'message'.
 function connectToGitHub() {
     github.login(function(res) {
+        // Make sure the necessary repo is created, and that files are synced.
+        github.refreshRepo(populateSketchList);
+
         var a = document.getElementById('gitHubButton');
         a.innerHTML = 'Remove link to GitHub';
         a.setAttribute('href', '#');
@@ -252,14 +258,21 @@ function removeLinkToGitHub() {
 
 }
 
+function finishLoad() {
+    // Re-populate the sketch list
+    // TODO: Simply add the new sketch instead of redoing everything
+    populateSketchList();
+
+    selectTab('code_editor');
+    editor.refresh();
+}
+
 function startGitHubCommit() {
-    github.refreshRepo(function() {
-        github.writeFile(document.getElementById('commit_name').value, editor.getValue(), function(txt, status) {
-            console.log("Output:");
-            console.log(txt);
-            console.log("Status:" + status);
-        });
-    })
+    github.writeFile(document.getElementById('commit_name').value, editor.getValue(), function(txt, status) {
+        if ((status >= 200) && (status < 300)) {
+            finishLoad();
+        }
+    });
 }
 
 function saveCurrentEditor() {
@@ -315,12 +328,7 @@ function storeSketchLocally(contents, sketchName) {
     // Stash the document list back in local storage
     saveLocalSketches(localSketches);
 
-    // Re-populate the sketch list
-    // TODO: Simply add the new sketch instead of redoing everything
-    populateSketchList();
-
-    selectTab('code_editor');
-    editor.refresh();
+    finishLoad();
 
     downloadSketch(editor.getValue(), sketchName);
 }
@@ -333,7 +341,16 @@ function saveLocalSketchAs(e) {
     return false;
 }
 
-function overwriteSketch(e) {
+function overwriteGithubSketch(e) {
+    var sketchName = e.target.sketchName;
+    github.writeFile(sketchName, editor.getValue(), function(txt, status) {
+        if ((status >= 200) && (status < 300)) {
+            finishLoad();
+        }
+    });
+}
+
+function overwriteLocalSketch(e) {
     var sketchName = e.target.sketchName;
     storeSketchLocally(editor.getValue(), sketchName);
 
@@ -531,6 +548,15 @@ function undoDeleteLocalSketch(a) {
     return false;
 }
 
+function deleteGithubSketch(e) {
+    var sketchName = e.target.sketchName;
+    github.deleteFile(sketchName, function(txt, status) {
+        if ((status >= 200) && (status < 300)) {
+            finishLoad();
+        }
+    });
+}
+
 function deleteLocalSketch(a) {
     var localSketches = getLocalSketches();
     var sketchName = a.target.sketchName;
@@ -557,6 +583,21 @@ function deleteLocalSketch(a) {
     document.getElementById('sketch_list').firstChild.appendChild(li);
 
     return false;
+}
+
+function loadGithubSketch(e) {
+    github.loadFile(e.target.sketchName, function(value, err) {
+        if (value) {
+            editor.setValue(value);
+            resizeHeader();
+
+            selectTab('code_editor');
+            editor.refresh();
+        } else {
+            console.log('Unable to load sketch:');
+            console.log(err);
+        }
+    });
 }
 
 function loadLocalSketch(e) {
@@ -670,7 +711,7 @@ function populateSketchList() {
         c.value = name;
         c.sketchName = name;
         c.innerHTML = 'Overwrite';
-        c.onclick = overwriteSketch;
+        c.onclick = overwriteLocalSketch;
 
         var s1 = document.createElement('span');
         s1.innerHTML = ' ';
@@ -746,7 +787,6 @@ function populateSketchList() {
             a.onclick = connectToGitHub;
         } else {
             a.innerHTML = 'Remove link to GitHub';
-            //a.setAttribute('href', '#');
             a.setAttribute('class', 'teal_button');
             a.onclick = removeLinkToGitHub;
 
@@ -777,6 +817,53 @@ function populateSketchList() {
             li.appendChild(padding);
             li.appendChild(b);
             li.appendChild(padding2);
+            ul.appendChild(li);
+
+            // Add sketches stored in localStorage
+            github.getFiles().forEach(function(name) {
+                li = document.createElement('li');
+                li.className = 'SketchItem';
+
+                var s = document.createElement('span');
+                s.sketchName = name;
+                s.innerHTML = name;
+
+                b = document.createElement('a');
+                b.setAttribute('class', 'teal_button');
+                b.innerHTML = 'Load';
+                b.sketchName = name;
+                b.onclick = loadGithubSketch;
+
+                a = document.createElement('a');
+                a.setAttribute('class', 'teal_button');
+                a.sketchName = name;
+                a.onclick = deleteGithubSketch;
+                a.innerHTML = 'Delete';
+
+                var c = document.createElement('a');
+                c.setAttribute('class', 'teal_button');
+                c.id = 'overwriteSketchName';
+                c.value = name;
+                c.sketchName = name;
+                c.innerHTML = 'Overwrite';
+                c.onclick = overwriteGithubSketch;
+
+                var s1 = document.createElement('span');
+                s1.innerHTML = ' ';
+                var s2 = document.createElement('span');
+                s2.innerHTML = ' ';
+                var s3 = document.createElement('span');
+                s3.innerHTML = ' ';
+
+                li.appendChild(s);
+                li.appendChild(s1);
+                li.appendChild(c);
+                li.appendChild(s2);
+                li.appendChild(b);
+                li.appendChild(s3);
+                li.appendChild(a);
+                ul.appendChild(li);
+            });
         }
 
         //create the github button
@@ -940,13 +1027,28 @@ function installWaveRenderer() {
 // Fetch /config.json and update the global "config" variable.
 function fetchConfiguration() {
     var request = new window.XMLHttpRequest();
-    request.onreadystatechange = function() {
-        if ((request.readyState === 4) && (request.status === 200)) {
+    request.onload = function() {
+        if ((request.status >= 200) && (request.status < 300)) {
             config = JSON.parse(request.responseText);
+
+            // Populate the Github object with parameters, if supplied.
+            if (("gatewayUrl" in config) && typeof config.gatewayUrl === 'string') {
+                github.setGatewayUrl(config.gatewayUrl);
+            }
+            if (("gitHubClientId" in config) && typeof config.gitHubClientId === 'string') {
+                github.setGatewayUrl(config.gitHubClientId);
+            }
         }
     };
     request.open('GET', '/config.json', true);
     request.send(JSON.stringify(codeobj));
+}
+
+function updateGitHubDatabase() {
+    // We keep a locally-cached copy of the github repo.  Make sure it's synced.
+    if (github.loggedIn()) {
+        github.refreshRepo(populateSketchList);
+    }
 }
 
 function installPiwik() {
@@ -978,4 +1080,5 @@ resizeHeader();
 fixupExamples();
 populateSketchList();
 installWaveRenderer();
+updateGitHubDatabase();
 installPiwik();

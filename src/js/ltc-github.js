@@ -7,8 +7,10 @@ var LTCGitHub = function(params) {
     // Settable parameters
     this.gatewayUrl = params.gatewayUrl || 'http://localhost:9999/authenticate/';
     this.gitHubUrl = params.gitHubUrl || 'https://api.github.com';
-    this.gitHubTokenUrl = params.gitHubTokenUrl;
     this.gitHubRepoName = params.gitHubRepoName || 'Love-to-Code-storage';
+    this.gitHubClientId = params.gitHubClientId || 'b8c261bb2b2a5aea7f0b';
+    this.gitHubScope = params.gitHubScope || 'repo';
+    this.gitHubOauthUrl = params.gitHubOauthUrl || 'https://github.com/login/oauth/authorize';
 
     // A synchronized table of files on the server, including their SHA sums.
     this.files = {};
@@ -40,6 +42,14 @@ LTCGitHub.prototype = {
         localStorage.setItem('gitHubLogin', l);
     },
 
+    setGatewayUrl: function(u) {
+        this.gatewayUrl = u;
+    },
+
+    setGitHubClientId: function(c) {
+        this.gitHubClientId = c;
+    },
+
     clear: function() {
         localStorage.removeItem('gitHubToken');
         localStorage.removeItem('gitHubLogin');
@@ -59,10 +69,7 @@ LTCGitHub.prototype = {
                     'has_projects': false,
                     'has_wiki': false
                 }, function(txt, status) {
-                    console.log('Got result from checkForChibitronicsRepo():');
-                    console.log(txt)
-                    console.log('Status: ' + status);
-                    if (status >= 200 && status <= 299) {
+                    if (status >= 200 && status < 300) {
                         if (cb !== undefined) {
                             cb();
                         }
@@ -121,7 +128,7 @@ LTCGitHub.prototype = {
 
         // Prefix the URL with the github API path, if it's relative.
         var url = path;
-        if (!path.startsWith("http://") && !path.startsWith("https://")) {
+        if (!path.startsWith('http://') && !path.startsWith('https://')) {
             url = this.gitHubUrl + path;
         }
 
@@ -149,23 +156,86 @@ LTCGitHub.prototype = {
 
     login: function(cb) {
         if (!this.loggedIn()) {
-            window.open(this.gitHubTokenUrl);
+            var gitHubTokenUrl = this.gitHubOauthUrl + '?client_id=' + this.gitHubClientId + '&scope=' + this.gitHubScope;
+            window.open(gitHubTokenUrl);
             this.loginCallback = cb;
         } else {
             cb(1);
         }
     },
 
+    getFiles: function() {
+        var files = [];
+        for (var name in this.files) {
+            if (this.files.hasOwnProperty(name)) {
+                files.push(name);
+            }
+        }
+        return files;
+    },
+
     writeFile: function(fileName, contents, cb) {
-        this.doApiCall('PUT', '/repos/' + this.getLogin() + '/' + this.gitHubRepoName + '/contents/' + fileName, {
+        var fileArgs = {
             'path': fileName,
             'message': 'Saving file',
             'content': btoa(contents),
-        }, function(txt, status) {
-            if (cb !== undefined) {
-                cb(txt, status);
+        };
+
+        // The only difference between an "update" and a "create" is the presence of the "sha" argument.
+        if (fileName in this.files) {
+            fileArgs.sha = this.files[fileName].sha;
+        }
+        this.doApiCall('PUT',
+            '/repos/' + this.getLogin() + '/' + this.gitHubRepoName + '/contents/' + fileName,
+            fileArgs,
+            function(txt, status) {
+                // Update our local copy of the SHA value, so we can make future updates.
+                if ((status >= 200) && (status < 300)) {
+                    var result = JSON.parse(txt);
+                    if (!this.files.hasOwnProperty(fileName)) {
+                        this.files[fileName] = {};
+                    }
+                    this.files[fileName].sha = result.content.sha;
+                }
+
+                // CAll the completion callback (if any)
+                if (cb !== undefined) {
+                    cb(txt, status);
+                }
             }
-        });
+        );
+    },
+
+    loadFile: function(fileName, cb) {
+        this.doApiCall('GET', '/repos/' + this.getLogin() + '/' + this.gitHubRepoName + '/contents/' + fileName,
+            undefined,
+            function(txt, status) {
+                if ((status >= 200) && (status < 300)) {
+                    var result = JSON.parse(txt);
+                    // Update the sha, since we have it anyway.
+                    this.files[fileName].sha = result.sha;
+                    if (cb) {
+                        cb(atob(result.content));
+                    }
+                }
+            });
+    },
+
+    deleteFile: function(fileName, cb) {
+        var parameters = {
+            'message': 'deleted from web api',
+            'sha': this.files[fileName].sha
+        };
+        this.doApiCall('DELETE', '/repos/' + this.getLogin() + '/' + this.gitHubRepoName + '/contents/' + fileName,
+            parameters,
+            function(txt, status) {
+                if ((status >= 200) && (status < 300)) {
+                    delete this.files[fileName];
+                    if (cb) {
+                        cb(txt, status);
+                    }
+                }
+            });
     }
 };
 
