@@ -19,6 +19,7 @@
     "globals": {
         "atob": true,
         "Blob": true,
+        "btoa": true,
         "CodeMirror": true,
         "context": false,
         "define": true,
