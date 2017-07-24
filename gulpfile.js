@@ -29,6 +29,8 @@ var pump = require('pump');
 var jshint = require('gulp-jshint');
 
 var compileUrl = argv.compileUrl || '//chibitronics.com/compile';
+var gitHubClientId = argv.clientId;
+var gitHubGatewayUrl = argv.gitHubGatewayUrl;
 
 var configHandler = /* Add a live url, /config.json, that returns our current configuration. */
     function(req, res, next) {
@@ -37,7 +39,9 @@ var configHandler = /* Add a live url, /config.json, that returns our current co
         }
         res.setHeader('Content-Type', 'application/json; charset=utf-8');
         res.end(JSON.stringify({
-            compileUrl: compileUrl
+            compileUrl: compileUrl,
+            gitHubGatewayUrl: gitHubGatewayUrl,
+            gitHubClientId: gitHubClientId,
         }));
     };
 
