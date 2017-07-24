@@ -217,7 +217,7 @@ function downloadSketch(contents, fileName) {
     var a = document.createElement('a');
     document.body.appendChild(a);
     a.style = 'display: none';
-    var url = window.URL.createObjectURL(blob);
+    var url = (window.URL || window.webkitURL).createObjectURL(blob);
     a.href = url;
 
     if (fileName === '') {
@@ -232,7 +232,7 @@ function downloadSketch(contents, fileName) {
     // Remove the URL in 100 ms, enough time for the downloader to run.
     setTimeout(function() {
         document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+        (window.URL || window.webkitURL).revokeObjectURL(url);
     }, 100);
 }
 
