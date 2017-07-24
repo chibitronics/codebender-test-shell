@@ -111,7 +111,7 @@ function clickUpload(e) {
     // Play empty data onclick to enable audio playback.
     var audioTag = getAudioElement();
     if (isIE11) {
-        audioTag.src = 'data:audio/mp3;base64,' +
+        audioTag.src = 'data:audio/mpeg;base64,' +
             'SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2Z' +
             'jU2LjM2LjEwMAAAAAAAAAAAAAAA//OEAA' +
             'AAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8' +
