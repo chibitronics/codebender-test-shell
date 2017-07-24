@@ -39,10 +39,6 @@ html {
     padding-right: 0;
 }
 
-#fqbn {
-    display: none;
-}
-
 #sidebar {
     width: -150px;
     right: 0;
