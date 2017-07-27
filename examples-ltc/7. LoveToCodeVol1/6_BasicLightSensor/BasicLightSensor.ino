@@ -12,9 +12,9 @@ void setup(){
 }
 
 void loop(){
-  bright = read(5);  // read current light level
+  lightLevel = read(5);  // read current light level
   
-  if (bright == 1){  
+  if (lightLevel == 1){  
       off(0);        // if light level is bright, turn off pin 0     
     } else {
       on(0);         // otherwise turn on pin 0
