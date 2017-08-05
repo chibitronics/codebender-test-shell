@@ -103,7 +103,7 @@ html {
     background: #f9f9f7;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
-    border-radius: 4px;
+    border-radius: 12px;
     padding: 14px 20px;
     color: #17C7D1;
     font-size: 17px;
@@ -128,7 +128,16 @@ html {
 .teal_button {
     background: #17C7D1;
     color: #fff !important;
-    border-radius: 4px;
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+.red_button {
+    color: #17C7D1 !important;
+    border: 3px solid #17C7D1;
+    border-radius: 12px;
     padding: 14px 20px;
     margin-bottom: 20px;
     display: inline-block;

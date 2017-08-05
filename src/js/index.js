@@ -9,6 +9,8 @@ var codeobj = {};
 var modController;
 var autosaveGeneration = null;
 
+var lastText = null;
+
 // Piwik tracking interface
 window._paq = window._paq || [];
 
@@ -252,11 +254,14 @@ function storeSketchLocally(contents, sketchName) {
     // Re-populate the sketch list
     // TODO: Simply add the new sketch instead of redoing everything
     populateSketchList();
+    populateSaveMenu();
 
     selectTab('code_editor');
     editor.refresh();
 
     downloadSketch(editor.getValue(), sketchName);
+
+    updateTextChangeBuffer(); // note the save
 }
 
 function saveLocalSketchAs(e) {
@@ -312,6 +317,7 @@ function installHooks() {
     document.getElementById('upload_button').onclick = clickUpload;
     document.getElementById('examples_button').onclick = selectTab;
     document.getElementById('saveas_button').onclick = selectTab;
+    document.getElementById('load_button').onclick = selectTab;
 }
 
 function hideShowExampleCategory(e) {
@@ -387,6 +393,14 @@ function loadExampleFromLink(e) {
     var request = new window.XMLHttpRequest();
     var target = e.target;
 
+    if( hasTextChanged() ) {
+	var retVal = confirm( 'Unsaved changes! Proceed and lose changes?' );
+	if( retVal === false ) {
+	    selectTab('code_editor');
+	    return false;
+	}
+    }
+
     // If we clicked on the <LI> outside of the link, manually select the <A> tag inside.
     if (e.target.tagName === 'LI') {
         target = target.firstChild;
@@ -404,6 +418,7 @@ function loadExampleFromLink(e) {
             if (request.status === 200) {
                 editor.setValue(request.responseText);
                 resizeHeader();
+		updateTextChangeBuffer(); // note the new file is loaded from stock image
             }
         }
     };
@@ -461,6 +476,7 @@ function undoDeleteLocalSketch(a) {
     saveLocalSketches(localSketches);
 
     populateSketchList();
+    populateSaveMenu();
 
     return false;
 }
@@ -479,10 +495,13 @@ function deleteLocalSketch(a) {
 
     // Redraw the list of sketches, now that one is deleted
     populateSketchList();
+    populateSaveMenu();
 
     // Add in an 'Undo Delete' link
     var li = document.createElement('li');
     var undo = document.createElement('span');
+    var hr = document.createElement('hr');
+    li.appendChild(hr);
     undo.className = 'SketchItem';
     undo.innerHTML = 'Undo Delete';
     undo.onclick = undoDeleteLocalSketch;
@@ -557,7 +576,6 @@ function populateSketchList() {
     var li;
     var a;
     var t;
-    var padding;
     var note;
 
     var sketchList = document.getElementById('sketch_list');
@@ -591,13 +609,120 @@ function populateSketchList() {
         b.onclick = loadLocalSketch;
 
         a = document.createElement('a');
-        a.setAttribute('class', 'teal_button');
+        a.setAttribute('class', 'red_button');
         a.sketchName = name;
         a.onclick = deleteLocalSketch;
         a.innerHTML = 'Delete';
 
+        var s2 = document.createElement('span');
+        s2.innerHTML = ' ';
+        var s3 = document.createElement('span');
+        s3.innerHTML = ' ';
+
+        li.appendChild(s);
+        li.appendChild(s2);
+        li.appendChild(b);
+        li.appendChild(s3);
+        li.appendChild(a);
+        ul.appendChild(li);
+    }
+
+    {
+        li = document.createElement('li');
+        var hr = document.createElement('hr');
+        li.appendChild(hr);
+        ul.appendChild(li);
+    }
+
+    // Add an entry for GitHub, or add a signup link if one doesn't exists
+    /*
+    if (getGithubToken() === null) {
+        li = document.createElement('li');
+
+        a = document.createElement('a');
+        a.innerHTML = 'Connect to GitHub';
+        a.setAttribute('href', '/connectToGitHub');
+        a.setAttribute('target', '__new');
+        a.setAttribute('class', 'teal_button');
+
+        li.appendChild(a);
+        ul.appendChild(li);
+    }
+    */
+
+    {
+        li = document.createElement('li');
+
+        note = document.createElement('p');
+        t = document.createTextNode('Click upload to select files stored on your device and load them into the LTC editor!');
+        note.appendChild(t);
+
+        i = document.createElement('input');
+        i.type = 'file';
+        i.setAttribute('id', 'upload_files');
+        i.setAttribute('placeholder', 'Upload a sketch');
+        i.addEventListener('change', uploadSketch, false);
+        i.style.width = '0px';
+        i.style.height = '0px';
+        i.style.border = '0px';
+        i.style.margin = '0px';
+        i.style.overflow = 'hidden';
+
+        a = document.createElement('a');
+        a.innerHTML = 'Upload';
+        a.setAttribute('href', '#');
+        a.setAttribute('class', 'teal_button');
+        a.onclick = function(e) { i.click(); return false; };
+
+        li.appendChild(note);
+        li.appendChild(i);
+        li.appendChild(a);
+        ul.appendChild(li);
+    }
+
+    // Add the entire list to the document
+    sketchList.appendChild(ul);
+
+    //             <ol>
+    //                    <li class='ExampleCategory'>Basics</li>
+    //                    <ul>
+    //                        <li class='ExampleItem'><a href='examples/01.Basics/AnalogReadSerial/AnalogReadSerial.ino'>Analog Read Serial</a></li>
+}
+
+function populateSaveMenu() {
+    var localSketches = getLocalSketches();
+    var li;
+    var a;
+    var t;
+    var padding;
+    var note;
+
+    var sketchSaveList = document.getElementById('sketch_save_list');
+
+    // Remove all previous child nodes, in case we're re-populating the list.
+    var childNodes = sketchSaveList.childNodes;
+    for (var i = 0; i < childNodes.length; i++) {
+        sketchSaveList.removeChild(childNodes[i]);
+    }
+
+    // Create an unordered list to store the sketch list
+    var ul = document.createElement('ul');
+    ul.className = 'SketchList';
+
+    // Add sketches stored in localStorage
+    for (var name in localSketches) {
+        if (!localSketches.hasOwnProperty(name)) {
+            continue;
+        }
+        li = document.createElement('li');
+        li.className = 'SketchItem';
+
+        var s = document.createElement('span');
+        s.sketchName = name;
+        s.innerHTML = name;
+
         var c = document.createElement('a');
-        c.setAttribute('class', 'teal_button');
+        c.setAttribute('class', 'red_button');
         c.id = 'overwriteSketchName';
         c.value = name;
         c.sketchName = name;
@@ -606,18 +731,10 @@ function populateSketchList() {
 
         var s1 = document.createElement('span');
         s1.innerHTML = ' ';
-        var s2 = document.createElement('span');
-        s2.innerHTML = ' ';
-        var s3 = document.createElement('span');
-        s3.innerHTML = ' ';
 
         li.appendChild(s);
         li.appendChild(s1);
         li.appendChild(c);
-        li.appendChild(s2);
-        li.appendChild(b);
-        li.appendChild(s3);
-        li.appendChild(a);
         ul.appendChild(li);
     }
 
@@ -665,29 +782,14 @@ function populateSketchList() {
         ul.appendChild(li);
     }
 
-    // Add an entry for GitHub, or add a signup link if one doesn't exists
-    /*
-    if (getGithubToken() === null) {
-        li = document.createElement('li');
-
-        a = document.createElement('a');
-        a.innerHTML = 'Connect to GitHub';
-        a.setAttribute('href', '/connectToGitHub');
-        a.setAttribute('target', '__new');
-        a.setAttribute('class', 'teal_button');
-
-        li.appendChild(a);
-        ul.appendChild(li);
-    }
-    */
-
     {
         li = document.createElement('li');
 
         note = document.createElement('p');
-        t = document.createTextNode('Files saved in browser are temporary and will eventually be be lost when your browser clears its history.');
-        var t2 = document.createTextNode('Please click \'download\' and save your program to your device when you\'re done, so you don\'t lose it!');
+        t = document.createTextNode('Files saved in a browser are not permanent.');
+        var t2 = document.createTextNode('Please click \'download\' and save your program to your device when you\'re done making changes, so you don\'t lose it!');
         note.appendChild(t);
+        note.appendChild(document.createElement('br'));
         note.appendChild(document.createElement('br'));
         note.appendChild(t2);
 
@@ -708,45 +810,15 @@ function populateSketchList() {
         a.setAttribute('class', 'teal_button');
         a.onclick = startDownloadSketch;
 
-        li.appendChild(note);
         li.appendChild(i);
         li.appendChild(padding);
         li.appendChild(a);
         ul.appendChild(li);
-    }
-
-    {
-        li = document.createElement('li');
-
-        note = document.createElement('p');
-        t = document.createTextNode('Click upload to select files stored on your device and load them into the LTC editor!');
-        note.appendChild(t);
-
-        i = document.createElement('input');
-        i.type = 'file';
-        i.setAttribute('id', 'upload_files');
-        i.setAttribute('placeholder', 'Upload a sketch');
-        i.addEventListener('change', uploadSketch, false);
-        i.style.width = '0px';
-        i.style.height = '0px';
-        i.style.border = '0px';
-        i.style.margin = '0px';
-        i.style.overflow = 'hidden';
-
-        a = document.createElement('a');
-        a.innerHTML = 'Upload';
-        a.setAttribute('href', '#');
-        a.setAttribute('class', 'teal_button');
-        a.onclick = function(e) { i.click(); return false; };
-
         li.appendChild(note);
-        li.appendChild(i);
-        li.appendChild(a);
-        ul.appendChild(li);
     }
 
     // Add the entire list to the document
-    sketchList.appendChild(ul);
+    sketchSaveList.appendChild(ul);
 
     //             <ol>
     //                    <li class='ExampleCategory'>Basics</li>
@@ -867,11 +939,33 @@ function installPiwik() {
     })();
 }
 
+function hasTextChanged() {
+    var curtext = editor.getValue();
+    
+    if( curtext !== lastText ) {
+	return true;
+    }
+
+    return false;
+}
+
+function updateTextChangeBuffer() {
+    // stash away the latest snapshot of the text buffer so we can warn of leaving edits
+    lastText = editor.getValue();
+}
+
+function hideMenu() {
+    document.getElementById('myDropdown').style.display = 'none';
+}
+
+hideMenu();
 fetchConfiguration();
 installHooks();
 initializeEditor();
 resizeHeader();
 fixupExamples();
 populateSketchList();
+populateSaveMenu();
 installWaveRenderer();
 installPiwik();
+updateTextChangeBuffer();
