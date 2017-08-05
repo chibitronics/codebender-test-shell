@@ -77,10 +77,10 @@ function buildResult(results, textStatus, status, jqXHR) {
         }
 
         var lbrEnable = document.getElementById('lbr_button').checked;
-        var modulationVersion = 1;
-        if (document.getElementById('mod_version').checked) {
-            modulationVersion = 2;
-        }
+        var modulationVersion = 2; // force to v2 modulation all the time
+        //if (document.getElementById('mod_version').checked) {
+	//    modulationVersion = 2;
+        //}
 
         modController = new ModulationController({
             canvas: getCanvas(),
