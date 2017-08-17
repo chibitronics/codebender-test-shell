@@ -16,23 +16,23 @@
     <script src="js/jscolor.js" type="text/javascript"></script>
 
     <header class="Site-header" id="Site-header">
-      <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
+        <div style="display: none; color: blue; text-decoration: underline; cursor: pointer; cursor: hand;" id="stoprunning">Stop running</div>
 
-      <div class="dropdown">
-	<a href="javascript:void(0);" onclick="openMenu()" id="menu_button"><img class="logo-face" src="/images/white_chibi_logo_face_sm.png" alt="Chibitronics Love-to-Code" width="54"><img class="logo-text" src="/images/white_chibi_logo_text_sm.png" alt="Chibitronics Love-to-Code" width="76"></a>
-	<div class="button_group" id="myDropdown">
-            <div class="switch_container">
-                <div class="switch_text">LBR mode</div>
-                <label class="switch" for="lbr_button">
+        <div class="dropdown">
+            <a href="javascript:void(0);" onclick="openMenu()" id="menu_button"><img class="logo-face" src="/images/white_chibi_logo_face_sm.png" alt="Chibitronics Love-to-Code" width="54"><img class="logo-text" src="/images/white_chibi_logo_text_sm.png" alt="Chibitronics Love-to-Code" width="76"></a>
+            <div class="button_group" id="myDropdown">
+                <div class="switch_container">
+                    <div class="switch_text">LBR mode</div>
+                    <label class="switch" for="lbr_button">
                     <input type="checkbox" id="lbr_button">
                     <span class="slider round"></span>
                 </label>
+                </div>
+                <audio id="audio_output" controls></audio>
             </div>
-	    <audio id="audio_output" controls></audio>
-	</div>
-      </div>
-      
-        
+        </div>
+
+
         <div class="button_group">
             <span class="button" id="upload_button" data-target="code_editor">Upload</span>
             <span class="button" id="examples_button" data-target="examples_list">Examples</span>
@@ -44,7 +44,7 @@
 
         <!-- Rounded switch -->
         <div class="switch_group">
-	<!--
+            <!--
             <div class="switch_container">
                 <div class="switch_text">LBR mode</div>
                 <label class="switch" for="lbr_button">
@@ -54,7 +54,7 @@
             </div>
 	    -->
 
-	    <!--
+            <!--
             <div class="switch_container">
                 <div class="switch_text">New striping</div>
                 <label class="switch" for="mod_version">
@@ -112,13 +112,13 @@ void loop() {
     </footer>
 
     <script>
-      function openMenu() {
-       if( document.getElementById("myDropdown").style.display == 'block' ) {
-         document.getElementById("myDropdown").style.display = 'none';
-       } else {
-         document.getElementById("myDropdown").style.display = 'block';
-      }
-      }
+        function openMenu() {
+            if (document.getElementById("myDropdown").style.display == 'block') {
+                document.getElementById("myDropdown").style.display = 'none';
+            } else {
+                document.getElementById("myDropdown").style.display = 'block';
+            }
+        }
     </script>
 
     <!-- build:css main.min.css -->
