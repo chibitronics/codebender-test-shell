@@ -39,6 +39,17 @@ html {
     padding-right: 0;
 }
 
+.winfooter {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 1rem;
+    background-color: #efefef;
+    text-aign: center;
+    margin-left: 30px;
+}
+
 #sidebar {
     width: -150px;
     right: 0;
@@ -120,7 +131,36 @@ html {
 
 .button.uploading {
     background: #777777;
-    color: #777777;
+    color: #999999;
+    cursor: default;
+    transition: background-color 300ms, color 300ms;
+}
+
+body {
+    font-family: Helvetica, Arial, Sans-Serif;
+}
+
+.test_button {
+    background: #17C7D1;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 12px;
+    padding: 14px 20px;
+    color: #f9f9f7;
+    font-size: 17px;
+    font-family: Helvetica, Arial, Sans-Serif;
+    text-decoration: none;
+    vertical-align: middle;
+    margin-right: 5px;
+    margin-left: 5px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    transition: background-color 300ms, color 300ms;
+    width: 33%;
+}
+.button.uploading {
+    background: #777777;
+    color: #999999;
     cursor: default;
     transition: background-color 300ms, color 300ms;
 }

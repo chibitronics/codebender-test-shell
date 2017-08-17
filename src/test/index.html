@@ -374,20 +374,23 @@
 
         function testPass() {
             testRunning = false;
-            document.getElementById('test-results').innerHTML = 'Test Passed!  If you didn\'t hear anything, turn up the volume and try again.';
-        }
+            document.getElementById('test-results').innerHTML = 'If you heard a short tune, you\'re <a href="https://chibitronics.com/lovetocode">Love to Code</a> compatible!<br> If you didn\'t hear anything, turn up the volume and try again.';
+            document.getElementById('test-browser-button').classList.remove('uploading');
+	}
 
         function testFail(reason) {
-            document.getElementById('test-results').innerHTML = 'Fail: ' + reason;
+            document.getElementById('test-results').innerHTML = 'Sorry, your browser is incompatible. Please try updating your browser or installing Chrome, Firefox, or Edge.<br><br>Error message: ' + reason;
+            document.getElementById('test-browser-button').classList.remove('uploading');
         }
 
         function testInfo(status) {
-            document.getElementById('test-results').innerHTML = 'Currently: ' + status;
+            document.getElementById('test-results').innerHTML = status;
         }
 
         function clickToTest(e) {
             var outWavBuilder;
 
+            document.getElementById('test-browser-button').classList.add('uploading');
             testInfo('Starting test...');
 
             try {
@@ -409,6 +412,7 @@
             outWavBuilder.makeTone(wavData, 523, 50);
             outWavBuilder.makeSilence(wavData, 150);
             outWavBuilder.makeTone(wavData, 698, 500);
+            outWavBuilder.makeTone(wavData, 880, 500);
             outWavBuilder.makeSilence(wavData, 350);
 
             try {
@@ -422,7 +426,7 @@
                 if (testRunning) {
                     testFail('Playback timed out');
                 }
-            }, 2000);
+            }, 2500);
         }
 
         function resizeHeader() {
@@ -433,19 +437,32 @@
         }
     </script>
 
-    <header class="Site-header" id="Site-header" style="top: 0; clear: both">
-        <div class="button" id="test-browser-button" data-target="code_editor">Test Browser</div>
-    </header>
-    <div id="main" class="Site-content" style="margin-top: 100px">
-        <div id="test-results" style="clear: both">
-            <noscript>Error: Javascript is disabled</noscript>
-        </div>
+<header class="Site-header" id="Site-header">
+  <a href="https://chibitronics.com">
+    <img class="logo-face" src="/images/white_chibi_logo_face_sm.png" alt="Chibitronics Love-to-Code" width="54"><img class="logo-text" src="/images/white_chibi_logo_text_sm.png" alt="Chibitronics Love-to-Code" width="76"></a>
+  
+    <div class="button_group">
+      <span class="button" id="test-browser-button" data-target="code_editor">Test Audio</div>
     </div>
+</header>
+
+<div id="main" class="Site-content" style="margin-top: 100px; margin-left: 30px;">
+  <br>
+  <p>
+    Welcome to the Chibitronics browser compatibility test! <br>
+    <!--
+    <br>
+    Press the "Test Audio" button above. If you can hear a short tune, then you're <a href="https://chibitronics.com/lovetocode">Love to Code</a> compatible! -->
+  </p>
+  <div id="test-results" style="clear: both">
+    <noscript>Error: Javascript is disabled. Love to Code requires Javascript!</noscript>
+  </div>
+</div>
 
     <script type="text/javascript">
         document.getElementById('test-browser-button').onclick = clickToTest;
         document.getElementById('test-browser-button').ontouchend = clickToTest;
-        testInfo('Waiting for button press');
+        testInfo('Press the "Test Audio" button above.');
         window.onresize = resizeHeader;
 
         function resizeHeaderTimer() {
@@ -454,6 +471,12 @@
         }
         resizeHeaderTimer();
     </script>
+
+    <div class="winfooter" id="winnote">
+      <p><b>Note to Windows users</b>: for reliable operation you will also need to disable any audio enhancements, such as Dolby Audio, if it came pre-installed.</p><p>This affects most Lenovo users. See below for tips on how to find and disable Dolby Audio!</p>
+      <center><img src="/images/windows-dolby-explain.png" style="width:600px"></center>
+    </div>
+    </footer>
 </body>
 
 </html>
