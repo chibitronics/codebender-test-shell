@@ -110,7 +110,7 @@ gulp.task('build-examples', function() {
 });
 
 gulp.task('build-html', function() {
-    return gulp.src('src/*.html') /* Load all HTML files */
+    return gulp.src('src/**/*.html') /* Load all HTML files */
         .pipe(useref()) /* Combine files into one */
         .pipe(fileinc()) /* Process @@include() directives */
         .pipe(gulpIf('*.css', cssnano())) /* minify css files */
@@ -258,7 +258,7 @@ gulp.task('default', function(callback) {
 });
 
 gulp.task('watch', ['browserSync'], function(callback) {
-    gulp.watch('src/*.html', ['build-html', browserSync.reload]);
+    gulp.watch('src/**/*.html', ['build-html', browserSync.reload]);
     gulp.watch('src/**/*.css', ['build-html', browserSync.reload]);
     gulp.watch('src/js/**/*.js', ['build-scripts', browserSync.reload]);
     gulp.watch('src/**/*.ino', ['build-examples', 'build-html', browserSync.reload]);
