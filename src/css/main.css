@@ -48,6 +48,8 @@ html {
     background-color: #efefef;
     text-aign: center;
     margin-left: 30px;
+    margin-right: 30px;
+    display: none;
 }
 
 #sidebar {
