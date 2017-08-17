@@ -374,7 +374,7 @@
 
         function testPass() {
             testRunning = false;
-            document.getElementById('test-results').innerHTML = 'If you heard a short tune, you\'re <a href="https://chibitronics.com/lovetocode">Love to Code</a> compatible!<br> If you didn\'t hear anything, turn up the volume and try again.';
+            document.getElementById('test-results').innerHTML = 'If you heard a short tune, you\'re <a href="https://chibitronics.com/lovetocode">Love to Code</a> compatible!<br><br>If you didn\'t hear anything, turn up the volume and try again.';
             document.getElementById('test-browser-button').classList.remove('uploading');
 	}
 
@@ -500,7 +500,7 @@
 	}
         document.getElementById('test-browser-button').onclick = clickToTest;
         document.getElementById('test-browser-button').ontouchend = clickToTest;
-        testInfo('Press the "Test Audio" button above.');
+        testInfo('Tap the "Test Audio" button above.');
 
         window.onresize = resizeHeader;
 
