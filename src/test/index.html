@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Chibitronics Love-to-Code</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="initial-scale=1.0,width=device-width" />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:type" content="website" />
+    <link rel="shortcut icon" type="image/png" href="/images/favicon.png" />
+    <link rel="apple-touch-icon-precomposed" href="/images/favicon.png" />
+</head>
+
+<body class="Site">
+    <audio id="audio_output"></audio>
+    <link rel="stylesheet" href="/main.min.css" />
+    <script type="text/javascript">
+        var audioFormat = 'wav';
+
+        var isIE11 = /Trident.*rv[ :]*11\./.test(navigator.userAgent);
+        /* Internet Explorer doesn't support WAV, so render an MP3 */
+        if (isIE11) {
+            /* LameJS is LGPL, so link it separately, and only if necessary */
+            /*jslint evil: true */
+            document.write('<script language="javascript" type="text/javascript" src="js/lame.min.js"></scri' + 'pt>');
+
+            /* IE doesn't support log10, so polyfill it */
+            Math.log10 = function(x) {
+                return Math.log(x) / Math.LN10;
+            };
+
+            audioFormat = 'mp3';
+        }
+
+        var WavBuilder = function(params) {
+            if (!params)
+                params = new Object();
+
+            this.endCallback = params.endCallback || undefined;
+            this.repeat = params.repeat || 3;
+            this.uriType = params.uriType || 'data';
+            this.format = params.format || "wav";
+            this.format = this.format.toLowerCase();
+
+            this.playing = false;
+            this.rate = 44100;
+            this.pcmData = null;
+        }
+        WavBuilder.prototype = {
+
+            fillU16: function(arr, off, val) {
+                arr[off + 0] = (val >> 0) & 0xff;
+                arr[off + 1] = (val >> 8) & 0xff;
+            },
+
+            fillU32: function(arr, off, val) {
+                arr[off + 0] = (val >> 0) & 0xff;
+                arr[off + 1] = (val >> 8) & 0xff;
+                arr[off + 2] = (val >> 16) & 0xff;
+                arr[off + 3] = (val >> 24) & 0xff;
+            },
+
+            getWavArray: function(samples) {
+                var numChannels = 1;
+                var bitsPerSample = 16;
+                var sampleRate = this.rate;
+
+                var blockAlign = (numChannels * bitsPerSample) >> 3;
+                var byteRate = blockAlign * sampleRate;
+                var subChunk1Size = 16; // PCM definition size is 16
+                var subChunk2Size = samples.length * (bitsPerSample >> 3);
+                var chunkSize = 36 + subChunk2Size;
+                var audioFormat = 1; // PCM audio format is defined as "1"
+
+                // Pre-allocate the wav output data, plus 44-byte WAV header
+                var wavData = new Uint8Array(samples.length * 2 + 44);
+
+                // Fill in the header
+                // Chunk ID 'RIFF'
+                wavData[0] = 0x52; // 'R'
+                wavData[1] = 0x49; // 'I'
+                wavData[2] = 0x46; // 'F'
+                wavData[3] = 0x46; // 'F'
+                // Chunk size
+                this.fillU32(wavData, 4, chunkSize);
+                // Format 'WAVE'
+                wavData[8] = 0x57; // 'W'
+                wavData[9] = 0x41; // 'A'
+                wavData[10] = 0x56; // 'V'
+                wavData[11] = 0x45; // 'E'
+                // Sub-chunk 1 ID 'fmt '
+                wavData[12] = 0x66; // 'f'
+                wavData[13] = 0x6d; // 'm'
+                wavData[14] = 0x74; // 't'
+                wavData[15] = 0x20; // ' '
+                this.fillU32(wavData, 16, subChunk1Size);
+                this.fillU16(wavData, 20, audioFormat);
+                this.fillU16(wavData, 22, numChannels);
+                this.fillU32(wavData, 24, sampleRate);
+                this.fillU32(wavData, 28, byteRate);
+                this.fillU16(wavData, 32, blockAlign);
+                this.fillU16(wavData, 34, bitsPerSample);
+                // Sub-chunk 2 ID 'data'
+                wavData[36] = 0x64; // 'd'
+                wavData[37] = 0x61; // 'a'
+                wavData[38] = 0x74; // 't'
+                wavData[39] = 0x61; // 'a'
+                this.fillU32(wavData, 40, subChunk2Size);
+
+                // Copy over the wav data
+                var wavDataOffset = 44;
+                for (var i = 0; i < samples.length; i++) {
+
+                    // Convert from 16-bit PCM to two's compliment 8-bit buffers'
+                    var sample = samples[i];
+
+                    // Javascript doesn't really do two's compliment
+                    if (sample < 0)
+                        sample = (0xffff - ~sample);
+
+                    wavData[wavDataOffset++] = Math.round(sample) & 0xff;
+                    wavData[wavDataOffset++] = Math.round(sample >> 8) & 0xff;
+                }
+
+                return wavData;
+            },
+
+            makeBlob: function(wavArray, mimeType) {
+                var blob;
+                try {
+                    blob = new Blob([wavArray], {
+                        type: mimeType
+                    });
+                } catch (e) {
+                    // Old blobbuilder workaround
+                    // From https://stackoverflow.com/questions/15293694/blob-constructor-browser-compatibility
+                    window.BlobBuilder = window.BlobBuilder ||
+                        window.WebKitBlobBuilder ||
+                        window.MozBlobBuilder ||
+                        window.MSBlobBuilder;
+
+                    if (e.name == 'TypeError' && window.BlobBuilder) {
+                        var bb = new BlobBuilder();
+                        bb.append(wavArray.buffer);
+                        blob = bb.getBlob(mimeType);
+                    } else if (e.name == "InvalidStateError") {
+                        // InvalidStateError (tested on FF13 WinXP)
+                        blob = new Blob([wavArray.buffer], {
+                            type: mimeType
+                        });
+                    } else {
+                        // blob constructor unsupported entirely
+                        throw "Blob not supported at all";
+                    }
+                }
+                return blob;
+            },
+
+
+
+            base64ArrayBuffer: function(arrayBuffer) {
+                var base64 = ''
+                var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+
+                var bytes = new Uint8Array(arrayBuffer)
+                var byteLength = bytes.byteLength
+                var byteRemainder = byteLength % 3
+                var mainLength = byteLength - byteRemainder
+
+                var a, b, c, d
+                var chunk
+
+                // Main loop deals with bytes in chunks of 3
+                for (var i = 0; i < mainLength; i = i + 3) {
+                    // Combine the three bytes into a single integer
+                    chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2]
+
+                    // Use bitmasks to extract 6-bit segments from the triplet
+                    a = (chunk & 16515072) >> 18 // 16515072 = (2^6 - 1) << 18
+                    b = (chunk & 258048) >> 12 // 258048   = (2^6 - 1) << 12
+                    c = (chunk & 4032) >> 6 // 4032     = (2^6 - 1) << 6
+                    d = chunk & 63 // 63       = 2^6 - 1
+
+                    // Convert the raw binary segments to the appropriate ASCII encoding
+                    base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d]
+                }
+
+                // Deal with the remaining bytes and padding
+                if (byteRemainder == 1) {
+                    chunk = bytes[mainLength]
+
+                    a = (chunk & 252) >> 2 // 252 = (2^6 - 1) << 2
+
+                    // Set the 4 least significant bits to zero
+                    b = (chunk & 3) << 4 // 3   = 2^2 - 1
+
+                    base64 += encodings[a] + encodings[b] + '=='
+                } else if (byteRemainder == 2) {
+                    chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1]
+
+                    a = (chunk & 64512) >> 10 // 64512 = (2^6 - 1) << 10
+                    b = (chunk & 1008) >> 4 // 1008  = (2^6 - 1) << 4
+
+                    // Set the 2 least significant bits to zero
+                    c = (chunk & 15) << 2 // 15    = 2^4 - 1
+
+                    base64 += encodings[a] + encodings[b] + encodings[c] + '='
+                }
+
+                return base64
+            },
+
+            transcodeToAudioTag: function(rawPcmData, tag, audioType) {
+                // Figure out which audio format to use, and fall back to a default format if unspecified.
+                if (audioType !== undefined) {
+                    if (audioType.toLowerCase() === 'mp3') {
+                        audioType = 'mp3';
+                    } else if (audioType.toLowerCase() === 'wav') {
+                        audioType = 'wav';
+                    } else {
+                        console.warn("Unrecognized audio format: " + audioType);
+                    }
+                    audioType = undefined;
+                }
+
+                // Use a default audio format if a valid one is unavailable.
+                if (audioType === undefined) {
+                    if (this.format === 'mp3') {
+                        audioType = 'mp3';
+                    } else if (this.format === 'wav') {
+                        audioType = 'wav';
+                    } else {
+                        throw "Unrecognized audio type";
+                    }
+                }
+
+                this.playCount = 0;
+                this.tag = tag;
+
+                if (!tag.paused) {
+                    tag.pause();
+                }
+
+                tag.onended = function() {
+                    // Play again if we haven't hit the limit'
+                    this.playCount++;
+                    if (this.playCount < this.repeat) {
+                        tag.play();
+                    } else {
+                        this.tag.onended = undefined;
+                        if (this.endCallback)
+                            this.endCallback();
+                    }
+                }.bind(this);
+
+                if (audioType === 'mp3') {
+                    this.transcodeMp3(rawPcmData, tag);
+                } else if (audioType === 'wav') {
+                    this.transcodeWav(rawPcmData, tag);
+                } else {
+                    throw "Unrecognized audio format: " + audioType;
+                }
+                this.pcmData = rawPcmData;
+
+                tag.play();
+            },
+
+            transcodeWav: function(samples, tag) {
+                var wavArray = this.getWavArray(samples);
+                var mimeType = 'audio/wav';
+
+                if (this.uriType === 'blob') {
+                    var blob = this.makeBlob(wavArray, mimeType);
+                    if (this.url !== undefined) {
+                        (window.URL || window.webkitURL).revokeObjectURL(this.url);
+                    }
+                    this.url = (window.URL || window.webkitURL).createObjectURL(blob);
+                } else if (this.uriType === 'data') {
+                    this.url = 'data:' + mimeType + ';base64,';
+
+                    var dataBin = '';
+                    for (var i = 0; i < wavArray.length; i++) {
+                        dataBin += String.fromCharCode(wavArray[i]);
+                    }
+                    this.url += btoa(dataBin);
+                }
+                tag.src = this.url;
+            },
+            transcodeMp3: function(samples, tag) {
+                var mp3encoder = new lamejs.Mp3Encoder(1, 44100, 128); //mono 44.1khz encode to 128kbps
+                var samples16 = new Int16Array(samples.length);
+
+                for (var i = 0; i < samples.length; i++) {
+                    samples16[i] = samples[i];
+                }
+
+                // Taken from lamejs README.md
+                var sampleBlockSize = 1152; //can be anything but make it a multiple of 576 to make encoders life easier
+                var mp3Data = [];
+                var mp3buf;
+                var mp3FileLength = 0;
+                for (var i = 0; i < samples16.length; i += sampleBlockSize) {
+                    var sampleChunk = samples16.subarray(i, i + sampleBlockSize);
+                    mp3buf = mp3encoder.encodeBuffer(sampleChunk);
+                    if (mp3buf.length > 0) {
+                        mp3Data.push(mp3buf);
+                        mp3FileLength += mp3buf.length;
+                    }
+                }
+                mp3buf = mp3encoder.flush(); //finish writing mp3
+
+                if (mp3buf.length > 0) {
+                    mp3FileLength += mp3buf.length;
+                    mp3Data.push(new Int8Array(mp3buf));
+                }
+
+                var linearMp3 = new Int8Array(mp3FileLength);
+                var offset = 0;
+                for (var i = 0; i < mp3Data.length; i++) {
+                    for (var j = 0; j < mp3Data[i].length; j++) {
+                        linearMp3[offset++] = mp3Data[i][j];
+                    }
+                }
+
+                var mimeType = 'audio/mpeg';
+                if (this.uriType === 'blob') {
+                    var blob = this.makeBlob(linearMp3, mimeType);
+                    if (this.url !== undefined) {
+                        (window.URL || window.webkitURL).revokeObjectURL(this.url);
+                    }
+                    this.url = (window.URL || window.webkitURL).createObjectURL(blob);
+                } else if (this.uriType === 'data') {
+                    this.url = 'data:' + mimeType + ';base64,' + this.base64ArrayBuffer(linearMp3);
+                }
+                tag.src = this.url;
+            },
+
+            makeTone: function(buffer, tone, msecs) {
+                var bufLen = Math.ceil(this.rate / (1000.0 / msecs));
+                var omega_lo = (2 * Math.PI * tone) / this.rate;
+                var phase = 0;
+                for (var i = 0; i < bufLen; i++) {
+                    buffer.push(Math.round(Math.cos(phase) * 16384));
+                    phase += omega_lo;
+                }
+                // To avoid zero-cross, keep adding samples until the polarity flips
+                if (Math.cos(phase) > 0) {
+                    while (Math.cos(phase) > 0) {
+                        buffer.push(Math.round(Math.cos(phase) * 16384));
+                        phase += omega_lo;
+                    }
+                } else {
+                    while (Math.cos(phase) < 0) {
+                        buffer.push(Math.round(Math.cos(phase) * 16384));
+                        phase += omega_lo;
+                    }
+                }
+            },
+
+            makeSilence: function(buffer, msecs) {
+                var silenceLen = Math.ceil(this.rate / (1000.0 / msecs));
+                for (var i = 0; i < silenceLen; i++) {
+                    buffer.push(0);
+                }
+            },
+
+            about: function() {
+                alert("(C) 2017 Chibitronics PTE Ltd.");
+            }
+        };
+
+        var testRunning = false;
+
+        function testPass() {
+            testRunning = false;
+            document.getElementById('test-results').innerHTML = 'Test Passed!  If you didn\'t hear anything, turn up the volume and try again.';
+        }
+
+        function testFail(reason) {
+            document.getElementById('test-results').innerHTML = 'Fail: ' + reason;
+        }
+
+        function testInfo(status) {
+            document.getElementById('test-results').innerHTML = 'Currently: ' + status;
+        }
+
+        function clickToTest(e) {
+            var outWavBuilder;
+
+            testInfo('Starting test...');
+
+            try {
+                outWavBuilder = new WavBuilder({
+                    format: audioFormat,
+                    uriType: 'blob',
+                    repeat: 1,
+                    endCallback: testPass
+                });
+            } catch (reason) {
+                testFail(reason);
+                return;
+            }
+
+            var wavData = [];
+            outWavBuilder.makeSilence(wavData, 250);
+            outWavBuilder.makeTone(wavData, 523, 150);
+            outWavBuilder.makeSilence(wavData, 150);
+            outWavBuilder.makeTone(wavData, 523, 50);
+            outWavBuilder.makeSilence(wavData, 150);
+            outWavBuilder.makeTone(wavData, 698, 500);
+            outWavBuilder.makeSilence(wavData, 350);
+
+            try {
+                outWavBuilder.transcodeToAudioTag(wavData, document.getElementById('audio_output'));
+                testRunning = true;
+            } catch (reason) {
+                testFail('Javascript error (More info: ' + reason + ')');
+                return;
+            }
+            window.setTimeout(function() {
+                if (testRunning) {
+                    testFail('Playback timed out');
+                }
+            }, 2000);
+        }
+
+        function resizeHeader() {
+            var header = document.getElementById('Site-header');
+            var height = header.offsetHeight;
+            document.getElementById('main').style.marginTop = height + 'px';
+            header.style.top = 0;
+        }
+    </script>
+
+    <header class="Site-header" id="Site-header" style="top: 0; clear: both">
+        <div class="button" id="test-browser-button" data-target="code_editor">Test Browser</div>
+    </header>
+    <div id="main" class="Site-content" style="margin-top: 100px">
+        <div id="test-results" style="clear: both">
+            <noscript>Error: Javascript is disabled</noscript>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        document.getElementById('test-browser-button').onclick = clickToTest;
+        document.getElementById('test-browser-button').ontouchend = clickToTest;
+        testInfo('Waiting for button press');
+        window.onresize = resizeHeader;
+
+        function resizeHeaderTimer() {
+            window.setTimeout(resizeHeaderTimer, 1000);
+            resizeHeader();
+        }
+        resizeHeaderTimer();
+    </script>
+</body>
+
+</html>
