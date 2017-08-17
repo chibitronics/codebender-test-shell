@@ -390,7 +390,13 @@
         function clickToTest(e) {
             var outWavBuilder;
 
-            document.getElementById('test-browser-button').classList.add('uploading');
+	    try {
+		document.getElementById('test-browser-button').classList.add('uploading');
+	    } catch (reason) {
+  	        testFail('Unsupported Javascript feature (More info: ' + reason + ')');
+		return;
+	    }
+				    
             testInfo('Starting test...');
 
             try {
