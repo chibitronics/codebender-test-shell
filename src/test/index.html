@@ -376,7 +376,7 @@
             testRunning = false;
             document.getElementById('test-results').innerHTML = 'If you heard a short tune, you\'re <a href="https://chibitronics.com/lovetocode">Love to Code</a> compatible!<br><br>If you didn\'t hear anything, turn up the volume and try again.';
             document.getElementById('test-browser-button').classList.remove('uploading');
-	}
+        }
 
         function testFail(reason) {
             document.getElementById('test-results').innerHTML = 'Sorry, your browser is incompatible. Please try updating your browser or installing Chrome, Firefox, or Edge.<br><br>Error message: ' + reason;
@@ -390,13 +390,13 @@
         function clickToTest(e) {
             var outWavBuilder;
 
-	    try {
-		document.getElementById('test-browser-button').classList.add('uploading');
-	    } catch (reason) {
-  	        testFail('Unsupported Javascript feature (More info: ' + reason + ')');
-		return;
-	    }
-				    
+            try {
+                document.getElementById('test-browser-button').classList.add('uploading');
+            } catch (reason) {
+                testFail('Unsupported Javascript feature (More info: ' + reason + ')');
+                return;
+            }
+
             testInfo('Starting test...');
 
             try {
@@ -440,39 +440,39 @@
             var height = header.offsetHeight;
             document.getElementById('main').style.marginTop = height + 'px';
             header.style.top = 0;
-	}
-				    
-	function getOS() {
-		var userAgent = window.navigator.userAgent,
-		platform = window.navigator.platform,
-		macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
-		windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
-		iosPlatforms = ['iPhone', 'iPad', 'iPod'],
-		os = null;
+        }
 
-		if (macosPlatforms.indexOf(platform) !== -1) {
-		    os = 'Mac OS';
-		} else if (iosPlatforms.indexOf(platform) !== -1) {
-		    os = 'iOS';
-		} else if (windowsPlatforms.indexOf(platform) !== -1) {
-		    os = 'Windows';
-		} else if (/Android/.test(userAgent)) {
-		    os = 'Android';
-		} else if (!os && /Linux/.test(platform)) {
-		    os = 'Linux';
-	        } else {
-		    os = 'Unknown';	    
-		}
-	        return os;
+        function getOS() {
+            var userAgent = window.navigator.userAgent,
+                platform = window.navigator.platform,
+                macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+                windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
+                iosPlatforms = ['iPhone', 'iPad', 'iPod'],
+                os = null;
+
+            if (macosPlatforms.indexOf(platform) !== -1) {
+                os = 'Mac OS';
+            } else if (iosPlatforms.indexOf(platform) !== -1) {
+                os = 'iOS';
+            } else if (windowsPlatforms.indexOf(platform) !== -1) {
+                os = 'Windows';
+            } else if (/Android/.test(userAgent)) {
+                os = 'Android';
+            } else if (!os && /Linux/.test(platform)) {
+                os = 'Linux';
+            } else {
+                os = 'Unknown';
+            }
+            return os;
         }
     </script>
 
-<header class="Site-header" id="Site-header">
-  <a href="https://chibitronics.com">
-    <img class="logo-face" src="/images/white_chibi_logo_face_sm.png" alt="Chibitronics Love-to-Code" width="54"><img class="logo-text" src="/images/white_chibi_logo_text_sm.png" alt="Chibitronics Love-to-Code" width="76"></a>
-  
-    <div class="button_group">
-      <span class="button" id="test-browser-button" data-target="code_editor">Test Audio</div>
+    <header class="Site-header" id="Site-header">
+        <a href="https://chibitronics.com">
+            <img class="logo-face" src="/images/white_chibi_logo_face_sm.png" alt="Chibitronics Love-to-Code" width="54"><img class="logo-text" src="/images/white_chibi_logo_text_sm.png" alt="Chibitronics Love-to-Code" width="76"></a>
+
+        <div class="button_group">
+            <span class="button" id="test-browser-button" data-target="code_editor">Test Audio</div>
     </div>
 </header>
 
