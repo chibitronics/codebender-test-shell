@@ -958,6 +958,57 @@ function hideMenu() {
     document.getElementById('myDropdown').style.display = 'none';
 }
 
+// Look for '#m=embed' in the HTTP fragment, to enable "embed" mode
+function initializeEmbed() {
+    var fragment = window.location.hash;
+    var embedMode = false;
+
+    // Strip off the leading '#' that appears
+    if (fragment.startsWith('#')) {
+        fragment = fragment.split('#', 2)[1];
+    }
+
+    var hashElements = fragment.split('&');
+    hashElements.forEach(function(element) {
+        var arg = element.split('=');
+        if ((arg[0] === 'm') && (arg[1] === 'embed')) {
+            console.log('Enabling embed mode');
+            embedMode = true;
+            document.getElementById('examples_button').style.display = 'none';
+            document.getElementById('saveas_button').style.display = 'none';
+            document.getElementById('load_button').style.display = 'none';
+            document.getElementById('open_button').style.display = '';
+            document.getElementById('open_button').addEventListener("click", function(e) {
+                var childWindow = window.open("/");
+                childWindow.addEventListener("load", function(e) {
+                    childWindow.postMessage({
+                        "sourceCode": editor.getValue()
+                    }, window.location);
+                })
+            })
+        }
+    });
+
+    // If we're not in embed mode, listen for 'sourceCode' messages from any parent we may have
+    if (!embedMode) {
+        window.addEventListener('message', function(event) {
+            if (event.data.sourceCode === undefined) {
+                return;
+            }
+            selectTab('code_editor');
+            if (hasTextChanged()) {
+                var retVal = confirm('Unsaved changes! Proceed and lose changes?');
+                if (retVal === false) {
+                    return false;
+                }
+            }
+            editor.setValue(event.data.sourceCode);
+            editor.refresh();
+            resizeHeader();
+        });
+    }
+}
+
 hideMenu();
 fetchConfiguration();
 installHooks();
@@ -969,3 +1020,4 @@ populateSaveMenu();
 installWaveRenderer();
 installPiwik();
 updateTextChangeBuffer();
+initializeEmbed();
