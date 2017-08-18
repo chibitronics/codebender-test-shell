@@ -1009,49 +1009,63 @@ function initializeEmbed() {
     });
 
     if (embedMode) {
+        // Set the editor to a blank value first, while we wait for the real code to appear.
+        editor.setValue('');
+        editor.refresh();
+        resizeHeader();
+
+        // Monitor messages coming via the message buffer.
         window.addEventListener('message', function(event) {
-            if (event.data.sourceCode === undefined) {
-                return;
-            }
-            selectTab('code_editor');
-            if (hasTextChanged()) {
-                var retVal = confirm('Unsaved changes! Proceed and lose changes?');
-                if (retVal === false) {
-                    return false;
+            if (event.data.type === undefined) {
+                console.log('No message defined');
+            } else if (event.data.type === 'initial_code') {
+                if (event.data.sourceCode === undefined) {
+                    return;
                 }
+                selectTab('code_editor');
+                editor.setValue(event.data.sourceCode);
+                editor.refresh();
+                resizeHeader();
+            } else {
+                console.log('Unrecognized message type: ' + event.data.type);
             }
-            editor.setValue(event.data.sourceCode);
-            editor.refresh();
-            resizeHeader();
         });
+
+        // Mark all unnecessary buttons as hidden, and show the 'Open in Editor' button.
         document.getElementById('examples_button').style.display = 'none';
         document.getElementById('saveas_button').style.display = 'none';
         document.getElementById('load_button').style.display = 'none';
         document.getElementById('open_button').style.display = '';
+
+        // Add an event to the 'Open in Editor' button to open a new window to our site.
         document.getElementById('open_button').addEventListener("click", function(e) {
             var childWindow = window.open("/");
             childWindow.addEventListener("load", function(e) {
                 childWindow.postMessage({
-                    "sourceCode": editor.getValue()
-                }, window.location);
+                    'type': 'open_in_editor',
+                    'sourceCode': editor.getValue()
+                }, '*');
             })
         })
     } else {
         // If we're not in embed mode, listen for 'sourceCode' messages from any parent we may have
         window.addEventListener('message', function(event) {
-            if (event.data.sourceCode === undefined) {
-                return;
-            }
-            selectTab('code_editor');
-            if (hasTextChanged()) {
-                var retVal = confirm('Unsaved changes! Proceed and lose changes?');
-                if (retVal === false) {
-                    return false;
+            if (event.data.type === undefined) {
+                console.log('No message defined');
+            } else if (event.data.type === 'open_in_editor') {
+                selectTab('code_editor');
+                if (hasTextChanged()) {
+                    var retVal = confirm('Unsaved changes! Proceed and lose changes?');
+                    if (retVal === false) {
+                        return false;
+                    }
                 }
+                editor.setValue(event.data.sourceCode);
+                editor.refresh();
+                resizeHeader();
+            } else {
+                console.log('Unrecognized message type: ' + event.data.type);
             }
-            editor.setValue(event.data.sourceCode);
-            editor.refresh();
-            resizeHeader();
         });
     }
 }
