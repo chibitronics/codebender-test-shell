@@ -68,7 +68,7 @@ void loop()  {
         document.getElementById('embed-test').addEventListener('load', function() {
             embedTestWindow.postMessage({
                 type: 'initial_code',
-                sourceCode: document.getElementById('source-example').innerHTML
+                sourceCode: document.getElementById('source-example').innerText
             }, '*');
         });
     </script>
