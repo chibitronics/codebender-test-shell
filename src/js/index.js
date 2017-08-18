@@ -8,6 +8,7 @@ var editor;
 var codeobj = {};
 var modController;
 var autosaveGeneration = null;
+var embedMode = false;
 
 var lastText = null;
 
@@ -199,6 +200,9 @@ function saveCurrentEditor() {
     if (autosaveGeneration === null) {
         autosaveGeneration = editor.changeGeneration();
     } else if (!editor.isClean(autosaveGeneration)) {
+        if (embedMode) {
+            return;
+        }
         localStorage.setItem('currentSketch', editor.getValue());
         autosaveGeneration = editor.changeGeneration();
     }
@@ -435,6 +439,9 @@ function loadExampleFromLink(e) {
 }
 
 function fixupExamples() {
+    if (embedMode) {
+        return;
+    }
     var i;
     var e;
     var exampleCategories = document.getElementsByClassName('ExampleCategory');
@@ -572,6 +579,9 @@ function uploadSketch(e) {
 }
 
 function populateSketchList() {
+    if (embedMode) {
+        return;
+    }
     var localSketches = getLocalSketches();
     var li;
     var a;
@@ -690,6 +700,9 @@ function populateSketchList() {
 }
 
 function populateSaveMenu() {
+    if (embedMode) {
+        return;
+    }
     var localSketches = getLocalSketches();
     var li;
     var a;
@@ -951,7 +964,9 @@ function hasTextChanged() {
 
 function updateTextChangeBuffer() {
     // stash away the latest snapshot of the text buffer so we can warn of leaving edits
-    lastText = editor.getValue();
+    if (!embedMode) {
+        lastText = editor.getValue();
+    }
 }
 
 function hideMenu() {
@@ -961,7 +976,6 @@ function hideMenu() {
 // Look for '#m=embed' in the HTTP fragment, to enable "embed" mode
 function initializeEmbed() {
     var fragment = window.location.hash;
-    var embedMode = false;
 
     // Strip off the leading '#' that appears
     if (fragment.startsWith('#')) {
@@ -974,23 +988,39 @@ function initializeEmbed() {
         if ((arg[0] === 'm') && (arg[1] === 'embed')) {
             console.log('Enabling embed mode');
             embedMode = true;
-            document.getElementById('examples_button').style.display = 'none';
-            document.getElementById('saveas_button').style.display = 'none';
-            document.getElementById('load_button').style.display = 'none';
-            document.getElementById('open_button').style.display = '';
-            document.getElementById('open_button').addEventListener("click", function(e) {
-                var childWindow = window.open("/");
-                childWindow.addEventListener("load", function(e) {
-                    childWindow.postMessage({
-                        "sourceCode": editor.getValue()
-                    }, window.location);
-                })
-            })
         }
     });
 
-    // If we're not in embed mode, listen for 'sourceCode' messages from any parent we may have
-    if (!embedMode) {
+    if (embedMode) {
+        window.addEventListener('message', function(event) {
+            if (event.data.sourceCode === undefined) {
+                return;
+            }
+            selectTab('code_editor');
+            if (hasTextChanged()) {
+                var retVal = confirm('Unsaved changes! Proceed and lose changes?');
+                if (retVal === false) {
+                    return false;
+                }
+            }
+            editor.setValue(event.data.sourceCode);
+            editor.refresh();
+            resizeHeader();
+        });
+        document.getElementById('examples_button').style.display = 'none';
+        document.getElementById('saveas_button').style.display = 'none';
+        document.getElementById('load_button').style.display = 'none';
+        document.getElementById('open_button').style.display = '';
+        document.getElementById('open_button').addEventListener("click", function(e) {
+            var childWindow = window.open("/");
+            childWindow.addEventListener("load", function(e) {
+                childWindow.postMessage({
+                    "sourceCode": editor.getValue()
+                }, window.location);
+            })
+        })
+    } else {
+        // If we're not in embed mode, listen for 'sourceCode' messages from any parent we may have
         window.addEventListener('message', function(event) {
             if (event.data.sourceCode === undefined) {
                 return;
@@ -1013,6 +1043,7 @@ hideMenu();
 fetchConfiguration();
 installHooks();
 initializeEditor();
+initializeEmbed();
 resizeHeader();
 fixupExamples();
 populateSketchList();
@@ -1020,4 +1051,3 @@ populateSaveMenu();
 installWaveRenderer();
 installPiwik();
 updateTextChangeBuffer();
-initializeEmbed();
