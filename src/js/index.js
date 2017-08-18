@@ -517,6 +517,14 @@ function loadLocalSketch(e) {
     var localSketches = getLocalSketches();
     var sketchName = e.target.sketchName;
 
+    if (hasTextChanged()) {
+        var retVal = confirm('Unsaved changes! Proceed and lose changes?');
+        if (retVal === false) {
+            selectTab('code_editor');
+            return false;
+        }
+    }
+
     var sketch = localSketches[sketchName];
     if (sketch === undefined) {
         console.log('Couldn\'t find local sketch ' + sketchName);
@@ -541,6 +549,15 @@ function startDownloadSketch(e) {
 function uploadSketch(e) {
     var elt = e.target;
     var files = elt.files;
+
+    if (hasTextChanged()) {
+        var retVal = confirm('Unsaved changes! Proceed and lose changes?');
+        if (retVal === false) {
+            selectTab('code_editor');
+            return false;
+        }
+    }
+    
     if (files.length < 1) {
         console.log('No files were selected');
         return false;
