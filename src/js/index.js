@@ -79,7 +79,7 @@ function buildResult(results, textStatus, status, jqXHR) {
         var lbrEnable = document.getElementById('lbr_button').checked;
         var modulationVersion = 2; // force to v2 modulation all the time
         //if (document.getElementById('mod_version').checked) {
-	//    modulationVersion = 2;
+        //    modulationVersion = 2;
         //}
 
         modController = new ModulationController({
@@ -393,12 +393,12 @@ function loadExampleFromLink(e) {
     var request = new window.XMLHttpRequest();
     var target = e.target;
 
-    if( hasTextChanged() ) {
-	var retVal = confirm( 'Unsaved changes! Proceed and lose changes?' );
-	if( retVal === false ) {
-	    selectTab('code_editor');
-	    return false;
-	}
+    if (hasTextChanged()) {
+        var retVal = confirm('Unsaved changes! Proceed and lose changes?');
+        if (retVal === false) {
+            selectTab('code_editor');
+            return false;
+        }
     }
 
     // If we clicked on the <LI> outside of the link, manually select the <A> tag inside.
@@ -418,7 +418,7 @@ function loadExampleFromLink(e) {
             if (request.status === 200) {
                 editor.setValue(request.responseText);
                 resizeHeader();
-		updateTextChangeBuffer(); // note the new file is loaded from stock image
+                updateTextChangeBuffer(); // note the new file is loaded from stock image
             }
         }
     };
@@ -941,9 +941,9 @@ function installPiwik() {
 
 function hasTextChanged() {
     var curtext = editor.getValue();
-    
-    if( curtext !== lastText ) {
-	return true;
+
+    if (curtext !== lastText) {
+        return true;
     }
 
     return false;
