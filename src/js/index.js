@@ -85,7 +85,7 @@ function buildResult(results, textStatus, status, jqXHR) {
         modController = new ModulationController({
             canvas: getCanvas(),
             lbr: lbrEnable,
-            uriType: 'blob',
+            uriType: 'data',
             format: audioFormat,
             endCallback: function() {
                 getWaveFooter().style.display = 'none';
