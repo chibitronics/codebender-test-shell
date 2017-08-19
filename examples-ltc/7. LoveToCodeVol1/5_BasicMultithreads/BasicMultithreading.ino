@@ -1,17 +1,17 @@
 // Love to Code
-// Basic Multithreads
+// Basic Multithreading
 //
 // Multithreading is the act of running multiple pieces of code at the same time. 
 //
-// As long as you don't share any variables between threads, multithreading
-// is straightforward. This template allows you to put code in up to six
-// threads that run in parallel.
+// As long as you don't share any resources, like variables and output pins,
+// between threads multithreading is straightforward.
+// This template allows you to put code in up to six threads that run in parallel.
 //
 // The easiest way to use this code is to imagine you are writing a separate program,
 // with differently named variable names and pin names by number, for each output pin on Chibi Chip.
 // 
-// For this code to run, we must have all six setup0 through setup5 and loop0 through loop5 functions in the code even if 
-// they are blank.
+// For this code to run, we must have all six setup0() through setup5() and
+// loop0() through loop5() functions in the code even if they are empty.
 
 #include "ChibiOS.h" // we need to include our special code to enable threading
 #include "SimpleThreads.h" // we need to include our special code to enable threading
