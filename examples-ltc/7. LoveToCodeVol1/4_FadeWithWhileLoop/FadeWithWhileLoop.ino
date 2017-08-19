@@ -15,8 +15,7 @@ void loop() {
   int brightness = 0;  
   
   // increase brightness while our brightness is less than fully on (100%)
-  while(brightness <100) 
-  {
+  while(brightness < 100) {
     setLevel(LED, brightness);   //set our LED to the current brightness level
     pause(10);                   // wait for 10 milliseconds for the brightness to show
     brightness = brightness + 1; //increase our brightness level by 1
@@ -24,8 +23,7 @@ void loop() {
   }
   
   //decrease brightness while our brightness is more than fully off (0%)
-  while(brightness >0)
-  {
+  while(brightness > 0) {
     setLevel(LED, brightness);   //set our LED to the current brightness level
     pause(10);                   // wait for 10 milliseconds for the brightness to show
     brightness = brightness - 1; //decrease our brightness level by 1
