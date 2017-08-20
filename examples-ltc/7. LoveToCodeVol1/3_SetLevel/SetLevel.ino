@@ -1,14 +1,15 @@
 // Love to Code
 // Volume 1: Set Level
 
-int LED = 0;  //initialize LED as pin 0        
+int LED = 0;        // initialize LED as pin 0        
 
 void setup() {
-  outputMode(LED);  //set LED pin as output
+  outputMode(LED);  // set LED pin as output
 }
 
-// Use setLevel(pin, percent) to set brightness
-// level from 0 (fully off) to 100 (fully on)
+// Use repeated setLevel(pin, percent) statements
+// to increase brightness level to 100 (fully on)
+// and then back down to 0 (fully off)
 void loop() {
   setLevel(LED, 25);
   pause(500);
