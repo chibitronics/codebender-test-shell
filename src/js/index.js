@@ -32,13 +32,18 @@ if (isIE11) {
     /*jslint evil: true */
     document.write('<script language="javascript" type="text/javascript" src="js/lame.min.js"></script>');
 
-    /* IE doesn't support log10, so polyfill it */
-    Math.log10 = function(x) {
-        return Math.log(x) / Math.LN10;
-    };
-
     audioFormat = 'mp3';
 }
+
+/* Polyfill IE */
+if (!String.prototype.startsWith) {
+    String.prototype.startsWith = function(searchString, position) {
+        return this.substr(position || 0, searchString.length) === searchString;
+    };
+}
+Math.log10 = Math.log10 || function(x) {
+    return Math.log(x) * Math.LOG10E;
+};
 
 function getAudioElement() {
     return document.getElementById('audio_output');
