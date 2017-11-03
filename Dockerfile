@@ -1,6 +1,4 @@
-FROM node:7.8.0
-#FROM node:7.8.0 # arch=amd64
-#FROM armhf/node:7.8.0 # arch=armhf
+FROM node:9.0.0
 
 # use changes to package.json to force Docker not to use the cache
 # when we change our application's nodejs dependencies:
