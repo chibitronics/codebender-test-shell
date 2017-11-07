@@ -53,3 +53,12 @@ You can then run it locally, exposing it on port 8080:
 By default, it uses the build server at //ltc.chibitronics.com/compile and you can change this by setting COMPILE_URL:
 
     docker run --rm -it -p 8080:80 -e COMPILE_URL=//ltc.xobs.io/compile ltc-web-ui
+
+Github Integration
+------------------
+
+For Github integration, it is necessary to use a separate "gateway" server to bounce authentication requests back to Github.  Downlaod https://github.com/prose/gatekeeper and configure it.  Then set the gitHubGatewayUrl to point to the gatekeeper.
+
+For example, if your Gatekeeper is running at gatekeeper.example.com port 9999, run:
+
+ gulp serve-prod --clientId [GITHUB_CLIENT_ID] --gitHubGatewayUrl //gatekeeper.example.com:9999/authenticate/
