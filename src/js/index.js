@@ -1032,11 +1032,11 @@ function fetchConfiguration() {
             config = JSON.parse(request.responseText);
 
             // Populate the Github object with parameters, if supplied.
-            if (("gatewayUrl" in config) && typeof config.gatewayUrl === 'string') {
-                github.setGatewayUrl(config.gatewayUrl);
+            if (("gitHubGatewayUrl" in config) && typeof config.gitHubGatewayUrl === 'string') {
+                github.setGatewayUrl(config.gitHubGatewayUrl);
             }
             if (("gitHubClientId" in config) && typeof config.gitHubClientId === 'string') {
-                github.setGatewayUrl(config.gitHubClientId);
+                github.setGitHubClientId(config.gitHubClientId);
             }
         }
     };
