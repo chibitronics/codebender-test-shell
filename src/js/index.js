@@ -20,9 +20,9 @@ var fileName = 'LTC-program.ino';
 
 var isIE11 = /Trident.*rv[ :]*11\./.test(navigator.userAgent);
 
-// This gets replaced by reading /config.json at runtime.
+// This gets replaced by reading /config.json at runtime (if present).
 var config = {
-    compileUrl: '//ltc.xobs.io/compile'
+    compileUrl: '//compile.ltc.chibitronics.com/'
 };
 
 /* Internet Explorer doesn't support WAV, so render an MP3 */
