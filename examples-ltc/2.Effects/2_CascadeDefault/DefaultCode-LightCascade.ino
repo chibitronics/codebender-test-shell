@@ -178,4 +178,5 @@ void loop(void) {
     delay(500);
     blink[j] = 1;
   }
+  delay(1000); // added to keep patterns from overlapping
 }
