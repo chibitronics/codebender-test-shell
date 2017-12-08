@@ -50,6 +50,6 @@ You can then run it locally, exposing it on port 8080:
 
     docker run --rm -it -p 8080:80 ltc-web-ui
 
-By default, it uses the build server at //ltc.chibitronics.com/compile and you can change this by setting COMPILE_URL:
+By default, it uses the build server at //compile.ltc.chibitronics.com and you can change this by setting COMPILE_URL:
 
-    docker run --rm -it -p 8080:80 -e COMPILE_URL=//ltc.xobs.io/compile ltc-web-ui
+    docker run --rm -it -p 8080:80 -e COMPILE_URL=//compile.example.com/ ltc-web-ui
