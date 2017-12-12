@@ -42,7 +42,7 @@ then
 	print_usage
 	exit 1
 fi
-exit 0
+#exit 0
 
 # Figure out a serial number based on today's date.
 # The first invokation of the day should result in -01, and
